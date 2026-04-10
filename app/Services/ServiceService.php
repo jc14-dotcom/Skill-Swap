@@ -1,0 +1,109 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Services;
+
+use App\Models\Service;
+use App\Policies\ServicePolicy;
+
+class ServiceService
+{
+	private Service $services;
+	private ServicePolicy $policy;
+
+	public function __construct()
+	{
+		$this->services = new Service();
+		$this->policy = new ServicePolicy();
+	}
+
+	public function listPublicServices(): array
+	{
+		return $this->services->listPublic();
+	}
+
+	public function findService(int $id): ?array
+	{
+		return $this->services->findWithProvider($id);
+	}
+
+	public function createService(array $actor, array $payload): int
+	{
+		if (!$this->policy->canCreate($actor)) {
+			throw new \RuntimeException('Only providers can create services.');
+		}
+
+		return $this->services->createService([
+			'user_id' => (int) $actor['id'],
+			'title' => (string) $payload['title'],
+			'description' => (string) $payload['description'],
+			'price' => (float) $payload['price'],
+			'status' => 'active',
+		]);
+	}
+
+	public function listOwnServices(array $actor): array
+	{
+		return $this->services->listByProvider((int) $actor['id']);
+	}
+
+	public function canManageService(?array $actor, array $service): bool
+	{
+		if (!is_array($actor)) {
+			return false;
+		}
+
+		return $this->policy->canManage($actor, $service);
+	}
+
+	public function findManagedService(array $actor, int $serviceId): array
+	{
+		$service = $this->services->findWithProvider($serviceId);
+
+		if (!is_array($service)) {
+			throw new \RuntimeException('Service not found.');
+		}
+
+		if (!$this->policy->canManage($actor, $service)) {
+			throw new \RuntimeException('You are not allowed to manage this service.');
+		}
+
+		return $service;
+	}
+
+	public function updateService(array $actor, int $serviceId, array $payload): bool
+	{
+		$service = $this->findManagedService($actor, $serviceId);
+
+		$updated = $this->services->updateService($serviceId, [
+			'title' => (string) $payload['title'],
+			'description' => (string) $payload['description'],
+			'price' => (float) $payload['price'],
+			'status' => (string) $payload['status'],
+		]);
+
+		if (!$updated) {
+			throw new \RuntimeException('Service update failed.');
+		}
+
+		return true;
+	}
+
+	public function deleteService(array $actor, int $serviceId): bool
+	{
+		$service = $this->findManagedService($actor, $serviceId);
+
+		if ($this->services->hasBookings((int) $service['id'])) {
+			throw new \RuntimeException('Cannot delete a service that already has bookings.');
+		}
+
+		$deleted = $this->services->deleteService((int) $service['id']);
+
+		if (!$deleted) {
+			throw new \RuntimeException('Service delete failed.');
+		}
+
+		return true;
+	}
+}

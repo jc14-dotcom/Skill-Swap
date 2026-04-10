@@ -1,0 +1,7 @@
+/vendor/
+/node_modules/
+/storage/logs/*.log
+/storage/database.sqlite
+/.env
+/public/hot
+/public/assets/css/app.css.map

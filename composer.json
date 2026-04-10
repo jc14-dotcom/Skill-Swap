@@ -1,0 +1,24 @@
+{
+	"name": "skillswap/app",
+	"description": "SkillSwap modular monolith architecture",
+	"type": "project",
+	"require": {
+		"php": "^8.2"
+	},
+	"autoload": {
+		"psr-4": {
+			"App\\": "app/",
+			"Core\\": "core/",
+			"Database\\Seeders\\": "database/seeders/"
+		}
+	},
+	"scripts": {
+		"serve": "php -S 127.0.0.1:8000 -t public",
+		"migrate": "php database/migrate.php",
+		"seed": "php database/seed.php",
+		"setup": [
+			"@php database/migrate.php",
+			"@php database/seed.php"
+		]
+	}
+}

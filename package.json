@@ -1,0 +1,22 @@
+{
+  "name": "skillswap",
+  "version": "1.0.0",
+  "description": "",
+  "main": "postcss.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.27",
+    "postcss": "^8.5.9",
+    "tailwindcss": "^3.4.17"
+  },
+  "scripts": {
+    "dev": "tailwindcss -i ./resources/css/input.css -o ./public/assets/css/app.css --watch",
+    "build": "tailwindcss -i ./resources/css/input.css -o ./public/assets/css/app.css --minify",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
