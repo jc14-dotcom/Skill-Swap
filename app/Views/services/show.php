@@ -11,6 +11,7 @@
 		</div>
 	</section>
 <?php else: ?>
+	<?php $providerImage = profile_image_url((string) ($service['provider_profile_picture'] ?? '')); ?>
 	<section class="ss-section">
 		<div class="ss-shell">
 			<div class="ss-split-shell">
@@ -19,7 +20,10 @@
 						<div>
 							<span class="ss-section-label">Service Detail</span>
 							<h1 class="ss-page-title"><?php echo htmlspecialchars((string) $service['title'], ENT_QUOTES, 'UTF-8'); ?></h1>
-							<p class="ss-muted-block" style="margin-top: 0.6rem;">Provider: <?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Unknown'), ENT_QUOTES, 'UTF-8'); ?></p>
+							<div class="ss-provider-row" style="margin-top: 0.6rem;">
+								<img src="<?php echo htmlspecialchars($providerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Unknown'), ENT_QUOTES, 'UTF-8'); ?> profile picture" class="ss-provider-avatar ss-provider-avatar-lg">
+								<p class="ss-muted-block">Provider: <?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Unknown'), ENT_QUOTES, 'UTF-8'); ?></p>
+							</div>
 						</div>
 
 						<div>
@@ -67,7 +71,13 @@
 					<section class="ss-page-card ss-mini-info-card">
 						<h3 style="font-size: 1rem;">Quick Facts</h3>
 						<div class="ss-mini-info-row"><span>Service ID</span><strong>#<?php echo (int) $service['id']; ?></strong></div>
-						<div class="ss-mini-info-row"><span>Provider</span><strong><?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Unknown'), ENT_QUOTES, 'UTF-8'); ?></strong></div>
+						<div class="ss-mini-info-row">
+							<span>Provider</span>
+							<strong class="ss-provider-mini">
+								<img src="<?php echo htmlspecialchars($providerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="Provider profile picture" class="ss-provider-avatar">
+								<?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Unknown'), ENT_QUOTES, 'UTF-8'); ?>
+							</strong>
+						</div>
 						<div class="ss-mini-info-row"><span>Current status</span><strong><?php echo htmlspecialchars((string) ($service['status'] ?? 'active'), ENT_QUOTES, 'UTF-8'); ?></strong></div>
 					</section>
 				</aside>

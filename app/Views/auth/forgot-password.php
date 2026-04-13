@@ -10,7 +10,7 @@
 
 	<div class="ss-field">
 		<label for="email">Email</label>
-		<input id="email" name="email" type="email" required value="<?php echo htmlspecialchars((string) old_input('email'), ENT_QUOTES, 'UTF-8'); ?>" class="ss-input">
+		<input id="email" name="email" type="email" required maxlength="190" autocomplete="email" value="<?php echo htmlspecialchars((string) old_input('email'), ENT_QUOTES, 'UTF-8'); ?>" class="ss-input">
 	</div>
 
 	<div class="ss-actions">

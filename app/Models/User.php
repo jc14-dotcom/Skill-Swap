@@ -56,6 +56,10 @@ class User extends Model
 			'updated_at' => date('Y-m-d H:i:s'),
 		];
 
+		if (array_key_exists('profile_picture', $payload)) {
+			$attributes['profile_picture'] = $payload['profile_picture'];
+		}
+
 		if (isset($payload['password_hash']) && is_string($payload['password_hash']) && $payload['password_hash'] !== '') {
 			$attributes['password'] = $payload['password_hash'];
 		}

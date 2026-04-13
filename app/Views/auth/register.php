@@ -8,18 +8,18 @@
 
 	<div class="ss-field">
 		<label for="name">Name</label>
-		<input id="name" name="name" type="text" required value="<?php echo htmlspecialchars((string) old_input('name'), ENT_QUOTES, 'UTF-8'); ?>" class="ss-input">
+		<input id="name" name="name" type="text" required minlength="2" maxlength="120" autocomplete="name" value="<?php echo htmlspecialchars((string) old_input('name'), ENT_QUOTES, 'UTF-8'); ?>" class="ss-input">
 	</div>
 
 	<div class="ss-field">
 		<label for="email">Email</label>
-		<input id="email" name="email" type="email" required value="<?php echo htmlspecialchars((string) old_input('email'), ENT_QUOTES, 'UTF-8'); ?>" class="ss-input">
+		<input id="email" name="email" type="email" required maxlength="190" autocomplete="email" value="<?php echo htmlspecialchars((string) old_input('email'), ENT_QUOTES, 'UTF-8'); ?>" class="ss-input">
 	</div>
 
 	<div class="ss-field">
 		<label for="role">Role</label>
 		<?php $oldRole = (string) old_input('role', 'seeker'); ?>
-		<select id="role" name="role" class="ss-select">
+		<select id="role" name="role" required class="ss-select">
 			<option value="seeker" <?php echo $oldRole === 'seeker' ? 'selected' : ''; ?>>Seeker</option>
 			<option value="provider" <?php echo $oldRole === 'provider' ? 'selected' : ''; ?>>Provider</option>
 		</select>
@@ -27,12 +27,12 @@
 
 	<div class="ss-field">
 		<label for="password">Password</label>
-		<input id="password" name="password" type="password" required class="ss-input">
+		<input id="password" name="password" type="password" required minlength="8" maxlength="128" autocomplete="new-password" class="ss-input">
 	</div>
 
 	<div class="ss-field">
 		<label for="password_confirmation">Confirm Password</label>
-		<input id="password_confirmation" name="password_confirmation" type="password" required class="ss-input">
+		<input id="password_confirmation" name="password_confirmation" type="password" required minlength="8" maxlength="128" autocomplete="new-password" class="ss-input">
 	</div>
 
 	<div class="ss-actions">

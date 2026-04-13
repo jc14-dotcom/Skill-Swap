@@ -11,10 +11,13 @@ foreach ($allServices as $service) {
 		$name = 'Provider';
 	}
 
+	$avatar = profile_image_url((string) ($service['provider_profile_picture'] ?? ''));
+
 	if (!array_key_exists($name, $providerMap)) {
 		$providerMap[$name] = [
 			'name' => $name,
 			'role' => 'Skill Provider',
+			'avatar' => $avatar,
 		];
 	}
 }
@@ -23,10 +26,10 @@ $teamMembers = array_slice(array_values($providerMap), 0, 4);
 
 if ($teamMembers === []) {
 	$teamMembers = [
-		['name' => 'Aly Reyes', 'role' => 'UI Design Mentor'],
-		['name' => 'Carl Santos', 'role' => 'Backend Coach'],
-		['name' => 'Nina Lim', 'role' => 'Digital Marketing Expert'],
-		['name' => 'Jules Dela Cruz', 'role' => 'Product Strategy Advisor'],
+		['name' => 'Aly Reyes', 'role' => 'UI Design Mentor', 'avatar' => '/assets/images/default-avatar.png'],
+		['name' => 'Carl Santos', 'role' => 'Backend Coach', 'avatar' => '/assets/images/default-avatar.png'],
+		['name' => 'Nina Lim', 'role' => 'Digital Marketing Expert', 'avatar' => '/assets/images/default-avatar.png'],
+		['name' => 'Jules Dela Cruz', 'role' => 'Product Strategy Advisor', 'avatar' => '/assets/images/default-avatar.png'],
 	];
 }
 
@@ -119,6 +122,7 @@ $providerCount = count($providerMap);
 						<?php
 						$title = (string) ($service['title'] ?? 'Skill Service');
 						$iconVariant = $index % 3;
+						$providerImage = profile_image_url((string) ($service['provider_profile_picture'] ?? ''));
 						?>
 						<article class="ss-service-card ss-service-item">
 							<div class="ss-service-icon" aria-hidden="true">
@@ -146,7 +150,10 @@ $providerCount = count($providerMap);
 							</div>
 							<div>
 								<h3><?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?></h3>
-								<p class="ss-service-meta">By <?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Provider'), ENT_QUOTES, 'UTF-8'); ?></p>
+								<div class="ss-provider-row" style="margin-top: 0.35rem;">
+									<img src="<?php echo htmlspecialchars($providerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Provider'), ENT_QUOTES, 'UTF-8'); ?> profile picture" class="ss-provider-avatar">
+									<p class="ss-service-meta">By <?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Provider'), ENT_QUOTES, 'UTF-8'); ?></p>
+								</div>
 							</div>
 
 							<p class="ss-service-desc"><?php echo htmlspecialchars((string) ($service['description'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
@@ -249,7 +256,7 @@ $providerCount = count($providerMap);
 			<?php foreach ($teamMembers as $member): ?>
 				<article class="ss-team-card">
 					<div class="ss-team-photo">
-						<img src="/assets/images/default-avatar.png" alt="<?php echo htmlspecialchars((string) $member['name'], ENT_QUOTES, 'UTF-8'); ?> avatar">
+						<img src="<?php echo htmlspecialchars(profile_image_url((string) ($member['avatar'] ?? '')), ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars((string) $member['name'], ENT_QUOTES, 'UTF-8'); ?> avatar">
 					</div>
 					<div class="ss-team-body">
 						<h3><?php echo htmlspecialchars((string) $member['name'], ENT_QUOTES, 'UTF-8'); ?></h3>

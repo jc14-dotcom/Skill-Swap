@@ -12,7 +12,7 @@ class Service extends Model
 
 	public function listPublic(): array
 	{
-		$sql = 'SELECT s.*, u.name AS provider_name
+		$sql = 'SELECT s.*, u.name AS provider_name, u.profile_picture AS provider_profile_picture
 				FROM services s
 				INNER JOIN users u ON u.id = s.user_id
 				WHERE s.status = :status
@@ -23,7 +23,7 @@ class Service extends Model
 
 	public function findWithProvider(int $id): ?array
 	{
-		$sql = 'SELECT s.*, u.name AS provider_name, u.email AS provider_email
+		$sql = 'SELECT s.*, u.name AS provider_name, u.email AS provider_email, u.profile_picture AS provider_profile_picture
 				FROM services s
 				INNER JOIN users u ON u.id = s.user_id
 				WHERE s.id = :id

@@ -31,7 +31,16 @@ $appJsVersion = is_file($appJsPath) ? (string) filemtime($appJsPath) : '1';
 
 			<?php if (is_array($allErrors) && $allErrors !== []): ?>
 				<div class="ss-alert-stack">
-					<div class="ss-alert ss-alert-error">Please review your form input and try again.</div>
+					<div class="ss-alert ss-alert-error">
+						<p><strong>Please fix the following issues:</strong></p>
+						<ul>
+							<?php foreach ($allErrors as $fieldErrors): ?>
+								<?php foreach ((array) $fieldErrors as $message): ?>
+									<li><?php echo htmlspecialchars((string) $message, ENT_QUOTES, 'UTF-8'); ?></li>
+								<?php endforeach; ?>
+							<?php endforeach; ?>
+						</ul>
+					</div>
 				</div>
 			<?php endif; ?>
 

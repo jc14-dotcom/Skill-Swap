@@ -23,10 +23,14 @@
 		<?php else: ?>
 			<div class="ss-grid-3">
 				<?php foreach ($services as $service): ?>
+					<?php $providerImage = profile_image_url((string) ($service['provider_profile_picture'] ?? '')); ?>
 					<article class="ss-service-card">
 						<div>
 							<h3><?php echo htmlspecialchars((string) ($service['title'] ?? 'Skill Service'), ENT_QUOTES, 'UTF-8'); ?></h3>
-							<p class="ss-service-meta">By <?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Provider'), ENT_QUOTES, 'UTF-8'); ?></p>
+							<div class="ss-provider-row" style="margin-top: 0.35rem;">
+								<img src="<?php echo htmlspecialchars($providerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Provider'), ENT_QUOTES, 'UTF-8'); ?> profile picture" class="ss-provider-avatar">
+								<p class="ss-service-meta">By <?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Provider'), ENT_QUOTES, 'UTF-8'); ?></p>
+							</div>
 						</div>
 
 						<p class="ss-service-desc"><?php echo htmlspecialchars((string) ($service['description'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>

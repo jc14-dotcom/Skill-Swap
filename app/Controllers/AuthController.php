@@ -33,8 +33,8 @@ class AuthController extends Controller
 	public function login(): void
 	{
 		[$valid, $errors, $clean] = $this->validate($this->request->all(), [
-			'email' => 'required|email',
-			'password' => 'required|string|min:6',
+			'email' => 'required|email|max:190',
+			'password' => 'required|string|min:8|max:128',
 		]);
 
 		if (!$valid) {
@@ -98,7 +98,7 @@ class AuthController extends Controller
 	{
 		[$valid, $errors, $clean] = $this->validate($this->request->all(), [
 			'token' => 'required|string|min:20|max:255',
-			'password' => 'required|string|min:8|confirmed',
+			'password' => 'required|string|min:8|max:128|confirmed',
 		]);
 
 		$token = trim((string) ($clean['token'] ?? (string) $this->request->input('token', '')));
@@ -123,7 +123,7 @@ class AuthController extends Controller
 		[$valid, $errors, $clean] = $this->validate($this->request->all(), [
 			'name' => 'required|string|min:2|max:120',
 			'email' => 'required|email|max:190',
-			'password' => 'required|string|min:8|confirmed',
+			'password' => 'required|string|min:8|max:128|confirmed',
 			'role' => 'required|in:seeker,provider',
 		]);
 

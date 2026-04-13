@@ -9,12 +9,12 @@
 
 	<div class="ss-field">
 		<label for="password">New Password</label>
-		<input id="password" name="password" type="password" required class="ss-input">
+		<input id="password" name="password" type="password" required minlength="8" maxlength="128" autocomplete="new-password" class="ss-input">
 	</div>
 
 	<div class="ss-field">
 		<label for="password_confirmation">Confirm New Password</label>
-		<input id="password_confirmation" name="password_confirmation" type="password" required class="ss-input">
+		<input id="password_confirmation" name="password_confirmation" type="password" required minlength="8" maxlength="128" autocomplete="new-password" class="ss-input">
 	</div>
 
 	<div class="ss-actions">
