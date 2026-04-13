@@ -22,9 +22,25 @@ class ServiceController extends Controller
 
 	public function index(): void
 	{
+		$actor = $this->user();
+		$services = $this->services->listPublicServices();
+
+		if (is_array($actor)) {
+			if ($this->request->path() === '/') {
+				$this->redirect('/home');
+				return;
+			}
+
+			$this->view('services.marketplace', [
+				'title' => 'Marketplace',
+				'services' => $services,
+			]);
+			return;
+		}
+
 		$this->view('services.index', [
 			'title' => 'Services',
-			'services' => $this->services->listPublicServices(),
+			'services' => $services,
 		]);
 	}
 

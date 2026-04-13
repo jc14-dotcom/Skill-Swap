@@ -45,6 +45,10 @@ return [
 			'max' => (int) (getenv('RATE_LIMIT_REGISTER_MAX') ?: 3),
 			'window' => (int) (getenv('RATE_LIMIT_REGISTER_WINDOW') ?: 60),
 		],
+		'password_reset' => [
+			'max' => (int) (getenv('RATE_LIMIT_PASSWORD_RESET_MAX') ?: 5),
+			'window' => (int) (getenv('RATE_LIMIT_PASSWORD_RESET_WINDOW') ?: 300),
+		],
 		'default' => [
 			'max' => (int) (getenv('RATE_LIMIT_DEFAULT_MAX') ?: 30),
 			'window' => (int) (getenv('RATE_LIMIT_DEFAULT_WINDOW') ?: 60),

@@ -85,6 +85,10 @@ class Session
 
 	public static function flash(string $key, mixed $value): void
 	{
+		if (!isset($_SESSION['_flash_next']) || !is_array($_SESSION['_flash_next'])) {
+			$_SESSION['_flash_next'] = [];
+		}
+
 		self::arraySet($_SESSION['_flash_next'], $key, $value);
 	}
 
@@ -123,7 +127,8 @@ class Session
 
 	private static function ageFlashData(): void
 	{
-		$_SESSION['_flash'] = $_SESSION['_flash_next'] ?? [];
+		$next = $_SESSION['_flash_next'] ?? [];
+		$_SESSION['_flash'] = is_array($next) ? $next : [];
 		unset($_SESSION['_flash_next']);
 	}
 

@@ -8,8 +8,13 @@ class ServicePolicy
 {
     public function canCreate(array $user): bool
     {
-        $role = (string) ($user['role'] ?? 'seeker');
-        return in_array($role, ['provider', 'admin'], true);
+        $userId = (int) ($user['id'] ?? 0);
+        if ($userId <= 0) {
+            return false;
+        }
+
+        $role = (string) ($user['role'] ?? '');
+        return in_array($role, ['seeker', 'provider', 'admin'], true);
     }
 
     public function canManage(array $user, array $service): bool

@@ -115,12 +115,14 @@ class BookingController extends Controller
 			return;
 		}
 
+		$redirectTo = $this->bookingsRedirectForActor($actor);
+
 		[$valid, $errors, $clean] = $this->validate($this->request->all(), [
 			'status' => 'required|in:accepted,rejected,completed,cancelled',
 		]);
 
 		if (!$valid) {
-			$this->redirect('/bookings/provider');
+			$this->redirect($redirectTo);
 			return;
 		}
 
@@ -131,6 +133,13 @@ class BookingController extends Controller
 			Session::flash('errors', ['booking' => [$exception->getMessage()]]);
 		}
 
-		$this->redirect('/bookings/provider');
+		$this->redirect($redirectTo);
+	}
+
+	private function bookingsRedirectForActor(array $actor): string
+	{
+		return (string) ($actor['role'] ?? '') === 'seeker'
+			? '/bookings/mine'
+			: '/bookings/provider';
 	}
 }

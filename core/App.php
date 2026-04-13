@@ -16,6 +16,9 @@ class App
 	/** @var array<string, mixed> */
 	private array $config = [];
 
+	private Logger $logger;
+	private string $requestId;
+
 	private Router $router;
 
 	public function __construct(string $basePath)
@@ -25,6 +28,10 @@ class App
 
 		$this->loadEnvironment();
 		$this->loadConfig();
+		$this->requestId = $this->resolveRequestId();
+		$_SERVER['APP_REQUEST_ID'] = $this->requestId;
+		$_ENV['APP_REQUEST_ID'] = $this->requestId;
+		$this->logger = new Logger($this->basePath, (array) $this->config('logging', []));
 
 		date_default_timezone_set((string) $this->config('app.timezone', 'UTC'));
 
@@ -49,6 +56,11 @@ class App
 	public static function getConfig(string $key, mixed $default = null): mixed
 	{
 		return self::instance()->config($key, $default);
+	}
+
+	public static function logger(): Logger
+	{
+		return self::instance()->logger;
 	}
 
 	public function config(string $key, mixed $default = null): mixed
@@ -149,7 +161,16 @@ class App
 		});
 
 		set_exception_handler(function (Throwable $exception): void {
-			$this->logException($exception);
+			$actor = Session::get('auth.user');
+			$actorId = is_array($actor) ? (int) ($actor['id'] ?? 0) : 0;
+			$this->logger->error('Unhandled exception', [
+				'request_id' => $this->requestId,
+				'method' => (string) ($_SERVER['REQUEST_METHOD'] ?? 'CLI'),
+				'path' => (string) ($_SERVER['REQUEST_URI'] ?? '/'),
+				'actor_id' => $actorId > 0 ? $actorId : null,
+				'exception' => $exception,
+				'trace' => $exception->getTraceAsString(),
+			]);
 
 			http_response_code(500);
 			$isDebug = (bool) $this->config('app.debug', false);
@@ -168,24 +189,17 @@ class App
 		});
 	}
 
-	private function logException(Throwable $exception): void
+	private function resolveRequestId(): string
 	{
-		$logDir = $this->basePath('storage/logs');
-		if (!is_dir($logDir)) {
-			mkdir($logDir, 0777, true);
+		$incoming = (string) ($_SERVER['HTTP_X_REQUEST_ID'] ?? '');
+		if ($incoming !== '' && preg_match('/^[a-zA-Z0-9\-_]{8,100}$/', $incoming) === 1) {
+			return $incoming;
 		}
 
-		$logFile = $logDir . '/app.log';
-		$line = sprintf(
-			"[%s] %s: %s in %s:%d\n%s\n\n",
-			date('Y-m-d H:i:s'),
-			$exception::class,
-			$exception->getMessage(),
-			$exception->getFile(),
-			$exception->getLine(),
-			$exception->getTraceAsString()
-		);
-
-		file_put_contents($logFile, $line, FILE_APPEND);
+		try {
+			return bin2hex(random_bytes(8));
+		} catch (\Throwable $exception) {
+			return uniqid('req_', true);
+		}
 	}
 }

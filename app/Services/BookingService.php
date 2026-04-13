@@ -5,20 +5,27 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Booking;
+use App\Models\BookingStatusHistory;
 use App\Models\Service;
 use App\Policies\BookingPolicy;
+use Core\App;
+use Core\Database;
 
 class BookingService
 {
 	private Booking $bookings;
+	private BookingStatusHistory $statusHistory;
 	private Service $services;
 	private BookingPolicy $policy;
+	private NotificationService $notifications;
 
 	public function __construct()
 	{
 		$this->bookings = new Booking();
+		$this->statusHistory = new BookingStatusHistory();
 		$this->services = new Service();
 		$this->policy = new BookingPolicy();
+		$this->notifications = new NotificationService();
 	}
 
 	public function createBooking(array $actor, array $payload): array
@@ -34,18 +41,40 @@ class BookingService
 			throw new \RuntimeException('You are not allowed to book this service.');
 		}
 
-		$bookingId = $this->bookings->createBooking([
-			'service_id' => $serviceId,
-			'seeker_id' => (int) $actor['id'],
-			'provider_id' => (int) $service['user_id'],
-			'status' => 'pending',
-			'message' => $payload['message'] ?? null,
-			'scheduled_at' => $payload['scheduled_at'] ?? null,
-		]);
+		$bookingId = Database::transaction(function () use ($actor, $payload, $service, $serviceId): int {
+			$createdId = $this->bookings->createBooking([
+				'service_id' => $serviceId,
+				'seeker_id' => (int) $actor['id'],
+				'provider_id' => (int) $service['user_id'],
+				'status' => 'pending',
+				'message' => $payload['message'] ?? null,
+				'scheduled_at' => $payload['scheduled_at'] ?? null,
+			]);
 
-		$booking = $this->bookings->findDetailed($bookingId);
+			$this->statusHistory->record($createdId, null, 'pending', (int) ($actor['id'] ?? 0));
+			return $createdId;
+		});
+
+		$booking = $this->bookings->findDetailed((int) $bookingId);
 		if (!is_array($booking)) {
 			throw new \RuntimeException('Booking could not be loaded after creation.');
+		}
+
+		App::logger()->info('booking.created', [
+			'booking_id' => (int) $booking['id'],
+			'service_id' => (int) $booking['service_id'],
+			'seeker_id' => (int) $booking['seeker_id'],
+			'provider_id' => (int) $booking['provider_id'],
+			'status' => (string) $booking['status'],
+		]);
+
+		try {
+			$this->notifications->notifyBookingCreated($booking, (int) ($actor['id'] ?? 0));
+		} catch (\Throwable $exception) {
+			App::logger()->warning('notification.booking_created.failed', [
+				'booking_id' => (int) $booking['id'],
+				'error' => $exception->getMessage(),
+			]);
 		}
 
 		return $booking;
@@ -72,11 +101,39 @@ class BookingService
 			throw new \RuntimeException('Status transition is not allowed.');
 		}
 
-		$this->bookings->updateStatus($bookingId, $newStatus);
+		$currentStatus = (string) ($booking['status'] ?? '');
+
+		Database::transaction(function () use ($actor, $bookingId, $currentStatus, $newStatus): void {
+			$this->bookings->updateStatus($bookingId, $newStatus);
+			$this->statusHistory->record($bookingId, $currentStatus, $newStatus, (int) ($actor['id'] ?? 0));
+		});
 
 		$updated = $this->bookings->findDetailed($bookingId);
 		if (!is_array($updated)) {
 			throw new \RuntimeException('Booking update failed.');
+		}
+
+		App::logger()->info('booking.status.transitioned', [
+			'booking_id' => (int) $updated['id'],
+			'from_status' => $currentStatus,
+			'to_status' => (string) $updated['status'],
+			'actor_id' => (int) ($actor['id'] ?? 0),
+		]);
+
+		try {
+			$this->notifications->notifyBookingTransition(
+				$updated,
+				$currentStatus,
+				(string) $updated['status'],
+				(int) ($actor['id'] ?? 0)
+			);
+		} catch (\Throwable $exception) {
+			App::logger()->warning('notification.booking_transition.failed', [
+				'booking_id' => (int) $updated['id'],
+				'from_status' => $currentStatus,
+				'to_status' => (string) $updated['status'],
+				'error' => $exception->getMessage(),
+			]);
 		}
 
 		return $updated;

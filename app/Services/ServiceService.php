@@ -31,7 +31,7 @@ class ServiceService
 	public function createService(array $actor, array $payload): int
 	{
 		if (!$this->policy->canCreate($actor)) {
-			throw new \RuntimeException('Only providers can create services.');
+			throw new \RuntimeException('Only authenticated members can create services.');
 		}
 
 		return $this->services->createService([

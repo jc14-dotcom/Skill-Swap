@@ -12,7 +12,7 @@ class GuestMiddleware
     public function handle(Request $request, callable $next): mixed
     {
         if (is_array(Session::get('auth.user'))) {
-            header('Location: /services', true, 302);
+            header('Location: /home', true, 302);
             exit;
         }
 

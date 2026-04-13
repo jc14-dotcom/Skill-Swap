@@ -8,8 +8,13 @@ class BookingPolicy
 {
     public function canCreate(array $user, array $service): bool
     {
-        $role = (string) ($user['role'] ?? 'seeker');
-        if (!in_array($role, ['seeker', 'admin'], true)) {
+        $userId = (int) ($user['id'] ?? 0);
+        if ($userId <= 0) {
+            return false;
+        }
+
+        $role = (string) ($user['role'] ?? '');
+        if (!in_array($role, ['seeker', 'provider', 'admin'], true)) {
             return false;
         }
 
@@ -17,7 +22,7 @@ class BookingPolicy
             return true;
         }
 
-        return (int) ($service['user_id'] ?? 0) !== (int) ($user['id'] ?? 0);
+        return (int) ($service['user_id'] ?? 0) !== $userId;
     }
 
     public function canView(array $user, array $booking): bool
