@@ -8,7 +8,7 @@
 				<h1 class="ss-page-title">My Booking Requests</h1>
 				<p class="ss-muted-block" style="margin-top: 0.4rem;">Track provider responses and submit a review once work is completed.</p>
 			</div>
-			<a href="/bookings/create" class="ss-btn">New Booking <span class="ss-arrow">-></span></a>
+			<a href="/services" class="ss-btn">New Booking <span class="ss-arrow">-></span></a>
 		</div>
 
 		<?php if (($bookings ?? []) === []): ?>

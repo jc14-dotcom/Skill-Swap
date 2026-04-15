@@ -32,7 +32,7 @@
 			<div class="ss-actions">
 				<a href="/services" class="ss-btn-outline">Browse marketplace</a>
 				<a href="/bookings/mine" class="ss-btn-outline">My bookings</a>
-				<a href="/bookings/provider" class="ss-btn-outline">Provider queue</a>
+				<a href="/bookings/provider" class="ss-btn-outline">Provider schedule</a>
 				<a href="/services/create" class="ss-btn-soft">Create service <span class="ss-arrow">-></span></a>
 			</div>
 		</div>

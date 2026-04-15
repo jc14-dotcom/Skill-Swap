@@ -13,6 +13,9 @@ if ($displayName === '') {
 
 $profileInitial = strtoupper(substr($displayName, 0, 1));
 $roleLabel = strtoupper((string) ($user['role'] ?? 'member'));
+$userRole = strtolower((string) ($user['role'] ?? 'member'));
+$canSeekSkill = !$isAuth || $userRole !== 'provider';
+$canOfferSkill = !$isAuth || $userRole !== 'seeker';
 
 $notificationFeed = [
 	'unread_count' => 0,
@@ -43,12 +46,23 @@ $brandHref = $isAuth ? '/home' : '/services';
 if ($isAuth) {
 	$links = [
 		['label' => 'Home', 'href' => '/home', 'active' => $path === '/home'],
-		['label' => 'Marketplace', 'href' => '/services', 'active' => $path === '/services' || preg_match('#^/services/\\d+$#', $path) === 1],
-		['label' => 'My Services', 'href' => '/services/mine', 'active' => $path === '/services/mine' || preg_match('#^/services/\\d+/edit$#', $path) === 1],
-		['label' => 'My Bookings', 'href' => '/bookings/mine', 'active' => $path === '/bookings/mine' || $path === '/bookings'],
-		['label' => 'Messages', 'href' => '/messages', 'active' => str_starts_with($path, '/messages')],
-		['label' => 'Dashboard', 'href' => '/dashboard', 'active' => str_starts_with($path, '/dashboard')],
 	];
+
+	if ($canSeekSkill) {
+		$links[] = ['label' => 'Seek Skills', 'href' => '/services', 'active' => $path === '/services' || preg_match('#^/services/\\d+$#', $path) === 1];
+	}
+
+	$links[] = ['label' => 'Messages', 'href' => '/messages', 'active' => str_starts_with($path, '/messages')];
+	$links[] = ['label' => 'Dashboard', 'href' => '/dashboard', 'active' => str_starts_with($path, '/dashboard')];
+
+	if ($canOfferSkill) {
+		$links[] = ['label' => 'Provider Schedule', 'href' => '/bookings/provider', 'active' => $path === '/bookings/provider'];
+		$links[] = ['label' => 'My Services', 'href' => '/services/mine', 'active' => $path === '/services/mine' || preg_match('#^/services/\\d+/edit$#', $path) === 1];
+	}
+
+	if ($canSeekSkill) {
+		$links[] = ['label' => 'My Bookings', 'href' => '/bookings/mine', 'active' => $path === '/bookings/mine' || $path === '/bookings'];
+	}
 } else {
 	$links = [
 		['label' => 'Home', 'href' => '/services#home', 'active' => $path === '/' || $path === '/services'],
@@ -199,11 +213,19 @@ if ($isAuth) {
 
 	<div class="ss-mobile-auth">
 		<?php if ($isAuth): ?>
-			<a href="/bookings/create" class="ss-btn-soft">Seek Skill</a>
-			<a href="/services/create" class="ss-btn-outline">Offer Skill</a>
-			<a href="/services/mine" class="ss-btn-outline">My Services</a>
-			<a href="/bookings/mine" class="ss-btn-outline">My Booking Requests</a>
-			<a href="/bookings/provider" class="ss-btn-outline">Provider Queue</a>
+			<?php if ($canSeekSkill): ?>
+				<a href="/services" class="ss-btn-soft">Seek Skill</a>
+				<a href="/bookings/mine" class="ss-btn-outline">My Booking Requests</a>
+			<?php endif; ?>
+
+			<?php if ($canOfferSkill): ?>
+				<a href="/services/create" class="ss-btn-outline">Offer Skill</a>
+				<a href="/services/mine" class="ss-btn-outline">My Services</a>
+			<?php endif; ?>
+
+			<?php if ($canOfferSkill): ?>
+				<a href="/bookings/provider" class="ss-btn-outline">Provider Schedule</a>
+			<?php endif; ?>
 			<form action="/logout" method="post" class="ss-logout-form">
 				<?php echo csrf_field(); ?>
 				<button type="submit" class="ss-btn-outline" style="width: 100%;">Logout</button>

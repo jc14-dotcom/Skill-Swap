@@ -64,6 +64,22 @@ class Booking extends Model
 		return $this->query($sql, ['provider_id' => $providerId])->fetchAll();
 	}
 
+	public function listForProviderService(int $providerId, int $serviceId): array
+	{
+		$sql = 'SELECT b.*, s.title AS service_title, u.name AS seeker_name, u.profile_picture AS seeker_profile_picture
+				FROM bookings b
+				INNER JOIN services s ON s.id = b.service_id
+				INNER JOIN users u ON u.id = b.seeker_id
+				WHERE b.provider_id = :provider_id
+				  AND b.service_id = :service_id
+				ORDER BY b.id DESC';
+
+		return $this->query($sql, [
+			'provider_id' => $providerId,
+			'service_id' => $serviceId,
+		])->fetchAll();
+	}
+
 	public function updateStatus(int $bookingId, string $status): bool
 	{
 		return $this->updateById($bookingId, [

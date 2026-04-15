@@ -33,6 +33,6 @@
 
 <div class="ss-page-card" style="padding: 0.9rem; margin-top: 0.55rem;">
 	<p class="ss-subtle">Demo Accounts</p>
-	<p class="mt-1">Provider: provider@example.com / [removed-demo-password]</p>
+	<p class="mt-1">Both: provider@example.com / [removed-demo-password]</p>
 	<p>Seeker: seeker@example.com / [removed-demo-password]</p>
 </div>

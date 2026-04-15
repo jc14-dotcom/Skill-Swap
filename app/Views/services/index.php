@@ -63,7 +63,7 @@ $providerCount = count($providerMap);
 				<div class="ss-hero-actions">
 					<a href="#marketplace" class="ss-btn-soft">Explore Skills <span class="ss-arrow">-></span></a>
 					<?php if (auth_check()): ?>
-						<a href="/bookings/create" class="ss-btn-outline">Start Booking</a>
+						<a href="/services" class="ss-btn-outline">Start Booking</a>
 					<?php else: ?>
 						<a href="/register" class="ss-btn-outline">Join SkillSwap</a>
 					<?php endif; ?>
@@ -123,8 +123,9 @@ $providerCount = count($providerMap);
 						$title = (string) ($service['title'] ?? 'Skill Service');
 						$iconVariant = $index % 3;
 						$providerImage = profile_image_url((string) ($service['provider_profile_picture'] ?? ''));
+						$serviceLink = '/services/' . (int) ($service['id'] ?? 0);
 						?>
-						<article class="ss-service-card ss-service-item">
+						<article class="ss-service-card ss-service-item" data-card-link="<?php echo htmlspecialchars($serviceLink, ENT_QUOTES, 'UTF-8'); ?>" role="link" tabindex="0" aria-label="Open <?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?> details">
 							<div class="ss-service-icon" aria-hidden="true">
 								<?php if ($iconVariant === 0): ?>
 									<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -160,7 +161,7 @@ $providerCount = count($providerMap);
 
 							<div class="ss-service-foot">
 								<span class="ss-price-chip"><?php echo htmlspecialchars(format_currency((float) ($service['price'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?></span>
-								<a href="/services/<?php echo (int) ($service['id'] ?? 0); ?>" class="ss-mini-link">Read More <span class="ss-arrow">-></span></a>
+								<a href="<?php echo htmlspecialchars($serviceLink, ENT_QUOTES, 'UTF-8'); ?>" class="ss-mini-link">Read More <span class="ss-arrow">-></span></a>
 							</div>
 						</article>
 					<?php endforeach; ?>

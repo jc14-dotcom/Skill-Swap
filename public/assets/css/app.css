@@ -1628,6 +1628,15 @@ body.ss-drawer-open {
   transition: transform 0.26s ease, box-shadow 0.26s ease, background 0.26s ease, color 0.26s ease;
 }
 
+.ss-service-card[data-card-link] {
+  cursor: pointer;
+}
+
+.ss-service-card[data-card-link]:focus-visible {
+  outline: 3px solid rgba(47, 116, 255, 0.35);
+  outline-offset: 3px;
+}
+
 .ss-service-card::after {
   content: "";
   position: absolute;
@@ -3103,6 +3112,27 @@ body.ss-drawer-open {
   display: grid;
   gap: 0.62rem;
   box-shadow: 0 6px 18px rgba(22, 41, 79, 0.08);
+}
+
+.ss-record-card[data-card-link] {
+  cursor: pointer;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.ss-record-card[data-card-link]:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 26px rgba(22, 41, 79, 0.13);
+  border-color: rgba(47, 116, 255, 0.34);
+}
+
+.ss-record-card[data-card-link]:focus-visible {
+  outline: 3px solid rgba(47, 116, 255, 0.35);
+  outline-offset: 3px;
+}
+
+.ss-service-booking-list {
+  display: grid;
+  gap: 0.85rem;
 }
 
 .ss-record-card h3 {

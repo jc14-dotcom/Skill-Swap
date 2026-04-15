@@ -41,11 +41,34 @@ class BookingController extends Controller
 	public function create(): void
 	{
 		$serviceId = (int) $this->request->query('service_id', 0);
-		$service = $serviceId > 0 ? $this->services->findService($serviceId) : null;
+
+		if ($serviceId <= 0) {
+			$this->redirect('/services');
+			return;
+		}
+
+		$service = $this->services->findService($serviceId);
+		if (!is_array($service)) {
+			Session::flash('errors', ['booking' => ['Selected skill is no longer available. Please choose another one.']]);
+			$this->redirect('/services');
+			return;
+		}
+
+		$actor = $this->user();
+		$actorId = is_array($actor) ? (int) ($actor['id'] ?? 0) : 0;
+		$actorRole = is_array($actor) ? (string) ($actor['role'] ?? '') : '';
+		$serviceOwnerId = (int) ($service['user_id'] ?? 0);
+
+		if ($actorId > 0 && $actorId === $serviceOwnerId && $actorRole !== 'admin') {
+			Session::flash('errors', ['booking' => ['You cannot book your own offered skill.']]);
+			$this->redirect('/services/' . $serviceId);
+			return;
+		}
 
 		$this->view('bookings.create', [
-			'title' => 'Create Booking',
+			'title' => 'Confirm Booking',
 			'service' => $service,
+			'requestedServiceId' => $serviceId,
 		]);
 	}
 
@@ -102,7 +125,7 @@ class BookingController extends Controller
 		}
 
 		$this->view('bookings.provider-bookings', [
-			'title' => 'Provider Bookings',
+			'title' => 'Provider Schedule',
 			'bookings' => $this->bookings->listForProvider($actor),
 		]);
 	}
@@ -115,7 +138,7 @@ class BookingController extends Controller
 			return;
 		}
 
-		$redirectTo = $this->bookingsRedirectForActor($actor);
+		$redirectTo = $this->resolveStatusRedirect($actor);
 
 		[$valid, $errors, $clean] = $this->validate($this->request->all(), [
 			'status' => 'required|in:accepted,rejected,completed,cancelled',
@@ -136,10 +159,34 @@ class BookingController extends Controller
 		$this->redirect($redirectTo);
 	}
 
+	private function resolveStatusRedirect(array $actor): string
+	{
+		$fallback = $this->bookingsRedirectForActor($actor);
+		$target = trim((string) $this->request->input('redirect', ''));
+
+		if ($target === '') {
+			return $fallback;
+		}
+
+		if (!str_starts_with($target, '/')) {
+			return $fallback;
+		}
+
+		return $target;
+	}
+
 	private function bookingsRedirectForActor(array $actor): string
 	{
-		return (string) ($actor['role'] ?? '') === 'seeker'
-			? '/bookings/mine'
-			: '/bookings/provider';
+		$role = (string) ($actor['role'] ?? '');
+
+		if ($role === 'seeker') {
+			return '/bookings/mine';
+		}
+
+		if ($role === 'provider') {
+			return '/bookings/provider';
+		}
+
+		return '/bookings';
 	}
 }

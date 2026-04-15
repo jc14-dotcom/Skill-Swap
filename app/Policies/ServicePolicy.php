@@ -14,7 +14,7 @@ class ServicePolicy
         }
 
         $role = (string) ($user['role'] ?? '');
-        return in_array($role, ['seeker', 'provider', 'admin'], true);
+        return in_array($role, ['seeker', 'provider', 'both', 'admin'], true);
     }
 
     public function canManage(array $user, array $service): bool

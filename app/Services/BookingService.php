@@ -90,6 +90,24 @@ class BookingService
 		return $this->bookings->listForProvider((int) $actor['id']);
 	}
 
+	public function listForProviderService(array $actor, array $service): array
+	{
+		$serviceId = (int) ($service['id'] ?? 0);
+		$providerId = (int) ($service['user_id'] ?? 0);
+		$actorId = (int) ($actor['id'] ?? 0);
+		$actorRole = (string) ($actor['role'] ?? '');
+
+		if ($serviceId <= 0 || $providerId <= 0) {
+			return [];
+		}
+
+		if ($actorRole !== 'admin' && $actorId !== $providerId) {
+			throw new \RuntimeException('You are not allowed to view bookings for this service.');
+		}
+
+		return $this->bookings->listForProviderService($providerId, $serviceId);
+	}
+
 	public function transitionStatus(array $actor, int $bookingId, string $newStatus): array
 	{
 		$booking = $this->bookings->findDetailed($bookingId);

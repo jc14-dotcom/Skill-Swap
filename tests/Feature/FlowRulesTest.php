@@ -137,10 +137,13 @@ $assert = static function (bool $condition, string $message) use (&$failures): v
 
 try {
     $client = new FlowHttpClient($baseUrl);
-    $stamp = time() . '_' . random_int(1000, 9999);
-    $providerEmail = 'provider.' . $stamp . '@example.com';
-    $seekerEmail = 'seeker.' . $stamp . '@example.com';
-    $adminEmail = 'admin.' . $stamp . '@example.com';
+    $stampBase = time() . '_' . random_int(1000, 9999);
+    $providerStamp = $stampBase . '_p';
+    $seekerStamp = $stampBase . '_s';
+    $adminStamp = $stampBase . '_a';
+    $providerEmail = 'provider.' . $providerStamp . '@example.com';
+    $seekerEmail = 'seeker.' . $seekerStamp . '@example.com';
+    $adminEmail = 'admin.' . $adminStamp . '@example.com';
     $initialPassword = 'Password123!';
     $newPassword = 'Password456!';
 
@@ -149,7 +152,7 @@ try {
          VALUES (:name, :email, :password, :role, :created_at, :updated_at)'
     );
     $adminInsert->execute([
-        'name' => 'Admin ' . $stamp,
+        'name' => 'Admin ' . $adminStamp,
         'email' => $adminEmail,
         'password' => password_hash($initialPassword, PASSWORD_DEFAULT),
         'role' => 'admin',
@@ -173,7 +176,7 @@ try {
 
     $registerProvider = $client->request('POST', '/register', [
         '_token' => $providerCsrf,
-        'name' => 'Provider ' . $stamp,
+        'name' => 'Provider ' . $providerStamp,
         'email' => $providerEmail,
         'password' => $initialPassword,
         'password_confirmation' => $initialPassword,
@@ -188,7 +191,7 @@ try {
 
     $createService = $client->request('POST', '/services', [
         '_token' => $serviceCsrf,
-        'title' => 'Bundle A Test Service ' . $stamp,
+        'title' => 'Bundle A Test Service ' . $providerStamp,
         'description' => 'Provider test service used for request-level booking transition assertions.',
         'price' => '250',
     ]);
@@ -209,7 +212,7 @@ try {
     $seekerCsrf = $client->csrfTokenFromBody($registerSeekerPage['body']);
     $registerSeeker = $client->request('POST', '/register', [
         '_token' => $seekerCsrf,
-        'name' => 'Seeker ' . $stamp,
+        'name' => 'Seeker ' . $seekerStamp,
         'email' => $seekerEmail,
         'password' => $initialPassword,
         'password_confirmation' => $initialPassword,

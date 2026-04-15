@@ -124,7 +124,7 @@ class AuthController extends Controller
 			'name' => 'required|string|min:2|max:120',
 			'email' => 'required|email|max:190',
 			'password' => 'required|string|min:8|max:128|confirmed',
-			'role' => 'required|in:seeker,provider',
+			'role' => 'required|in:seeker,provider,both',
 		]);
 
 		if (!$valid) {

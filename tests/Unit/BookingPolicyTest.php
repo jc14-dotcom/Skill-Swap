@@ -28,6 +28,8 @@ $policy = new App\Policies\BookingPolicy();
 
 $provider = ['id' => 10, 'role' => 'provider'];
 $seeker = ['id' => 22, 'role' => 'seeker'];
+$bothProvider = ['id' => 10, 'role' => 'both'];
+$bothSeeker = ['id' => 22, 'role' => 'both'];
 $guest = ['id' => 0, 'role' => 'guest'];
 
 $serviceByOther = ['user_id' => 90];
@@ -39,6 +41,7 @@ $completed = ['status' => 'completed', 'provider_id' => 10, 'seeker_id' => 22];
 
 $tests = [
     'provider can create booking for another member service' => $policy->canCreate($provider, $serviceByOther) === true,
+    'both-role user can create booking for another member service' => $policy->canCreate($bothProvider, $serviceByOther) === true,
     'provider cannot book own service' => $policy->canCreate($provider, $serviceOwnedByProvider) === false,
     'seeker can create booking' => $policy->canCreate($seeker, $serviceByOther) === true,
     'guest cannot create booking' => $policy->canCreate($guest, $serviceByOther) === false,
@@ -47,7 +50,9 @@ $tests = [
     'seeker cannot accept pending' => $policy->canTransition($seeker, $pending, 'accepted') === false,
     'seeker can cancel pending' => $policy->canTransition($seeker, $pending, 'cancelled') === true,
     'provider can complete accepted' => $policy->canTransition($provider, $accepted, 'completed') === true,
+    'both-role provider can complete accepted' => $policy->canTransition($bothProvider, $accepted, 'completed') === true,
     'provider can cancel accepted' => $policy->canTransition($provider, $accepted, 'cancelled') === true,
+    'both-role seeker can cancel accepted' => $policy->canTransition($bothSeeker, $accepted, 'cancelled') === true,
     'seeker can cancel accepted' => $policy->canTransition($seeker, $accepted, 'cancelled') === true,
     'seeker cannot complete accepted' => $policy->canTransition($seeker, $accepted, 'completed') === false,
     'invalid jump is rejected' => $policy->canTransition($provider, $pending, 'completed') === false,

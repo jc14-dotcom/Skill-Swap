@@ -1,7 +1,7 @@
 <?php declare(strict_types=1); ?>
 
 <h2>Create Account</h2>
-<p class="ss-auth-note">Start as seeker or provider and unlock SkillSwap collaboration tools.</p>
+<p class="ss-auth-note">Start as seeker, provider, or both and unlock SkillSwap collaboration tools.</p>
 
 <form action="/register" method="post" class="ss-form-shell" style="max-width: none; box-shadow: none; border: 0; padding: 0; background: transparent;">
 	<?php echo csrf_field(); ?>
@@ -22,6 +22,7 @@
 		<select id="role" name="role" required class="ss-select">
 			<option value="seeker" <?php echo $oldRole === 'seeker' ? 'selected' : ''; ?>>Seeker</option>
 			<option value="provider" <?php echo $oldRole === 'provider' ? 'selected' : ''; ?>>Provider</option>
+			<option value="both" <?php echo $oldRole === 'both' ? 'selected' : ''; ?>>Both (Seeker + Provider)</option>
 		</select>
 	</div>
 

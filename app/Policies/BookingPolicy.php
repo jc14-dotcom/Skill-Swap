@@ -14,7 +14,7 @@ class BookingPolicy
         }
 
         $role = (string) ($user['role'] ?? '');
-        if (!in_array($role, ['seeker', 'provider', 'admin'], true)) {
+        if (!in_array($role, ['seeker', 'provider', 'both', 'admin'], true)) {
             return false;
         }
 

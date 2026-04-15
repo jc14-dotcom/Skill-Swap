@@ -12,6 +12,11 @@
 	</section>
 <?php else: ?>
 	<?php $providerImage = profile_image_url((string) ($service['provider_profile_picture'] ?? '')); ?>
+	<?php $viewer = auth_user(); ?>
+	<?php $viewerId = is_array($viewer) ? (int) ($viewer['id'] ?? 0) : 0; ?>
+	<?php $isOwnService = $viewerId > 0 && $viewerId === (int) ($service['user_id'] ?? 0); ?>
+	<?php $providerBookings = is_array($providerBookings ?? null) ? $providerBookings : []; ?>
+	<?php $bookingActionRedirect = (string) ($bookingActionRedirect ?? '/services/' . (int) ($service['id'] ?? 0)); ?>
 	<section class="ss-section">
 		<div class="ss-shell">
 			<div class="ss-split-shell">
@@ -36,7 +41,11 @@
 
 					<div class="ss-actions" style="margin-top: 1.4rem;">
 						<?php if (auth_check()): ?>
-							<a href="/bookings/create?service_id=<?php echo (int) $service['id']; ?>" class="ss-btn-soft">Book this service <span class="ss-arrow">-></span></a>
+							<?php if (!$isOwnService): ?>
+								<a href="/bookings/create?service_id=<?php echo (int) $service['id']; ?>" class="ss-btn-soft">Book this service <span class="ss-arrow">-></span></a>
+							<?php else: ?>
+								<span class="ss-subtle">You cannot book your own offered service.</span>
+							<?php endif; ?>
 						<?php else: ?>
 							<a href="/login" class="ss-btn-outline">Login to book</a>
 						<?php endif; ?>
@@ -53,6 +62,73 @@
 								<button type="submit" class="ss-btn-outline" style="border-color: #d07f8f; color: #8c2f48;">Delete service</button>
 							</form>
 						</div>
+
+						<section class="ss-page-card" style="margin-top: 1.2rem; padding: 1rem;">
+							<div class="ss-page-head" style="margin-bottom: 0.75rem;">
+								<div>
+									<span class="ss-section-label">Provider Requests</span>
+									<h2 style="font-size: 1.15rem; margin-top: 0.35rem;">People Who Booked This Skill</h2>
+								</div>
+								<a href="/bookings/provider" class="ss-btn-outline">Open full provider schedule</a>
+							</div>
+
+							<?php if ($providerBookings === []): ?>
+								<div class="ss-empty-card" style="padding: 1rem;">
+									<p class="ss-muted-block" style="margin: 0;">No one has booked this skill yet.</p>
+								</div>
+							<?php else: ?>
+								<div class="ss-service-booking-list">
+									<?php foreach ($providerBookings as $booking): ?>
+										<?php
+										$currentStatus = (string) ($booking['status'] ?? 'pending');
+										$preferredSchedule = format_datetime((string) ($booking['scheduled_at'] ?? ''), 'M d, Y h:i A');
+										$bookingMessage = trim((string) ($booking['message'] ?? ''));
+										$allowedStatuses = [];
+										$statusLabels = [
+											'accepted' => 'Accept Customer',
+											'rejected' => 'Reject Customer',
+											'completed' => 'Mark Completed',
+											'cancelled' => 'Cancel Booking',
+										];
+										$seekerImage = profile_image_url((string) ($booking['seeker_profile_picture'] ?? ''));
+
+										if ($currentStatus === 'pending') {
+											$allowedStatuses = ['accepted', 'rejected'];
+										} elseif ($currentStatus === 'accepted') {
+											$allowedStatuses = ['completed', 'cancelled'];
+										}
+										?>
+										<article class="ss-record-card" style="padding: 0.95rem;">
+											<span class="ss-chip">Status: <?php echo htmlspecialchars($currentStatus, ENT_QUOTES, 'UTF-8'); ?></span>
+											<div class="ss-provider-row" style="margin-top: 0.25rem;">
+												<img src="<?php echo htmlspecialchars($seekerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars((string) ($booking['seeker_name'] ?? 'Seeker'), ENT_QUOTES, 'UTF-8'); ?> profile picture" class="ss-provider-avatar">
+												<p class="ss-muted-block" style="margin: 0;">Seeker: <?php echo htmlspecialchars((string) ($booking['seeker_name'] ?? 'Unknown'), ENT_QUOTES, 'UTF-8'); ?></p>
+											</div>
+											<p class="ss-muted-block" style="margin: 0;">Preferred schedule: <?php echo htmlspecialchars($preferredSchedule, ENT_QUOTES, 'UTF-8'); ?></p>
+											<?php if ($bookingMessage !== ''): ?>
+												<p class="ss-muted-block" style="margin: 0;">Customer note: <?php echo htmlspecialchars($bookingMessage, ENT_QUOTES, 'UTF-8'); ?></p>
+											<?php endif; ?>
+
+											<div class="ss-record-actions" style="margin-top: 0.2rem;">
+												<?php if ($allowedStatuses === []): ?>
+													<span class="ss-subtle">No further actions</span>
+												<?php else: ?>
+													<?php foreach ($allowedStatuses as $nextStatus): ?>
+														<form action="/bookings/<?php echo (int) $booking['id']; ?>/status" method="post">
+															<?php echo csrf_field(); ?>
+															<input type="hidden" name="_method" value="PATCH">
+															<input type="hidden" name="status" value="<?php echo htmlspecialchars($nextStatus, ENT_QUOTES, 'UTF-8'); ?>">
+															<input type="hidden" name="redirect" value="<?php echo htmlspecialchars($bookingActionRedirect, ENT_QUOTES, 'UTF-8'); ?>">
+															<button type="submit" class="ss-btn-outline"><?php echo htmlspecialchars((string) ($statusLabels[$nextStatus] ?? ucfirst($nextStatus)), ENT_QUOTES, 'UTF-8'); ?></button>
+														</form>
+													<?php endforeach; ?>
+												<?php endif; ?>
+											</div>
+										</article>
+									<?php endforeach; ?>
+								</div>
+							<?php endif; ?>
+						</section>
 					<?php endif; ?>
 				</div>
 

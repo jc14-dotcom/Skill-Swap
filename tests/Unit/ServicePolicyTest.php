@@ -30,6 +30,7 @@ $providerOwner = ['id' => 8, 'role' => 'provider'];
 $providerOther = ['id' => 9, 'role' => 'provider'];
 $admin = ['id' => 1, 'role' => 'admin'];
 $seeker = ['id' => 11, 'role' => 'seeker'];
+$both = ['id' => 12, 'role' => 'both'];
 $guest = ['id' => 0, 'role' => 'guest'];
 
 $service = ['id' => 44, 'user_id' => 8];
@@ -37,6 +38,7 @@ $service = ['id' => 44, 'user_id' => 8];
 $tests = [
     'provider can create service' => $policy->canCreate($providerOwner) === true,
     'seeker can create service' => $policy->canCreate($seeker) === true,
+    'both-role user can create service' => $policy->canCreate($both) === true,
     'guest cannot create service' => $policy->canCreate($guest) === false,
     'owner provider can manage own service' => $policy->canManage($providerOwner, $service) === true,
     'other provider cannot manage foreign service' => $policy->canManage($providerOther, $service) === false,

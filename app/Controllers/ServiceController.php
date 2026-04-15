@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Services\BookingService;
 use App\Services\ServiceService;
 use Core\Controller;
 use Core\Request;
@@ -13,11 +14,13 @@ use Core\Session;
 class ServiceController extends Controller
 {
 	private ServiceService $services;
+	private BookingService $bookings;
 
 	public function __construct(Request $request, Response $response)
 	{
 		parent::__construct($request, $response);
 		$this->services = new ServiceService();
+		$this->bookings = new BookingService();
 	}
 
 	public function index(): void
@@ -55,10 +58,19 @@ class ServiceController extends Controller
 			return;
 		}
 
+		$canManage = $this->services->canManageService($actor, $service);
+		$providerBookings = [];
+
+		if ($canManage && is_array($actor)) {
+			$providerBookings = $this->bookings->listForProviderService($actor, $service);
+		}
+
 		$this->view('services.show', [
 			'title' => $service['title'],
 			'service' => $service,
-			'canManage' => $this->services->canManageService($actor, $service),
+			'canManage' => $canManage,
+			'providerBookings' => $providerBookings,
+			'bookingActionRedirect' => '/services/' . (int) ($service['id'] ?? 0),
 		]);
 	}
 

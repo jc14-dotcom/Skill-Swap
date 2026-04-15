@@ -19,7 +19,7 @@
 		<?php else: ?>
 			<div class="ss-service-list">
 				<?php foreach ($services as $service): ?>
-					<article class="ss-record-card">
+					<article class="ss-record-card" data-card-link="/services/<?php echo (int) $service['id']; ?>" role="link" tabindex="0" aria-label="Open <?php echo htmlspecialchars((string) $service['title'], ENT_QUOTES, 'UTF-8'); ?> details">
 						<span class="ss-chip"><?php echo htmlspecialchars((string) ($service['status'] ?? 'active'), ENT_QUOTES, 'UTF-8'); ?></span>
 						<h3><?php echo htmlspecialchars((string) $service['title'], ENT_QUOTES, 'UTF-8'); ?></h3>
 						<p class="ss-muted-block"><?php echo htmlspecialchars((string) $service['description'], ENT_QUOTES, 'UTF-8'); ?></p>

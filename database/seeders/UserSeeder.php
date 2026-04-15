@@ -15,12 +15,16 @@ class UserSeeder
 		Database::query(
 			'INSERT INTO users (name, email, password, role, created_at, updated_at)
 			 VALUES (:name, :email, :password, :role, :created_at, :updated_at)
-			 ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at)',
+			 ON DUPLICATE KEY UPDATE
+			 	name = VALUES(name),
+			 	password = VALUES(password),
+			 	role = VALUES(role),
+			 	updated_at = VALUES(updated_at)',
 			[
-				'name' => 'Provider Demo',
+				'name' => 'Hybrid Demo',
 				'email' => 'provider@example.com',
 				'password' => password_hash('[removed-demo-password]', PASSWORD_DEFAULT),
-				'role' => 'provider',
+				'role' => 'both',
 				'created_at' => $now,
 				'updated_at' => $now,
 			]
@@ -29,7 +33,11 @@ class UserSeeder
 		Database::query(
 			'INSERT INTO users (name, email, password, role, created_at, updated_at)
 			 VALUES (:name, :email, :password, :role, :created_at, :updated_at)
-			 ON DUPLICATE KEY UPDATE updated_at = VALUES(updated_at)',
+			 ON DUPLICATE KEY UPDATE
+			 	name = VALUES(name),
+			 	password = VALUES(password),
+			 	role = VALUES(role),
+			 	updated_at = VALUES(updated_at)',
 			[
 				'name' => 'Seeker Demo',
 				'email' => 'seeker@example.com',

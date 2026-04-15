@@ -3,6 +3,9 @@
 <?php
 $userName = htmlspecialchars((string) ($user['name'] ?? 'Member'), ENT_QUOTES, 'UTF-8');
 $roleLabel = strtoupper(htmlspecialchars((string) ($role ?? 'seeker'), ENT_QUOTES, 'UTF-8'));
+$rawRole = strtolower((string) ($role ?? 'seeker'));
+$canSeekSkill = $rawRole !== 'provider';
+$canOfferSkill = $rawRole !== 'seeker';
 ?>
 
 <section class="ss-section">
@@ -14,9 +17,12 @@ $roleLabel = strtoupper(htmlspecialchars((string) ($role ?? 'seeker'), ENT_QUOTE
 				<p class="ss-muted-block" style="margin-top: 0.5rem;">You are logged in as <?php echo $roleLabel; ?>. In SkillSwap, every member can seek new skills and also offer their own.</p>
 			</div>
 			<div class="ss-actions">
-				<a href="/services" class="ss-btn-outline">Open marketplace</a>
-				<a href="/bookings/create" class="ss-btn-soft">Seek a skill <span class="ss-arrow">-></span></a>
-				<a href="/services/create" class="ss-btn-outline">Offer a skill</a>
+				<?php if ($canSeekSkill): ?>
+					<a href="/services" class="ss-btn-soft">Seek a skill <span class="ss-arrow">-></span></a>
+				<?php endif; ?>
+				<?php if ($canOfferSkill): ?>
+					<a href="/services/create" class="ss-btn-outline">Offer a skill</a>
+				<?php endif; ?>
 			</div>
 		</div>
 
@@ -40,13 +46,23 @@ $roleLabel = strtoupper(htmlspecialchars((string) ($role ?? 'seeker'), ENT_QUOTE
 		<div class="ss-page-card">
 			<h2 style="font-size: 1.65rem; margin-bottom: 0.7rem;">Quick Actions</h2>
 			<div class="ss-actions">
-				<a href="/bookings/create" class="ss-btn-outline">Seek skill</a>
-				<a href="/services/create" class="ss-btn-outline">Offer skill</a>
-				<a href="/services/mine" class="ss-btn-outline">My services (<?php echo (int) ($myServiceCount ?? 0); ?>)</a>
-				<a href="/bookings/mine" class="ss-btn-outline">My bookings</a>
-				<a href="/bookings/provider" class="ss-btn-outline">Provider queue</a>
+				<?php if ($canSeekSkill): ?>
+					<a href="/services" class="ss-btn-outline">Seek skill</a>
+					<a href="/bookings/mine" class="ss-btn-outline">My bookings</a>
+				<?php endif; ?>
+
+				<?php if ($canOfferSkill): ?>
+					<a href="/services/create" class="ss-btn-outline">Offer skill</a>
+					<a href="/services/mine" class="ss-btn-outline">My services (<?php echo (int) ($myServiceCount ?? 0); ?>)</a>
+				<?php endif; ?>
+
+				<?php if ($canOfferSkill): ?>
+					<a href="/bookings/provider" class="ss-btn-outline">Provider schedule</a>
+				<?php endif; ?>
 				<a href="/dashboard" class="ss-btn-outline">Open dashboard</a>
-				<a href="/services/create" class="ss-btn-soft">Create service <span class="ss-arrow">-></span></a>
+				<?php if ($canOfferSkill): ?>
+					<a href="/services/create" class="ss-btn-soft">Create service <span class="ss-arrow">-></span></a>
+				<?php endif; ?>
 			</div>
 		</div>
 	</div>

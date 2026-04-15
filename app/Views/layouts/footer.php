@@ -59,7 +59,7 @@
 					<ul>
 						<li><a href="/services">Browse skills</a></li>
 						<li><a href="/services/create">Publish service</a></li>
-						<li><a href="/bookings/create">Create booking</a></li>
+						<li><a href="/services">Create booking</a></li>
 						<li><a href="/bookings/mine">Track requests</a></li>
 						<li><a href="/reviews/create">Leave a review</a></li>
 					</ul>

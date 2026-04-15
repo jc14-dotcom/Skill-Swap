@@ -5,8 +5,8 @@
 		<div class="ss-page-head">
 			<div>
 				<span class="ss-section-label">Provider Zone</span>
-				<h1 class="ss-page-title">Incoming Booking Requests</h1>
-				<p class="ss-muted-block" style="margin-top: 0.45rem;">Update booking states based on the workflow policy and service readiness.</p>
+				<h1 class="ss-page-title">Provider Booking Schedule</h1>
+				<p class="ss-muted-block" style="margin-top: 0.45rem;">Review customer requests, check preferred schedule, and accept or reject bookings.</p>
 			</div>
 		</div>
 
@@ -20,7 +20,15 @@
 				<?php foreach ($bookings as $booking): ?>
 					<?php
 					$currentStatus = (string) ($booking['status'] ?? 'pending');
+					$preferredSchedule = format_datetime((string) ($booking['scheduled_at'] ?? ''), 'M d, Y h:i A');
+					$bookingMessage = trim((string) ($booking['message'] ?? ''));
 					$allowedStatuses = [];
+					$statusLabels = [
+						'accepted' => 'Accept Customer',
+						'rejected' => 'Reject Customer',
+						'completed' => 'Mark Completed',
+						'cancelled' => 'Cancel Booking',
+					];
 
 					if ($currentStatus === 'pending') {
 						$allowedStatuses = ['accepted', 'rejected'];
@@ -32,6 +40,10 @@
 						<span class="ss-chip">Status: <?php echo htmlspecialchars($currentStatus, ENT_QUOTES, 'UTF-8'); ?></span>
 						<h3><?php echo htmlspecialchars((string) $booking['service_title'], ENT_QUOTES, 'UTF-8'); ?></h3>
 						<p class="ss-muted-block">Seeker: <?php echo htmlspecialchars((string) ($booking['seeker_name'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+						<p class="ss-muted-block">Preferred Schedule: <?php echo htmlspecialchars($preferredSchedule, ENT_QUOTES, 'UTF-8'); ?></p>
+						<?php if ($bookingMessage !== ''): ?>
+							<p class="ss-muted-block">Customer Note: <?php echo htmlspecialchars($bookingMessage, ENT_QUOTES, 'UTF-8'); ?></p>
+						<?php endif; ?>
 
 						<div class="ss-record-actions">
 							<?php if ($allowedStatuses === []): ?>
@@ -42,7 +54,7 @@
 										<?php echo csrf_field(); ?>
 										<input type="hidden" name="_method" value="PATCH">
 										<input type="hidden" name="status" value="<?php echo htmlspecialchars($nextStatus, ENT_QUOTES, 'UTF-8'); ?>">
-										<button type="submit" class="ss-btn-outline"><?php echo htmlspecialchars(ucfirst($nextStatus), ENT_QUOTES, 'UTF-8'); ?></button>
+										<button type="submit" class="ss-btn-outline"><?php echo htmlspecialchars((string) ($statusLabels[$nextStatus] ?? ucfirst($nextStatus)), ENT_QUOTES, 'UTF-8'); ?></button>
 									</form>
 								<?php endforeach; ?>
 							<?php endif; ?>

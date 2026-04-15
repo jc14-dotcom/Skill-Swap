@@ -583,9 +583,88 @@
 		});
 	}
 
+	function initClickableCards() {
+		var cards = document.querySelectorAll('[data-card-link]');
+		if (cards.length === 0) {
+			return;
+		}
+
+		function shouldIgnoreNavigation(target, card) {
+			var node = target;
+			while (node && node !== card) {
+				if (!(node instanceof HTMLElement)) {
+					return true;
+				}
+
+				var tagName = String(node.tagName || '').toUpperCase();
+				if (
+					tagName === 'A'
+					|| tagName === 'BUTTON'
+					|| tagName === 'INPUT'
+					|| tagName === 'SELECT'
+					|| tagName === 'TEXTAREA'
+					|| tagName === 'LABEL'
+					|| tagName === 'SUMMARY'
+					|| node.hasAttribute('data-no-card-nav')
+				) {
+					return true;
+				}
+
+				node = node.parentElement;
+			}
+
+			return false;
+		}
+
+		eachNode(cards, function (card) {
+			var href = card.getAttribute('data-card-link');
+			if (!href) {
+				return;
+			}
+
+			if (!card.hasAttribute('tabindex')) {
+				card.setAttribute('tabindex', '0');
+			}
+
+			if (!card.hasAttribute('role')) {
+				card.setAttribute('role', 'link');
+			}
+
+			card.addEventListener('click', function (event) {
+				if (event.defaultPrevented) {
+					return;
+				}
+
+				if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+					return;
+				}
+
+				if (shouldIgnoreNavigation(event.target, card)) {
+					return;
+				}
+
+				window.location.assign(href);
+			});
+
+			card.addEventListener('keydown', function (event) {
+				if (event.key !== 'Enter' && event.key !== ' ') {
+					return;
+				}
+
+				if (shouldIgnoreNavigation(event.target, card)) {
+					return;
+				}
+
+				event.preventDefault();
+				window.location.assign(href);
+			});
+		});
+	}
+
 	initPasswordToggles();
 	initFormFieldValidation();
 	initProfileSettingsDirtyState();
 	initSubmitOnceForms();
 	initProfilePhotoControls();
+	initClickableCards();
 })();
