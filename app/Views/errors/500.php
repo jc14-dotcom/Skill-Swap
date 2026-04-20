@@ -2,6 +2,8 @@
 declare(strict_types=1);
 
 $safeMessage = htmlspecialchars((string) ($errorMessage ?? 'Unexpected server error.'), ENT_QUOTES, 'UTF-8');
+$appCssPath = __DIR__ . '/../../../public/assets/css/app.css';
+$appCssVersion = is_file($appCssPath) ? (string) filemtime($appCssPath) : '1';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -9,21 +11,24 @@ $safeMessage = htmlspecialchars((string) ($errorMessage ?? 'Unexpected server er
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>500 Server Error</title>
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="/assets/css/app.css">
+	<link rel="preload" href="/assets/fonts/manrope-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+	<link rel="preload" href="/assets/fonts/sora-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+	<link rel="stylesheet" href="/assets/css/app.css?v=<?php echo urlencode($appCssVersion); ?>">
 </head>
-<body class="ss-site">
-	<main class="ss-main">
-		<div class="ss-shell">
-			<div class="ss-empty-card" style="min-height: 24rem; display: grid; place-content: center; text-align: center;">
-				<span class="ss-section-label" style="justify-content: center;">500 Error</span>
-				<h1 class="ss-page-title" style="margin-left: auto; margin-right: auto;">Server error</h1>
-				<p style="margin-top: 0.6rem;">A server error occurred.</p>
-				<p style="margin-top: 0.8rem; text-align: left;" class="ss-page-card"><?php echo $safeMessage; ?></p>
-				<div class="ss-actions" style="justify-content: center; margin-top: 1rem;">
-					<a href="/services" class="ss-btn-soft">Back to Services <span class="ss-arrow">-></span></a>
+<body class="min-h-screen bg-surface-page font-sans text-neutral-900 antialiased">
+	<main class="py-10">
+		<div class="mx-auto w-[min(1320px,calc(100%-2rem))]">
+			<div class="grid min-h-[24rem] place-content-center rounded-3xl border border-neutral-200 bg-white p-8 text-center shadow-card">
+				<span class="inline-flex items-center justify-center gap-3 text-xs font-extrabold uppercase tracking-[0.16em] text-brand-700">
+					<span class="h-px w-8 bg-brand-300"></span>
+					500 Error
+					<span class="h-px w-8 bg-brand-300"></span>
+				</span>
+				<h1 class="mt-4 text-4xl font-heading font-extrabold text-neutral-950 md:text-5xl">Server error</h1>
+				<p class="mt-3 text-sm leading-7 text-neutral-700">A server error occurred.</p>
+				<p class="mt-4 rounded-2xl border border-neutral-200 bg-surface-page px-4 py-3 text-left text-sm leading-7 text-neutral-700"><?php echo $safeMessage; ?></p>
+				<div class="mt-5 flex justify-center">
+					<a href="/services" class="inline-flex items-center gap-2 rounded-full bg-brand-500 px-5 py-2.5 text-sm font-extrabold text-white shadow-brand transition hover:-translate-y-0.5 hover:bg-brand-600">Back to Services <span aria-hidden="true">-></span></a>
 				</div>
 			</div>
 		</div>

@@ -6,79 +6,147 @@ $actorRole = is_array($actor) ? strtolower((string) ($actor['role'] ?? 'member')
 $actorId = is_array($actor) ? (int) ($actor['id'] ?? 0) : 0;
 $canSeekSkill = $actorRole !== 'provider';
 $canOfferSkill = $actorRole !== 'seeker';
+$searchQuery = trim((string) ($searchQuery ?? ''));
+$isSearching = $searchQuery !== '';
+
+$outlineButtonClasses = 'inline-flex items-center justify-center rounded-full border border-neutral-400 bg-white px-5 py-3 text-sm font-extrabold text-neutral-900 transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700';
+$primaryButtonClasses = 'inline-flex items-center justify-center gap-2 rounded-full bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-brand transition hover:-translate-y-0.5 hover:bg-brand-600';
+$miniLinkClasses = 'inline-flex items-center gap-1 text-sm font-extrabold text-brand-600 transition hover:text-brand-700';
+$cardSurfaceClasses = ['bg-surface-rose', 'bg-surface-page', 'bg-surface-warm'];
+$defaultAvatarImage = profile_image_url('');
 ?>
 
-<section class="ss-section">
-	<div class="ss-shell ss-utility-stack">
-		<div class="ss-page-head">
+<section class="py-14">
+	<div class="mx-auto grid w-[min(1320px,calc(100%-2rem))] gap-6">
+		<div class="flex flex-wrap items-start justify-between gap-4">
 			<div>
-				<span class="ss-section-label">Marketplace</span>
-				<h1 class="ss-page-title">Find Skills To Learn Or Swap</h1>
-				<p class="ss-muted-block" style="margin-top: 0.5rem;">Browse active offers, book what you need, or publish your own service.</p>
+				<span class="mb-3 inline-flex text-xs font-extrabold uppercase tracking-[0.2em] text-brand-500">Marketplace</span>
+				<h1 class="max-w-[16ch] text-4xl font-extrabold leading-tight text-neutral-950 md:text-5xl">Find Skills To Learn Or Swap</h1>
+				<p class="mt-2 text-base text-neutral-700">Browse active offers, book what you need, or publish your own service.</p>
 			</div>
-			<div class="ss-actions">
+			<div class="flex flex-wrap items-center gap-3">
 				<?php if ($canSeekSkill): ?>
-					<a href="/bookings/mine" class="ss-btn-outline">My bookings</a>
+					<a href="/bookings/mine" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">My bookings</a>
 				<?php endif; ?>
 				<?php if ($canOfferSkill): ?>
-					<a href="/services/create" class="ss-btn-soft">Offer skill <span class="ss-arrow">-></span></a>
+					<a href="/services/create" class="<?php echo htmlspecialchars($primaryButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Offer skill <span aria-hidden="true">-></span></a>
 				<?php endif; ?>
 			</div>
 		</div>
 
-		<?php if (($services ?? []) === []): ?>
-			<div class="ss-empty-card">
-				<h3>No active services yet.</h3>
-				<p>Be the first to offer a skill and start swapping with the community.</p>
-				<a href="/services/create" class="ss-btn" style="margin-top: 1rem;">Create first service <span class="ss-arrow">-></span></a>
+		<form
+			action="/services"
+			method="get"
+			class="rounded-3xl border border-neutral-300 bg-surface-card p-4 shadow-soft"
+			role="search"
+			aria-label="Search skills"
+			data-live-search-form
+			data-live-search-endpoint="/services?format=json"
+			data-search-max-length="120"
+		>
+			<label for="market-search-input" class="mb-2 block text-sm font-extrabold tracking-wide text-brand-800">Search by skill title, type, or provider</label>
+			<div class="block">
+				<div class="flex min-h-12 items-center gap-3 rounded-2xl border border-neutral-300 bg-neutral-50 px-4 transition focus-within:border-brand-500 focus-within:ring-2 focus-within:ring-brandSoft">
+					<span class="h-5 w-5 flex-shrink-0 text-brand-600" aria-hidden="true">
+						<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<circle cx="11" cy="11" r="6.6" stroke="currentColor" stroke-width="1.9"/>
+							<path d="M16 16L20.5 20.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+						</svg>
+					</span>
+					<input
+						id="market-search-input"
+						type="search"
+						name="q"
+						value="<?php echo htmlspecialchars($searchQuery, ENT_QUOTES, 'UTF-8'); ?>"
+						class="h-12 w-full min-w-0 border-0 bg-transparent p-0 text-lg text-neutral-900 placeholder:text-neutral-500 focus:outline-none"
+						data-live-search-input
+						data-live-search-min-length="2"
+						maxlength="120"
+						placeholder="Example: graphic design, coding, tutoring, language"
+						autocomplete="off"
+					>
+				</div>
 			</div>
-		<?php else: ?>
-			<div class="ss-grid-3">
-				<?php foreach ($services as $service): ?>
+			<p class="mt-2 text-sm font-semibold text-neutral-700" data-live-search-status aria-live="polite" <?php echo $isSearching ? '' : 'hidden'; ?>>
+				<?php if ($isSearching): ?>
+					Showing results for "<?php echo htmlspecialchars($searchQuery, ENT_QUOTES, 'UTF-8'); ?>".
+				<?php endif; ?>
+			</p>
+			<span class="hidden text-neutral-600 text-neutral-700 text-info-700 text-danger-700"></span>
+		</form>
+
+		<div class="grid gap-4" data-live-search-results-wrap>
+			<div class="grid grid-cols-1 gap-6 xl:grid-cols-3" data-live-search-results <?php echo ($services ?? []) === [] ? 'hidden' : ''; ?>>
+				<?php foreach ($services as $index => $service): ?>
 					<?php
 					$providerImage = profile_image_url((string) ($service['provider_profile_picture'] ?? ''));
 					$isOwnService = $actorId > 0 && $actorId === (int) ($service['user_id'] ?? 0);
 					$serviceLink = '/services/' . (int) ($service['id'] ?? 0);
+					$surfaceClass = $cardSurfaceClasses[$index % count($cardSurfaceClasses)];
 					?>
-					<article class="ss-service-card" data-card-link="<?php echo htmlspecialchars($serviceLink, ENT_QUOTES, 'UTF-8'); ?>" role="link" tabindex="0" aria-label="Open <?php echo htmlspecialchars((string) ($service['title'] ?? 'service'), ENT_QUOTES, 'UTF-8'); ?> details">
+					<article class="group grid min-h-[17rem] gap-4 rounded-3xl border border-neutral-300 p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-brand <?php echo htmlspecialchars((string) $surfaceClass, ENT_QUOTES, 'UTF-8'); ?>" data-card-link="<?php echo htmlspecialchars($serviceLink, ENT_QUOTES, 'UTF-8'); ?>" role="link" tabindex="0" aria-label="Open <?php echo htmlspecialchars((string) ($service['title'] ?? 'service'), ENT_QUOTES, 'UTF-8'); ?> details">
 						<div>
-							<h3><?php echo htmlspecialchars((string) ($service['title'] ?? 'Skill Service'), ENT_QUOTES, 'UTF-8'); ?></h3>
-							<div class="ss-provider-row" style="margin-top: 0.35rem;">
-								<img src="<?php echo htmlspecialchars($providerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Provider'), ENT_QUOTES, 'UTF-8'); ?> profile picture" class="ss-provider-avatar">
-								<p class="ss-service-meta">By <?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Provider'), ENT_QUOTES, 'UTF-8'); ?></p>
+							<h3 class="text-[1.45rem] font-extrabold leading-tight text-neutral-950"><?php echo htmlspecialchars((string) ($service['title'] ?? 'Skill Service'), ENT_QUOTES, 'UTF-8'); ?></h3>
+							<div class="mt-1.5 flex items-center gap-3">
+								<img src="<?php echo htmlspecialchars($providerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Provider'), ENT_QUOTES, 'UTF-8'); ?> profile picture" class="h-9 w-9 rounded-full border-2 border-brand-200 bg-neutral-200 object-cover" data-fallback-src="<?php echo htmlspecialchars($defaultAvatarImage, ENT_QUOTES, 'UTF-8'); ?>">
+								<p class="text-sm font-bold text-neutral-700">By <?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Provider'), ENT_QUOTES, 'UTF-8'); ?></p>
 							</div>
 						</div>
 
-						<p class="ss-service-desc"><?php echo htmlspecialchars((string) ($service['description'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+						<p class="text-sm leading-7 text-neutral-700"><?php echo htmlspecialchars((string) ($service['description'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
 
-						<div class="ss-service-foot">
-							<span class="ss-price-chip"><?php echo htmlspecialchars(format_currency((float) ($service['price'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?></span>
-							<div class="ss-actions" style="gap: 0.45rem;">
-								<a href="<?php echo htmlspecialchars($serviceLink, ENT_QUOTES, 'UTF-8'); ?>" class="ss-mini-link">View</a>
+						<div class="mt-auto flex items-center justify-between gap-3">
+							<span class="rounded-full bg-white/90 px-3 py-1 text-sm font-extrabold text-brand-700"><?php echo htmlspecialchars(format_currency((float) ($service['price'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?></span>
+							<div class="flex items-center gap-3">
+								<a href="<?php echo htmlspecialchars($serviceLink, ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($miniLinkClasses, ENT_QUOTES, 'UTF-8'); ?>">View</a>
 								<?php if (!$isOwnService): ?>
-									<a href="/bookings/create?service_id=<?php echo (int) ($service['id'] ?? 0); ?>" class="ss-mini-link">Book</a>
+									<a href="/bookings/create?service_id=<?php echo (int) ($service['id'] ?? 0); ?>" class="<?php echo htmlspecialchars($miniLinkClasses, ENT_QUOTES, 'UTF-8'); ?>">Book</a>
 								<?php else: ?>
-									<span class="ss-subtle">Your service</span>
+									<span class="text-sm font-semibold text-neutral-600">Your service</span>
 								<?php endif; ?>
 							</div>
 						</div>
 					</article>
 				<?php endforeach; ?>
 			</div>
-		<?php endif; ?>
 
-		<div class="ss-page-card">
-			<h2 style="font-size: 1.4rem; margin-bottom: 0.65rem;">Inside System Links</h2>
-			<div class="ss-actions">
-				<a href="/home" class="ss-btn-outline">Member home</a>
+			<div class="rounded-3xl border border-neutral-300 bg-surface-card px-6 py-12 text-center shadow-soft" data-live-search-empty <?php echo ($services ?? []) !== [] ? 'hidden' : ''; ?>>
+				<h3 class="text-2xl font-extrabold text-neutral-950" data-live-search-empty-title>
+					<?php if ($isSearching): ?>
+						No skills found for "<?php echo htmlspecialchars($searchQuery, ENT_QUOTES, 'UTF-8'); ?>".
+					<?php else: ?>
+						No active services yet.
+					<?php endif; ?>
+				</h3>
+				<p class="mt-2 text-base text-neutral-700" data-live-search-empty-copy>
+					<?php if ($isSearching): ?>
+						Try another keyword like design, editing, coding, tutoring, or language.
+					<?php else: ?>
+						Be the first to offer a skill and start swapping with the community.
+					<?php endif; ?>
+				</p>
 				<?php if ($canOfferSkill): ?>
-					<a href="/services/mine" class="ss-btn-outline">My services</a>
+					<div class="mt-4 flex justify-center" data-live-search-empty-actions>
+						<a href="/services/create" class="<?php echo htmlspecialchars($primaryButtonClasses, ENT_QUOTES, 'UTF-8'); ?>" data-live-search-empty-offer>
+							<?php echo $isSearching ? 'Offer this skill' : 'Create first service'; ?> <span aria-hidden="true">-></span>
+						</a>
+					</div>
+				<?php endif; ?>
+			</div>
+		</div>
+
+		<div class="rounded-3xl border border-neutral-300 bg-surface-card p-6 shadow-soft">
+			<h2 class="mb-3 text-2xl font-extrabold text-neutral-950">Inside System Links</h2>
+			<div class="flex flex-wrap items-center gap-3">
+				<a href="/home" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Member home</a>
+				<?php if ($canOfferSkill): ?>
+					<a href="/services/mine" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">My services</a>
 				<?php endif; ?>
 				<?php if ($canSeekSkill): ?>
-					<a href="/bookings/mine" class="ss-btn-outline">My bookings</a>
+					<a href="/bookings/mine" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">My bookings</a>
 				<?php endif; ?>
 				<?php if ($canOfferSkill): ?>
-					<a href="/bookings/provider" class="ss-btn-outline">Provider schedule</a>
+					<a href="/bookings/provider" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Provider schedule</a>
 				<?php endif; ?>
 			</div>
 		</div>

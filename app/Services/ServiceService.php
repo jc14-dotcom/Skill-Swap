@@ -18,9 +18,9 @@ class ServiceService
 		$this->policy = new ServicePolicy();
 	}
 
-	public function listPublicServices(): array
+	public function listPublicServices(string $searchQuery = ''): array
 	{
-		return $this->services->listPublic();
+		return $this->services->listPublic($searchQuery);
 	}
 
 	public function findService(int $id): ?array

@@ -25,11 +25,76 @@ if (!function_exists('format_datetime')) {
 	}
 }
 
+if (!function_exists('asset_image_url')) {
+	function asset_image_url(?string $value, string $default = '/assets/images/default-image.svg', string $baseDirectory = '/assets/images/'): string
+	{
+		$raw = trim((string) $value);
+		$defaultPath = trim($default);
+
+		if ($defaultPath === '' || !str_starts_with($defaultPath, '/assets/images/')) {
+			$defaultPath = '/assets/images/default-image.svg';
+		}
+
+		if ($raw === '') {
+			return $defaultPath;
+		}
+
+		if (str_starts_with($raw, 'http://') || str_starts_with($raw, 'https://')) {
+			return $raw;
+		}
+
+		$normalized = str_replace('\\', '/', $raw);
+		if (str_contains($normalized, '..')) {
+			return $defaultPath;
+		}
+
+		if (str_starts_with($normalized, '/')) {
+			if (!str_starts_with($normalized, '/assets/images/')) {
+				return $defaultPath;
+			}
+
+			if (defined('BASE_PATH')) {
+				$absolute = BASE_PATH . '/public' . $normalized;
+				if (!is_file($absolute)) {
+					return $defaultPath;
+				}
+			}
+
+			return $normalized;
+		}
+
+		$base = '/' . trim(str_replace('\\', '/', $baseDirectory), '/') . '/';
+		if (!str_starts_with($base, '/assets/images/')) {
+			$base = '/assets/images/';
+		}
+
+		$parts = array_values(array_filter(explode('/', ltrim($normalized, '/')), static fn (string $part): bool => $part !== ''));
+		if ($parts === []) {
+			return $defaultPath;
+		}
+
+		$encodedParts = array_map(static fn (string $part): string => rawurlencode($part), $parts);
+		$candidate = $base . implode('/', $encodedParts);
+
+		if (!str_starts_with($candidate, '/assets/images/')) {
+			return $defaultPath;
+		}
+
+		if (defined('BASE_PATH')) {
+			$candidateAbsolute = BASE_PATH . '/public' . $candidate;
+			if (!is_file($candidateAbsolute)) {
+				return $defaultPath;
+			}
+		}
+
+		return $candidate;
+	}
+}
+
 if (!function_exists('profile_image_url')) {
 	function profile_image_url(?string $value): string
 	{
 		$default = '/assets/images/default-avatar.png';
-		$defaultAbsolute = defined('BASE_PATH') ? BASE_PATH . '/public' . $default : null;
 		$raw = trim((string) $value);
 
 		if ($raw === '' || strtolower($raw) === 'default-avatar.png') {
@@ -46,14 +111,7 @@ if (!function_exists('profile_image_url')) {
 		}
 
 		if (str_starts_with($normalized, '/assets/images/')) {
-			if (is_string($defaultAbsolute)) {
-				$absolute = BASE_PATH . '/public' . $normalized;
-				if (!is_file($absolute)) {
-					return $default;
-				}
-			}
-
-			return $normalized;
+			return asset_image_url($normalized, $default, '/assets/images/');
 		}
 
 		if (str_starts_with($normalized, '/')) {
@@ -65,15 +123,6 @@ if (!function_exists('profile_image_url')) {
 			return $default;
 		}
 
-		$candidate = '/assets/images/profiles/' . rawurlencode($fileName);
-
-		if (is_string($defaultAbsolute)) {
-			$candidateAbsolute = BASE_PATH . '/public' . $candidate;
-			if (!is_file($candidateAbsolute)) {
-				return $default;
-			}
-		}
-
-		return $candidate;
+		return asset_image_url($fileName, $default, '/assets/images/profiles/');
 	}
 }

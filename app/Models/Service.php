@@ -10,15 +10,30 @@ class Service extends Model
 {
 	protected string $table = 'services';
 
-	public function listPublic(): array
+	public function listPublic(?string $searchQuery = null): array
 	{
 		$sql = 'SELECT s.*, u.name AS provider_name, u.profile_picture AS provider_profile_picture
 				FROM services s
 				INNER JOIN users u ON u.id = s.user_id
-				WHERE s.status = :status
-				ORDER BY s.id DESC';
+				WHERE s.status = :status';
 
-		return $this->query($sql, ['status' => 'active'])->fetchAll();
+		$params = ['status' => 'active'];
+		$keyword = trim((string) $searchQuery);
+
+		if ($keyword !== '') {
+			$sql .= ' AND (
+				s.title LIKE :keyword_title
+				OR s.description LIKE :keyword_description
+				OR u.name LIKE :keyword_provider
+			)';
+			$params['keyword_title'] = '%' . $keyword . '%';
+			$params['keyword_description'] = '%' . $keyword . '%';
+			$params['keyword_provider'] = '%' . $keyword . '%';
+		}
+
+		$sql .= ' ORDER BY s.id DESC';
+
+		return $this->query($sql, $params)->fetchAll();
 	}
 
 	public function findWithProvider(int $id): ?array

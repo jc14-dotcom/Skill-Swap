@@ -26,7 +26,21 @@ class ServiceController extends Controller
 	public function index(): void
 	{
 		$actor = $this->user();
-		$services = $this->services->listPublicServices();
+		$searchQuery = trim((string) $this->request->query('q', ''));
+		if (strlen($searchQuery) > 120) {
+			$searchQuery = substr($searchQuery, 0, 120);
+		}
+
+		$services = $this->services->listPublicServices($searchQuery);
+
+		if ($this->wantsJson()) {
+			$this->json([
+				'query' => $searchQuery,
+				'count' => count($services),
+				'services' => $this->transformPublicServicesForApi($services, $actor),
+			]);
+			return;
+		}
 
 		if (is_array($actor)) {
 			if ($this->request->path() === '/') {
@@ -37,6 +51,7 @@ class ServiceController extends Controller
 			$this->view('services.marketplace', [
 				'title' => 'Marketplace',
 				'services' => $services,
+				'searchQuery' => $searchQuery,
 			]);
 			return;
 		}
@@ -44,7 +59,59 @@ class ServiceController extends Controller
 		$this->view('services.index', [
 			'title' => 'Services',
 			'services' => $services,
+			'searchQuery' => $searchQuery,
 		]);
+	}
+
+	private function wantsJson(): bool
+	{
+		$format = strtolower(trim((string) $this->request->query('format', '')));
+		if ($format === 'json') {
+			return true;
+		}
+
+		$accept = strtolower((string) $this->request->header('Accept', ''));
+		return str_contains($accept, 'application/json');
+	}
+
+	private function transformPublicServicesForApi(array $services, ?array $actor): array
+	{
+		$items = [];
+		$actorId = is_array($actor) ? (int) ($actor['id'] ?? 0) : 0;
+
+		foreach ($services as $service) {
+			if (!is_array($service)) {
+				continue;
+			}
+
+			$serviceId = (int) ($service['id'] ?? 0);
+			$title = trim((string) ($service['title'] ?? ''));
+			if ($title === '') {
+				$title = 'Skill Service';
+			}
+
+			$description = trim((string) ($service['description'] ?? ''));
+			$providerName = trim((string) ($service['provider_name'] ?? ''));
+			if ($providerName === '') {
+				$providerName = 'Provider';
+			}
+
+			$isOwnService = $actorId > 0 && $actorId === (int) ($service['user_id'] ?? 0);
+
+			$items[] = [
+				'id' => $serviceId,
+				'title' => $title,
+				'description' => $description,
+				'provider_name' => $providerName,
+				'provider_image_url' => profile_image_url((string) ($service['provider_profile_picture'] ?? '')),
+				'price_label' => format_currency((float) ($service['price'] ?? 0)),
+				'detail_url' => '/services/' . $serviceId,
+				'book_url' => '/bookings/create?service_id=' . $serviceId,
+				'is_own_service' => $isOwnService,
+			];
+		}
+
+		return $items;
 	}
 
 	public function show(string $id): void
