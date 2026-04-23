@@ -2,7 +2,6 @@
 declare(strict_types=1);
 
 $pageTitle = htmlspecialchars((string) ($title ?? 'SkillSwap'), ENT_QUOTES, 'UTF-8');
-$success = session_get('success');
 $allErrors = form_errors();
 $appCssPath = __DIR__ . '/../../../public/assets/css/app.css';
 $appCssVersion = is_file($appCssPath) ? (string) filemtime($appCssPath) : '1';
@@ -25,14 +24,6 @@ $appJsVersion = is_file($appJsPath) ? (string) filemtime($appJsPath) : '1';
 
 	<main class="flex min-h-[calc(100vh-12rem)] flex-col py-6">
 		<div class="mx-auto w-[min(1320px,calc(100%-2rem))]">
-			<?php if (is_string($success) && $success !== ''): ?>
-				<div class="mb-4">
-					<div class="rounded-2xl border border-success-300 bg-success-50 px-4 py-3 text-sm font-semibold text-success-800 shadow-soft">
-						<?php echo htmlspecialchars($success, ENT_QUOTES, 'UTF-8'); ?>
-					</div>
-				</div>
-			<?php endif; ?>
-
 			<?php if (is_array($allErrors) && $allErrors !== []): ?>
 				<div class="mb-4">
 					<div class="rounded-2xl border border-danger-300 bg-danger-50 px-4 py-3 text-sm text-danger-800 shadow-soft">

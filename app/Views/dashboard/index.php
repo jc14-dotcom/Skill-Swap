@@ -1,6 +1,6 @@
 <?php declare(strict_types=1); ?>
 
-<section class="py-14 md:py-16">
+<section class="pt-4 pb-14 md:pt-6 md:pb-16">
         <div class="mx-auto w-[min(1320px,calc(100%-2rem))] space-y-8">
                 <header class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                         <div>

@@ -467,46 +467,27 @@
 			return;
 		}
 
-		var trackedControls = form.querySelectorAll(
-			'input[name="name"], input[name="email"], input[name="password"], input[name="password_confirmation"], input[name="profile_picture"], input[name="remove_profile_picture"]'
-		);
-
-		function controlState(control) {
-			if (control.type === 'file') {
-				var files = control.files;
-				if (!files || files.length === 0) {
-					return '';
-				}
-
-				var selected = files[0];
-				return [selected.name, selected.size, selected.lastModified].join(':');
-			}
-
-			return String(control.value || '');
+		var passwordControl = form.querySelector('input[name="password"]');
+		var confirmationControl = form.querySelector('input[name="password_confirmation"]');
+		if (!passwordControl || !confirmationControl) {
+			return;
 		}
-
-		function snapshot() {
-			var parts = [];
-			eachNode(trackedControls, function (control) {
-				parts.push(control.name + '=' + controlState(control));
-			});
-
-			return parts.join('|');
-		}
-
-		var initialState = snapshot();
 
 		function updateDirtyState() {
-			var dirty = snapshot() !== initialState;
-			form.setAttribute('data-form-dirty', dirty ? 'true' : 'false');
-			submitButton.disabled = !dirty;
+			var hasPasswordValue = String(passwordControl.value || '').trim() !== '';
+			var hasConfirmationValue = String(confirmationControl.value || '').trim() !== '';
+			var allowSubmit = hasPasswordValue && hasConfirmationValue;
+			form.setAttribute('data-form-dirty', allowSubmit ? 'true' : 'false');
+			submitButton.disabled = !allowSubmit;
 		}
 
 		form.setAttribute('data-form-dirty', 'false');
 		submitButton.disabled = true;
-
-		form.addEventListener('input', updateDirtyState);
-		form.addEventListener('change', updateDirtyState);
+		passwordControl.addEventListener('input', updateDirtyState);
+		passwordControl.addEventListener('change', updateDirtyState);
+		confirmationControl.addEventListener('input', updateDirtyState);
+		confirmationControl.addEventListener('change', updateDirtyState);
+		updateDirtyState();
 	}
 
 	function initProfilePhotoControls() {

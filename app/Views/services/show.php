@@ -1,7 +1,7 @@
 <?php declare(strict_types=1); ?>
 
 <?php if (!is_array($service ?? null)): ?>
-	<section class="py-14">
+	<section class="pt-4 pb-14 md:pt-6 md:pb-16">
 		<div class="mx-auto w-[min(1320px,calc(100%-2rem))]">
 			<div class="rounded-3xl border border-neutral-300 bg-surface-card px-6 py-12 text-center shadow-soft">
 				<h2 class="text-2xl font-heading font-extrabold text-neutral-950">Service not found.</h2>
@@ -24,7 +24,7 @@
 	$dangerButtonClasses = 'inline-flex items-center justify-center rounded-full border border-danger-300 bg-white px-4 py-2 text-sm font-extrabold text-danger-700 transition hover:bg-danger-50';
 	$smallOutlineButtonClasses = 'inline-flex items-center justify-center rounded-full border border-neutral-400 bg-white px-3 py-2 text-xs font-extrabold text-neutral-800 transition hover:border-brand-500 hover:text-brand-700';
 	?>
-	<section class="py-14">
+	<section class="pt-4 pb-14 md:pt-6 md:pb-16">
 		<div class="mx-auto w-[min(1320px,calc(100%-2rem))]">
 			<div class="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)]">
 				<div class="rounded-3xl border border-neutral-300 bg-surface-card p-6 shadow-soft md:p-8">

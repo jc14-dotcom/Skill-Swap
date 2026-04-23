@@ -16,7 +16,7 @@ $cardSurfaceClasses = ['bg-surface-rose', 'bg-surface-page', 'bg-surface-warm'];
 $defaultAvatarImage = profile_image_url('');
 ?>
 
-<section class="py-14">
+<section class="pt-4 pb-14 md:pt-6 md:pb-16">
 	<div class="mx-auto grid w-[min(1320px,calc(100%-2rem))] gap-6">
 		<div class="flex flex-wrap items-start justify-between gap-4">
 			<div>

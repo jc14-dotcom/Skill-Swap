@@ -1,7 +1,7 @@
 <?php declare(strict_types=1); ?>
 
 <?php if (!is_array($service ?? null)): ?>
-	<section class="py-14 md:py-16">
+	<section class="pt-4 pb-14 md:pt-6 md:pb-16">
 		<div class="mx-auto w-[min(1320px,calc(100%-2rem))]">
 			<div class="rounded-3xl border border-dashed border-neutral-300 bg-white px-6 py-10 text-center shadow-soft">
 				<h2 class="text-2xl font-heading font-extrabold text-neutral-950">Service not found.</h2>
@@ -12,7 +12,7 @@
 	</section>
 <?php else: ?>
 	<?php $status = (string) old_input('status', (string) $service['status']); ?>
-	<section class="py-14 md:py-16">
+	<section class="pt-4 pb-14 md:pt-6 md:pb-16">
 		<div class="mx-auto w-[min(1320px,calc(100%-2rem))] space-y-8">
 			<header class="rounded-3xl border border-neutral-200 bg-white p-6 shadow-soft md:p-8">
 				<span class="inline-flex items-center gap-3 text-xs font-extrabold uppercase tracking-[0.16em] text-brand-700">

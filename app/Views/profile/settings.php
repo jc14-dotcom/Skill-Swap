@@ -5,7 +5,7 @@
 <?php $defaultProfileImageUrl = profile_image_url(''); ?>
 <?php $hasCustomProfileImage = $profileImageUrl !== $defaultProfileImageUrl; ?>
 
-<section class="py-14 md:py-16">
+<section class="pt-4 pb-14 md:pt-6 md:pb-16">
 	<div class="mx-auto w-[min(1320px,calc(100%-2rem))] space-y-8">
 		<header class="flex flex-col gap-5 rounded-3xl border border-neutral-200 bg-white p-6 shadow-soft md:p-8 lg:flex-row lg:items-end lg:justify-between">
 			<div>
@@ -39,7 +39,6 @@
 									data-default-src="<?php echo htmlspecialchars($defaultProfileImageUrl, ENT_QUOTES, 'UTF-8'); ?>"
 									data-fallback-src="<?php echo htmlspecialchars($defaultProfileImageUrl, ENT_QUOTES, 'UTF-8'); ?>"
 								>
-								<span class="pointer-events-none absolute inset-x-3 bottom-3 rounded-full bg-overlay-black35 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-white">Change</span>
 							</button>
 
 							<button type="button" class="inline-flex items-center gap-2 rounded-full border border-danger-300 bg-white px-4 py-2 text-xs font-extrabold text-danger-700 transition hover:bg-danger-50" data-profile-photo-remove>
@@ -128,7 +127,7 @@
 				</div>
 
 				<div class="flex flex-wrap gap-3">
-					<button type="submit" class="inline-flex items-center gap-2 rounded-full bg-brand-500 px-5 py-2.5 text-sm font-extrabold text-white shadow-brand transition hover:-translate-y-0.5 hover:bg-brand-600" data-submit-once-button data-loading-text="Saving..." disabled>
+					<button type="submit" class="inline-flex items-center gap-2 rounded-full bg-brand-500 px-5 py-2.5 text-sm font-extrabold text-white shadow-brand transition hover:-translate-y-0.5 hover:bg-brand-600 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-600 disabled:shadow-soft disabled:hover:translate-y-0 disabled:hover:bg-neutral-300" data-submit-once-button data-loading-text="Saving..." disabled>
 						<span class="inline-flex h-4 w-4" aria-hidden="true">
 							<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4">
 								<path d="M5.25 4.5H16.5L18.75 6.75V19.5H5.25V4.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>

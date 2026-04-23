@@ -51,7 +51,7 @@ $providerCount = count($providerMap);
 $defaultAvatarImage = profile_image_url('');
 ?>
 
-<section class="relative overflow-hidden bg-surface-page py-16" id="home">
+<section class="relative overflow-hidden bg-surface-page pt-4 pb-16 md:pt-6" id="home">
 	<div aria-hidden="true" class="pointer-events-none absolute -left-24 top-20 h-72 w-72 rounded-full border border-brand-200"></div>
 	<div aria-hidden="true" class="pointer-events-none absolute right-8 top-8 h-80 w-80 rounded-full border border-brand-200"></div>
 

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1); ?>
 
-<section class="py-14 md:py-16">
+<section class="pt-4 pb-14 md:pt-6 md:pb-16">
 	<div class="mx-auto w-[min(1320px,calc(100%-2rem))] space-y-8">
 		<header class="rounded-3xl border border-neutral-200 bg-white p-6 shadow-soft md:p-8">
 			<span class="inline-flex items-center gap-3 text-xs font-extrabold uppercase tracking-[0.16em] text-brand-700">

@@ -6,7 +6,7 @@ $selectedServiceId = is_array($selectedService) ? (int) ($selectedService['id'] 
 $defaultAvatarImage = profile_image_url('');
 ?>
 
-<section class="py-14 md:py-16">
+<section class="pt-4 pb-14 md:pt-6 md:pb-16">
 	<div class="mx-auto w-[min(1320px,calc(100%-2rem))] space-y-8">
 		<?php if (is_array($selectedService)): ?>
 			<?php $providerImage = profile_image_url((string) ($selectedService['provider_profile_picture'] ?? '')); ?>
