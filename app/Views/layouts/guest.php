@@ -31,7 +31,7 @@ $appJsVersion = is_file($appJsPath) ? (string) filemtime($appJsPath) : '1';
 				</div>
 			<?php endif; ?>
 
-			<?php if (is_array($allErrors) && $allErrors !== []): ?>
+			<?php if ((!isset($suppressGlobalErrors) || !$suppressGlobalErrors) && is_array($allErrors) && $allErrors !== []): ?>
 				<div class="mb-4">
 					<div class="rounded-2xl border border-danger-300 bg-danger-50 px-4 py-3 text-sm text-danger-800 shadow-soft">
 						<p class="font-extrabold">Please fix the following issues:</p>

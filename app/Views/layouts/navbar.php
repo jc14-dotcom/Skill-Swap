@@ -65,18 +65,17 @@ if ($isAuth) {
 	}
 } else {
 	$links = [
-		['label' => 'Home', 'href' => '/services#home', 'active' => $path === '/' || $path === '/services'],
-		['label' => 'Marketplace', 'href' => '/services#marketplace', 'active' => $path === '/services'],
-		['label' => 'About', 'href' => '/services#about', 'active' => false],
-		['label' => 'Workflow', 'href' => '/services#workflow', 'active' => false],
-		['label' => 'Stories', 'href' => '/services#stories', 'active' => false],
-		['label' => 'Contact', 'href' => '/services#footer', 'active' => false],
+		['label' => 'Home', 'href' => '/services#home', 'active' => $path === '/' || $path === '/services', 'section' => 'home'],
+		['label' => 'Marketplace', 'href' => '/services#marketplace', 'active' => false, 'section' => 'marketplace'],
+		['label' => 'About', 'href' => '/services#about', 'active' => false, 'section' => 'about'],
+		['label' => 'Workflow', 'href' => '/services#workflow', 'active' => false, 'section' => 'workflow'],
+		['label' => 'Stories', 'href' => '/services#stories', 'active' => false, 'section' => 'stories'],
+		['label' => 'Contact', 'href' => '/services#footer', 'active' => false, 'section' => 'footer'],
 	];
 }
 
 $outlineButtonClasses = 'inline-flex items-center justify-center rounded-full border border-neutral-400 bg-white px-4 py-2 text-sm font-extrabold text-neutral-900 transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700';
 $primaryButtonClasses = 'inline-flex items-center justify-center gap-2 rounded-full bg-brand-500 px-4 py-2 text-sm font-extrabold text-white shadow-brand transition hover:-translate-y-0.5 hover:bg-brand-600';
-$miniLinkClasses = 'inline-flex items-center gap-1 text-sm font-extrabold text-brand-600 transition hover:text-brand-700';
 $mobileNavLinkClasses = 'block rounded-xl px-3 py-2 text-sm font-bold text-neutral-700 transition hover:bg-brand-50 hover:text-brand-700';
 $guestOutlineButtonClasses = 'inline-flex items-center justify-center rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-base font-extrabold text-neutral-900 transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700';
 $guestPrimaryButtonClasses = 'inline-flex items-center justify-center gap-2 rounded-full bg-brand-500 px-5 py-2.5 text-base font-extrabold text-white shadow-brand transition hover:-translate-y-0.5 hover:bg-brand-600';
@@ -111,6 +110,11 @@ $mobileToggleClasses = $isAuth
 		<ul class="<?php echo htmlspecialchars($navListClasses, ENT_QUOTES, 'UTF-8'); ?>" aria-label="Main navigation">
 			<?php foreach ($links as $link): ?>
 				<?php
+				$linkAttributes = '';
+				if (!$isAuth && isset($link['section'])) {
+					$linkAttributes = ' data-guest-nav-link data-guest-nav-section="' . htmlspecialchars((string) $link['section'], ENT_QUOTES, 'UTF-8') . '"';
+				}
+
 				if ($isAuth) {
 					$linkClasses = $link['active']
 						? 'rounded-full bg-brand-50 px-3 py-2 text-sm font-bold text-brand-700'
@@ -122,7 +126,7 @@ $mobileToggleClasses = $isAuth
 				}
 				?>
 				<li>
-					<a href="<?php echo htmlspecialchars((string) $link['href'], ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($linkClasses, ENT_QUOTES, 'UTF-8'); ?>">
+					<a href="<?php echo htmlspecialchars((string) $link['href'], ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($linkClasses, ENT_QUOTES, 'UTF-8'); ?>"<?php echo $linkAttributes; ?>>
 						<?php echo htmlspecialchars((string) $link['label'], ENT_QUOTES, 'UTF-8'); ?>
 					</a>
 				</li>
@@ -170,31 +174,46 @@ $mobileToggleClasses = $isAuth
 											$notificationLink = '/home';
 										}
 
+										$notificationTitle = (string) ($notification['title'] ?? 'Notification');
+										$titleId = 'notif-title-' . $notificationId;
+										$metaId = 'notif-meta-' . $notificationId;
+										$bodyId = 'notif-body-' . $notificationId;
+
 										$isUnread = !isset($notification['read_at']) || (string) $notification['read_at'] === '';
 										$itemClasses = $isUnread
-											? 'rounded-xl border border-brand-200 bg-surface-page p-3'
-											: 'rounded-xl border border-neutral-200 bg-neutral-50 p-3';
+											? 'relative overflow-hidden rounded-xl border border-brand-200 bg-surface-page p-3 transition hover:border-brand-400 hover:bg-brand-50/40'
+											: 'relative overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 p-3 transition hover:border-brand-300 hover:bg-white';
 										?>
 										<li class="<?php echo htmlspecialchars($itemClasses, ENT_QUOTES, 'UTF-8'); ?>">
-											<div class="flex items-start justify-between gap-2">
-												<p class="text-sm font-extrabold text-neutral-900"><?php echo htmlspecialchars((string) ($notification['title'] ?? 'Notification'), ENT_QUOTES, 'UTF-8'); ?></p>
-												<time class="text-xs font-semibold text-neutral-500"><?php echo htmlspecialchars(format_datetime((string) ($notification['created_at'] ?? ''), 'M d, H:i'), ENT_QUOTES, 'UTF-8'); ?></time>
+											<a
+												href="<?php echo htmlspecialchars($notificationLink, ENT_QUOTES, 'UTF-8'); ?>"
+												class="absolute inset-0 z-10 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-200 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+												aria-labelledby="<?php echo htmlspecialchars($titleId, ENT_QUOTES, 'UTF-8'); ?>"
+												aria-describedby="<?php echo htmlspecialchars($metaId . ((string) ($notification['body'] ?? '') !== '' ? ' ' . $bodyId : ''), ENT_QUOTES, 'UTF-8'); ?>"
+											>
+												<span class="sr-only">Open notification</span>
+											</a>
+
+											<div class="relative pointer-events-none">
+												<div class="flex items-start justify-between gap-2">
+													<p id="<?php echo htmlspecialchars($titleId, ENT_QUOTES, 'UTF-8'); ?>" class="text-sm font-extrabold text-neutral-900"><?php echo htmlspecialchars($notificationTitle, ENT_QUOTES, 'UTF-8'); ?></p>
+													<time id="<?php echo htmlspecialchars($metaId, ENT_QUOTES, 'UTF-8'); ?>" class="text-xs font-semibold text-neutral-500"><?php echo htmlspecialchars(format_datetime((string) ($notification['created_at'] ?? ''), 'M d, H:i'), ENT_QUOTES, 'UTF-8'); ?></time>
+												</div>
+
+												<?php if ((string) ($notification['body'] ?? '') !== ''): ?>
+													<p id="<?php echo htmlspecialchars($bodyId, ENT_QUOTES, 'UTF-8'); ?>" class="mt-1 text-sm leading-6 text-neutral-700"><?php echo htmlspecialchars((string) $notification['body'], ENT_QUOTES, 'UTF-8'); ?></p>
+												<?php endif; ?>
 											</div>
 
-											<?php if ((string) ($notification['body'] ?? '') !== ''): ?>
-												<p class="mt-1 text-sm leading-6 text-neutral-700"><?php echo htmlspecialchars((string) $notification['body'], ENT_QUOTES, 'UTF-8'); ?></p>
-											<?php endif; ?>
-
-											<div class="mt-2 flex items-center gap-3">
-												<a href="<?php echo htmlspecialchars($notificationLink, ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($miniLinkClasses, ENT_QUOTES, 'UTF-8'); ?>">Open <span aria-hidden="true">-></span></a>
-												<?php if ($isUnread): ?>
+											<?php if ($isUnread): ?>
+												<div class="relative z-20 mt-2">
 													<form action="/notifications/<?php echo $notificationId; ?>/read" method="post">
 														<?php echo csrf_field(); ?>
 														<input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirectTo, ENT_QUOTES, 'UTF-8'); ?>">
 														<button type="submit" class="text-xs font-bold text-neutral-700 transition hover:text-brand-700">Mark read</button>
 													</form>
-												<?php endif; ?>
-											</div>
+												</div>
+											<?php endif; ?>
 										</li>
 									<?php endforeach; ?>
 								</ul>

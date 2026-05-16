@@ -11,6 +11,53 @@
 		}
 	}
 
+	function initGuestNavHighlight() {
+		var guestLinks = document.querySelectorAll('[data-guest-nav-link]');
+		if (guestLinks.length === 0) {
+			return;
+		}
+
+		var path = window.location.pathname;
+		if (path !== '/services' && path !== '/') {
+			return;
+		}
+
+		var activeClasses = 'rounded-full bg-brand-100 px-4 py-2.5 text-base font-extrabold text-brand-700';
+		var inactiveClasses = 'rounded-full px-4 py-2.5 text-base font-extrabold text-neutral-600 transition hover:bg-brand-50 hover:text-brand-700';
+		var sections = {};
+
+		eachNode(guestLinks, function (link) {
+			var section = link.getAttribute('data-guest-nav-section');
+			if (section) {
+				sections[section] = true;
+			}
+		});
+
+		function setActive(section) {
+			eachNode(guestLinks, function (link) {
+				var linkSection = link.getAttribute('data-guest-nav-section');
+				var isActive = linkSection === section;
+				link.className = isActive ? activeClasses : inactiveClasses;
+			});
+		}
+
+		function resolveSection() {
+			var hash = window.location.hash || '';
+			var section = hash !== '' ? hash.slice(1) : 'home';
+			if (!sections[section]) {
+				section = 'home';
+			}
+			return section;
+		}
+
+		function handleHashChange() {
+			setActive(resolveSection());
+		}
+
+		handleHashChange();
+		window.addEventListener('hashchange', handleHashChange);
+	}
+
 	function closeDrawer() {
 		if (overlay) {
 			overlay.classList.add('opacity-0', 'pointer-events-none');
@@ -42,6 +89,8 @@
 	if (openBtn) {
 		openBtn.addEventListener('click', openDrawer);
 	}
+
+	initGuestNavHighlight();
 
 	if (closeBtn) {
 		closeBtn.addEventListener('click', closeDrawer);
@@ -340,12 +389,30 @@
 			return label + ' is invalid.';
 		}
 
+		function resolveFieldContainer(field) {
+			if (!field) {
+				return null;
+			}
+
+			var container = field.closest('[data-field]');
+			if (container) {
+				return container;
+			}
+
+			container = field.parentElement;
+			if (container && container.hasAttribute('data-password-field')) {
+				return container.parentElement || container;
+			}
+
+			return container;
+		}
+
 		function clearFieldError(field) {
 			field.classList.remove('is-invalid');
 			field.removeAttribute('data-invalid');
 			field.removeAttribute('aria-invalid');
 
-			var container = field.closest('[data-field]') || field.parentElement;
+			var container = resolveFieldContainer(field);
 			if (!container) {
 				return;
 			}
@@ -361,7 +428,7 @@
 			field.setAttribute('data-invalid', 'true');
 			field.setAttribute('aria-invalid', 'true');
 
-			var container = field.closest('[data-field]') || field.parentElement;
+			var container = resolveFieldContainer(field);
 			if (!container) {
 				return;
 			}
@@ -467,26 +534,45 @@
 			return;
 		}
 
+		var nameControl = form.querySelector('input[name="name"]');
+		var emailControl = form.querySelector('input[name="email"]');
 		var passwordControl = form.querySelector('input[name="password"]');
 		var confirmationControl = form.querySelector('input[name="password_confirmation"]');
-		if (!passwordControl || !confirmationControl) {
-			return;
+		var fileInput = form.querySelector('input[name="profile_picture"]');
+		var removeField = form.querySelector('input[name="remove_profile_picture"]');
+		var originalName = String(form.getAttribute('data-original-name') || '');
+		var originalEmail = String(form.getAttribute('data-original-email') || '');
+
+		function normalizeValue(value) {
+			return String(value || '').trim();
+		}
+
+		function normalizeEmail(value) {
+			return normalizeValue(value).toLowerCase();
+		}
+
+		function hasProfilePhotoChange() {
+			if (fileInput && fileInput.files && fileInput.files.length > 0) {
+				return true;
+			}
+
+			return Boolean(removeField && String(removeField.value || '') === '1');
 		}
 
 		function updateDirtyState() {
-			var hasPasswordValue = String(passwordControl.value || '').trim() !== '';
-			var hasConfirmationValue = String(confirmationControl.value || '').trim() !== '';
-			var allowSubmit = hasPasswordValue && hasConfirmationValue;
+			var hasNameChanged = nameControl ? normalizeValue(nameControl.value) !== normalizeValue(originalName) : false;
+			var hasEmailChanged = emailControl ? normalizeEmail(emailControl.value) !== normalizeEmail(originalEmail) : false;
+			var hasPasswordChange = passwordControl ? normalizeValue(passwordControl.value) !== '' : false;
+			var hasConfirmationChange = confirmationControl ? normalizeValue(confirmationControl.value) !== '' : false;
+			var allowSubmit = hasNameChanged || hasEmailChanged || hasPasswordChange || hasConfirmationChange || hasProfilePhotoChange();
 			form.setAttribute('data-form-dirty', allowSubmit ? 'true' : 'false');
 			submitButton.disabled = !allowSubmit;
 		}
 
 		form.setAttribute('data-form-dirty', 'false');
 		submitButton.disabled = true;
-		passwordControl.addEventListener('input', updateDirtyState);
-		passwordControl.addEventListener('change', updateDirtyState);
-		confirmationControl.addEventListener('input', updateDirtyState);
-		confirmationControl.addEventListener('change', updateDirtyState);
+		form.addEventListener('input', updateDirtyState);
+		form.addEventListener('change', updateDirtyState);
 		updateDirtyState();
 	}
 

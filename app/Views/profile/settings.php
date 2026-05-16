@@ -24,7 +24,17 @@
 		</header>
 
 		<div class="grid gap-6 lg:grid-cols-[minmax(0,1fr),22rem]">
-			<form id="profile-settings-form" action="/profile/settings" method="post" enctype="multipart/form-data" class="space-y-6 rounded-3xl border border-neutral-200 bg-white p-6 shadow-soft md:p-8" data-submit-once data-submit-requires-dirty="true">
+			<form
+				id="profile-settings-form"
+				action="/profile/settings"
+				method="post"
+				enctype="multipart/form-data"
+				class="space-y-6 rounded-3xl border border-neutral-200 bg-white p-6 shadow-soft md:p-8"
+				data-submit-once
+				data-submit-requires-dirty="true"
+				data-original-name="<?php echo htmlspecialchars(trim((string) ($profileData['name'] ?? '')), ENT_QUOTES, 'UTF-8'); ?>"
+				data-original-email="<?php echo htmlspecialchars(strtolower(trim((string) ($profileData['email'] ?? ''))), ENT_QUOTES, 'UTF-8'); ?>"
+			>
 				<?php echo csrf_field(); ?>
 
 				<div class="rounded-3xl border border-neutral-200 bg-surface-page p-5" data-profile-photo-shell data-has-custom-photo="<?php echo $hasCustomProfileImage ? '1' : '0'; ?>">
@@ -54,7 +64,7 @@
 						</div>
 
 						<div class="grid flex-1 gap-4">
-							<div class="grid gap-4 md:grid-cols-2">
+							<div class="grid gap-4 md:grid-cols-2 md:items-start">
 								<div class="grid gap-2" data-field>
 									<label for="name" class="flex items-center gap-2 text-sm font-extrabold text-neutral-800">
 										<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-4 w-4 text-brand-700">
@@ -92,7 +102,7 @@
 					<input type="hidden" name="remove_profile_picture" value="0" data-remove-profile-picture>
 				</div>
 
-				<div class="grid gap-4 md:grid-cols-2">
+				<div class="grid gap-4 md:grid-cols-2 md:items-start">
 					<div class="grid gap-2 md:col-span-2" data-field>
 						<label for="role" class="flex items-center gap-2 text-sm font-extrabold text-neutral-800">
 							<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-4 w-4 text-brand-700">
