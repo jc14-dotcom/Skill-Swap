@@ -25,7 +25,7 @@
 	$smallOutlineButtonClasses = 'inline-flex items-center justify-center rounded-full border border-neutral-400 bg-white px-3 py-2 text-xs font-extrabold text-neutral-800 transition hover:border-brand-500 hover:text-brand-700';
 	?>
 	<section class="pt-4 pb-14 md:pt-6 md:pb-16">
-		<div class="mx-auto w-[min(1440px,calc(100%-2rem))] xl:w-[min(1600px,calc(100%-3rem))] 2xl:w-[min(1760px,calc(100%-4rem))] space-y-6">
+		<div class="mx-auto w-[min(1320px,calc(100%-2rem))] space-y-6">
 			<header class="rounded-3xl border border-neutral-200 bg-white p-6 shadow-soft md:p-8">
 				<div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
 					<div class="min-w-0">
