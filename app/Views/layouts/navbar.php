@@ -139,33 +139,32 @@ $mobileToggleClasses = $isAuth
 				<a href="/register" class="<?php echo htmlspecialchars($guestPrimaryButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Get Started <span aria-hidden="true">-></span></a>
 			<?php else: ?>
 				<div class="flex items-center gap-2">
-					<div class="relative" data-popover data-notif-popover>
+					<div class="relative" data-popover data-notif-popover data-notif-feed-url="/notifications?format=json&limit=6" data-notif-csrf-token="<?php echo htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
 						<button type="button" class="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 bg-white text-neutral-700 transition hover:border-brand-500 hover:text-brand-700" data-popover-trigger data-notif-toggle aria-label="Notifications" aria-expanded="false">
 							<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="h-5 w-5">
 								<path d="M14.25 18.75C14.25 19.99 13.24 21 12 21C10.76 21 9.75 19.99 9.75 18.75" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
 								<path d="M5.25 9.75C5.25 6.02 8.27 3 12 3C15.73 3 18.75 6.02 18.75 9.75V13.5L20.25 15V15.75H3.75V15L5.25 13.5V9.75Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
 							</svg>
-							<?php if ($unreadCount > 0): ?>
-								<span class="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-danger-500 px-1 text-[10px] font-extrabold text-white" aria-hidden="true"><?php echo $unreadCount > 99 ? '99+' : $unreadCount; ?></span>
-							<?php endif; ?>
+							<span class="absolute -right-1 -top-1 h-5 min-w-5 items-center justify-center rounded-full bg-danger-500 px-1 text-[10px] font-extrabold text-white" data-notif-count aria-live="polite" aria-atomic="true" aria-hidden="true" style="display:<?php echo $unreadCount > 0 ? 'inline-flex' : 'none'; ?>;"><?php echo $unreadCount > 99 ? '99+' : $unreadCount; ?></span>
 						</button>
 
 						<div class="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-[min(24rem,92vw)] rounded-2xl border border-neutral-300 bg-white p-3 shadow-card" data-popover-panel data-notif-panel hidden>
 							<div class="mb-2 flex items-center justify-between gap-2">
 								<p class="text-xs font-extrabold uppercase tracking-[0.16em] text-brand-700">Notifications</p>
-								<?php if ($unreadCount > 0): ?>
+								<div data-notif-mark-all-wrap<?php echo $unreadCount > 0 ? '' : ' hidden'; ?>>
 									<form action="/notifications/read-all" method="post">
 										<?php echo csrf_field(); ?>
 										<input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirectTo, ENT_QUOTES, 'UTF-8'); ?>">
 										<button type="submit" class="text-xs font-bold text-neutral-700 transition hover:text-brand-700">Mark all read</button>
 									</form>
-								<?php endif; ?>
+								</div>
 							</div>
 
-							<?php if ($notifications === []): ?>
-								<p class="rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-4 text-sm text-neutral-600">No new notifications yet.</p>
-							<?php else: ?>
-								<ul class="grid max-h-[24rem] gap-2 overflow-y-auto pr-1">
+							<div data-notif-feed-body>
+								<?php if ($notifications === []): ?>
+									<p class="rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-4 text-sm text-neutral-600">No new notifications yet.</p>
+								<?php else: ?>
+									<ul class="grid max-h-[24rem] gap-2 overflow-y-auto pr-1">
 									<?php foreach ($notifications as $notification): ?>
 										<?php
 										$notificationId = (int) ($notification['id'] ?? 0);
@@ -194,7 +193,7 @@ $mobileToggleClasses = $isAuth
 												<span class="sr-only">Open notification</span>
 											</a>
 
-											<div class="relative pointer-events-none">
+												<div class="relative z-0">
 												<div class="flex items-start justify-between gap-2">
 													<p id="<?php echo htmlspecialchars($titleId, ENT_QUOTES, 'UTF-8'); ?>" class="text-sm font-extrabold text-neutral-900"><?php echo htmlspecialchars($notificationTitle, ENT_QUOTES, 'UTF-8'); ?></p>
 													<time id="<?php echo htmlspecialchars($metaId, ENT_QUOTES, 'UTF-8'); ?>" class="text-xs font-semibold text-neutral-500"><?php echo htmlspecialchars(format_datetime((string) ($notification['created_at'] ?? ''), 'M d, H:i'), ENT_QUOTES, 'UTF-8'); ?></time>
@@ -218,6 +217,7 @@ $mobileToggleClasses = $isAuth
 									<?php endforeach; ?>
 								</ul>
 							<?php endif; ?>
+						</div>
 						</div>
 					</div>
 

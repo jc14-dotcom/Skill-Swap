@@ -136,9 +136,8 @@ $defaultAvatarImage = profile_image_url('');
 					$iconVariant = $index % 3;
 					$providerImage = profile_image_url((string) ($service['provider_profile_picture'] ?? ''));
 					$serviceLink = '/services/' . (int) ($service['id'] ?? 0);
-					$surfaceClass = $iconVariant === 0 ? 'bg-surface-rose' : ($iconVariant === 1 ? 'bg-surface-page' : 'bg-surface-warm');
 					?>
-					<article class="group grid min-h-[17rem] gap-4 rounded-3xl border border-neutral-300 p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-brand <?php echo htmlspecialchars($surfaceClass, ENT_QUOTES, 'UTF-8'); ?>" data-card-link="<?php echo htmlspecialchars($serviceLink, ENT_QUOTES, 'UTF-8'); ?>" role="link" tabindex="0" aria-label="Open <?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?> details">
+					<article class="group grid min-h-[17rem] gap-4 rounded-3xl border border-neutral-300 bg-white p-6 shadow-soft transition hover:-translate-y-1 hover:border-brand-200 hover:bg-surface-rose hover:shadow-brand" data-card-link="<?php echo htmlspecialchars($serviceLink, ENT_QUOTES, 'UTF-8'); ?>" role="link" tabindex="0" aria-label="Open <?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?> details">
 						<div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-brand-200 bg-white text-brand-700" aria-hidden="true">
 							<?php if ($iconVariant === 0): ?>
 								<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6">

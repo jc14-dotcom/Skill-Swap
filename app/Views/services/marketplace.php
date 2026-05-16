@@ -12,7 +12,6 @@ $isSearching = $searchQuery !== '';
 $outlineButtonClasses = 'inline-flex items-center justify-center rounded-full border border-neutral-400 bg-white px-5 py-3 text-sm font-extrabold text-neutral-900 transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700';
 $primaryButtonClasses = 'inline-flex items-center justify-center gap-2 rounded-full bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-brand transition hover:-translate-y-0.5 hover:bg-brand-600';
 $miniLinkClasses = 'inline-flex items-center gap-1 text-sm font-extrabold text-brand-600 transition hover:text-brand-700';
-$cardSurfaceClasses = ['bg-surface-rose', 'bg-surface-page', 'bg-surface-warm'];
 $defaultAvatarImage = profile_image_url('');
 ?>
 
@@ -82,9 +81,8 @@ $defaultAvatarImage = profile_image_url('');
 					$providerImage = profile_image_url((string) ($service['provider_profile_picture'] ?? ''));
 					$isOwnService = $actorId > 0 && $actorId === (int) ($service['user_id'] ?? 0);
 					$serviceLink = '/services/' . (int) ($service['id'] ?? 0);
-					$surfaceClass = $cardSurfaceClasses[$index % count($cardSurfaceClasses)];
 					?>
-					<article class="group grid min-h-[17rem] gap-4 rounded-3xl border border-neutral-300 p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-brand <?php echo htmlspecialchars((string) $surfaceClass, ENT_QUOTES, 'UTF-8'); ?>" data-card-link="<?php echo htmlspecialchars($serviceLink, ENT_QUOTES, 'UTF-8'); ?>" role="link" tabindex="0" aria-label="Open <?php echo htmlspecialchars((string) ($service['title'] ?? 'service'), ENT_QUOTES, 'UTF-8'); ?> details">
+					<article class="group grid min-h-[17rem] gap-4 rounded-3xl border border-neutral-300 bg-white p-6 shadow-soft transition hover:-translate-y-1 hover:border-brand-200 hover:bg-surface-rose hover:shadow-brand" data-card-link="<?php echo htmlspecialchars($serviceLink, ENT_QUOTES, 'UTF-8'); ?>" role="link" tabindex="0" aria-label="Open <?php echo htmlspecialchars((string) ($service['title'] ?? 'service'), ENT_QUOTES, 'UTF-8'); ?> details">
 						<div>
 							<h3 class="text-[1.45rem] font-extrabold leading-tight text-neutral-950"><?php echo htmlspecialchars((string) ($service['title'] ?? 'Skill Service'), ENT_QUOTES, 'UTF-8'); ?></h3>
 							<div class="mt-1.5 flex items-center gap-3">

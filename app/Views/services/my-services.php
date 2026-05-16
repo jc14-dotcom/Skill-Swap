@@ -22,7 +22,7 @@
 		<?php else: ?>
 			<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
 				<?php foreach ($services as $service): ?>
-					<article class="group grid min-h-[16rem] gap-4 rounded-3xl border border-neutral-200 bg-white p-6 shadow-soft transition hover:-translate-y-0.5 hover:shadow-card" data-card-link="/services/<?php echo (int) $service['id']; ?>" role="link" tabindex="0" aria-label="Open <?php echo htmlspecialchars((string) $service['title'], ENT_QUOTES, 'UTF-8'); ?> details">
+					<article class="group grid min-h-[16rem] gap-4 rounded-3xl border border-neutral-200 bg-white p-6 shadow-soft transition hover:-translate-y-0.5 hover:border-brand-200 hover:bg-surface-rose hover:shadow-brand" data-card-link="/services/<?php echo (int) $service['id']; ?>" role="link" tabindex="0" aria-label="Open <?php echo htmlspecialchars((string) $service['title'], ENT_QUOTES, 'UTF-8'); ?> details">
 						<span class="inline-flex w-fit items-center rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-brand-700"><?php echo htmlspecialchars((string) ($service['status'] ?? 'active'), ENT_QUOTES, 'UTF-8'); ?></span>
 						<h3 class="text-xl font-heading font-extrabold text-neutral-950"><?php echo htmlspecialchars((string) $service['title'], ENT_QUOTES, 'UTF-8'); ?></h3>
 						<p class="text-sm leading-7 text-neutral-700"><?php echo htmlspecialchars((string) $service['description'], ENT_QUOTES, 'UTF-8'); ?></p>
