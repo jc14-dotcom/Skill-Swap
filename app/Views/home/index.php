@@ -63,7 +63,6 @@ $canOfferSkill = $rawRole !== 'seeker';
                                 <?php if ($canOfferSkill): ?>
                                         <a href="/bookings/provider" class="inline-flex items-center rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-extrabold text-neutral-900 transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700 hover:bg-brand-50">Provider schedule</a>
                                 <?php endif; ?>
-                                <a href="/dashboard" class="inline-flex items-center rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-extrabold text-neutral-900 transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700 hover:bg-brand-50">Open dashboard</a>
                                 <?php if ($canOfferSkill): ?>
                                         <a href="/services/create" class="inline-flex items-center gap-2 rounded-full bg-brand-700 px-5 py-2.5 text-sm font-extrabold text-white shadow-brand transition hover:-translate-y-0.5 hover:bg-brand-800">Create service <span aria-hidden="true" class="text-brand-200">-></span></a>
                                 <?php endif; ?>

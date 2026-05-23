@@ -2,8 +2,6 @@
 
 $allServices = is_array($services ?? null) ? $services : [];
 $featuredServices = array_slice($allServices, 0, 6);
-$portfolioItems = array_slice($allServices, 0, 6);
-
 $providerMap = [];
 foreach ($allServices as $service) {
 	$name = trim((string) ($service['provider_name'] ?? 'Provider'));
@@ -20,17 +18,6 @@ foreach ($allServices as $service) {
 			'avatar' => $avatar,
 		];
 	}
-}
-
-$teamMembers = array_slice(array_values($providerMap), 0, 4);
-
-if ($teamMembers === []) {
-	$teamMembers = [
-		['name' => 'Aly Reyes', 'role' => 'UI Design Mentor', 'avatar' => '/assets/images/default-avatar.png'],
-		['name' => 'Carl Santos', 'role' => 'Backend Coach', 'avatar' => '/assets/images/default-avatar.png'],
-		['name' => 'Nina Lim', 'role' => 'Digital Marketing Expert', 'avatar' => '/assets/images/default-avatar.png'],
-		['name' => 'Jules Dela Cruz', 'role' => 'Product Strategy Advisor', 'avatar' => '/assets/images/default-avatar.png'],
-	];
 }
 
 $testimonialCards = [
@@ -211,86 +198,6 @@ $defaultAvatarImage = profile_image_url('');
 	</div>
 </section>
 
-<section class="py-14 md:py-16">
-	<div class="mx-auto w-[min(1320px,calc(100%-2rem))]">
-		<div class="rounded-3xl bg-gradient-to-r from-brand-900 via-brand-700 to-brandAccent-tintSoft p-7 text-white shadow-card md:p-10">
-			<span class="inline-flex items-center gap-3 text-xs font-extrabold uppercase tracking-[0.16em] text-brand-100">
-				<span class="h-px w-8 bg-overlay-white35"></span>
-				Community Update
-			</span>
-			<h2 class="mt-3 text-3xl font-heading font-extrabold">Subscribe For New Skills And Open Requests.</h2>
-			<p class="mt-3 max-w-[60ch] text-sm leading-8 text-brand-100">Get curated service highlights, provider onboarding tips, and trusted collaboration stories from the SkillSwap network.</p>
-
-			<form class="mt-5 flex flex-col gap-3 sm:flex-row" action="#" method="post" onsubmit="return false;">
-				<input type="email" name="email" placeholder="Your email here" aria-label="Email address" class="h-12 w-full rounded-full border border-overlay-white35 bg-overlay-white18 px-5 text-sm font-semibold text-white placeholder:text-brand-100 focus:outline-none focus:ring-2 focus:ring-white sm:max-w-sm">
-				<button type="submit" class="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-white px-6 text-sm font-extrabold text-brand-700 transition hover:bg-brand-100">Submit <span aria-hidden="true">-></span></button>
-			</form>
-		</div>
-	</div>
-</section>
-
-<section class="py-14 md:py-16">
-	<div class="mx-auto w-[min(1320px,calc(100%-2rem))] space-y-6 text-center">
-		<span class="inline-flex items-center gap-3 text-xs font-extrabold uppercase tracking-[0.16em] text-brand-700">
-			<span class="h-px w-8 bg-brand-300"></span>
-			Latest Portfolios
-		</span>
-		<h2 class="mx-auto max-w-[16ch] text-3xl font-heading font-extrabold text-neutral-950 md:text-4xl">Skill Categories In Demand</h2>
-
-		<div class="flex flex-wrap justify-center gap-2">
-			<span class="rounded-full border border-brand-200 bg-brand-50 px-4 py-2 text-xs font-extrabold uppercase tracking-wide text-brand-700">All</span>
-			<span class="rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-wide text-neutral-700">Design</span>
-			<span class="rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-wide text-neutral-700">Development</span>
-			<span class="rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-wide text-neutral-700">Marketing</span>
-			<span class="rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-wide text-neutral-700">Coaching</span>
-		</div>
-
-		<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-			<?php if ($portfolioItems === []): ?>
-				<div class="rounded-3xl border border-dashed border-neutral-300 bg-white px-6 py-10 text-sm text-neutral-600 md:col-span-2 xl:col-span-3">Category previews appear once services are available.</div>
-			<?php else: ?>
-				<?php foreach ($portfolioItems as $item): ?>
-					<div class="rounded-3xl border border-neutral-200 bg-white p-6 text-left shadow-soft">
-						<strong class="text-lg font-heading font-extrabold text-neutral-950"><?php echo htmlspecialchars((string) ($item['title'] ?? 'Skill Project'), ENT_QUOTES, 'UTF-8'); ?></strong>
-					</div>
-				<?php endforeach; ?>
-			<?php endif; ?>
-		</div>
-	</div>
-</section>
-
-<section class="py-14 md:py-16">
-	<div class="mx-auto w-[min(1320px,calc(100%-2rem))] space-y-6">
-		<div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-			<div>
-				<span class="inline-flex items-center gap-3 text-xs font-extrabold uppercase tracking-[0.16em] text-brand-700">
-					<span class="h-px w-8 bg-brand-300"></span>
-					Our Team Member
-				</span>
-				<h2 class="mt-3 text-3xl font-heading font-extrabold text-neutral-950 md:text-4xl">Meet Skill Providers Building Community Value</h2>
-			</div>
-			<div class="hidden items-center gap-2 md:flex" aria-hidden="true">
-				<button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 bg-white text-xl font-black text-neutral-700">&lt;</button>
-				<button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 bg-white text-xl font-black text-neutral-700">&gt;</button>
-			</div>
-		</div>
-
-		<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-			<?php foreach ($teamMembers as $member): ?>
-				<article class="rounded-3xl border border-neutral-200 bg-white p-5 shadow-soft">
-					<div class="overflow-hidden rounded-2xl border border-neutral-200 bg-surface-page">
-						<img src="<?php echo htmlspecialchars(profile_image_url((string) ($member['avatar'] ?? '')), ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars((string) $member['name'], ENT_QUOTES, 'UTF-8'); ?> avatar" class="h-48 w-full object-cover" data-fallback-src="<?php echo htmlspecialchars($defaultAvatarImage, ENT_QUOTES, 'UTF-8'); ?>">
-					</div>
-					<div class="mt-4">
-						<h3 class="text-xl font-heading font-extrabold text-neutral-950"><?php echo htmlspecialchars((string) $member['name'], ENT_QUOTES, 'UTF-8'); ?></h3>
-						<p class="mt-1 text-sm text-neutral-600"><?php echo htmlspecialchars((string) $member['role'], ENT_QUOTES, 'UTF-8'); ?></p>
-					</div>
-				</article>
-			<?php endforeach; ?>
-		</div>
-	</div>
-</section>
-
 <section class="py-14 md:py-16" id="workflow">
 	<div class="mx-auto w-[min(1320px,calc(100%-2rem))] space-y-6 text-center">
 		<span class="inline-flex items-center gap-3 text-xs font-extrabold uppercase tracking-[0.16em] text-brand-700">
@@ -354,10 +261,6 @@ $defaultAvatarImage = profile_image_url('');
 				</span>
 				<h2 class="mt-3 text-3xl font-heading font-extrabold text-neutral-950 md:text-4xl">What SkillSwap Members Say</h2>
 			</div>
-			<div class="hidden items-center gap-2 md:flex" aria-hidden="true">
-				<button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 bg-white text-xl font-black text-neutral-700">&lt;</button>
-				<button type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 bg-white text-xl font-black text-neutral-700">&gt;</button>
-			</div>
 		</div>
 
 		<div class="space-y-6 rounded-3xl border border-neutral-200 bg-white p-6 shadow-soft md:p-8">
@@ -374,12 +277,6 @@ $defaultAvatarImage = profile_image_url('');
 						</div>
 					</article>
 				<?php endforeach; ?>
-			</div>
-
-			<div class="flex justify-center gap-2" aria-hidden="true">
-				<span class="h-2 w-2 rounded-full bg-neutral-300"></span>
-				<span class="h-2 w-6 rounded-full bg-brand-600"></span>
-				<span class="h-2 w-2 rounded-full bg-neutral-300"></span>
 			</div>
 
 			<div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -400,59 +297,6 @@ $defaultAvatarImage = profile_image_url('');
 					<strong class="mt-1 block text-2xl font-heading font-extrabold text-neutral-950">400+</strong>
 				</div>
 			</div>
-		</div>
-	</div>
-</section>
-
-<section class="py-14 md:py-16" id="stories">
-	<div class="mx-auto w-[min(1320px,calc(100%-2rem))] space-y-6">
-		<div>
-			<span class="inline-flex items-center gap-3 text-xs font-extrabold uppercase tracking-[0.16em] text-brand-700">
-				<span class="h-px w-8 bg-brand-300"></span>
-				Latest Blog
-			</span>
-			<h2 class="mt-3 text-3xl font-heading font-extrabold text-neutral-950 md:text-4xl">Recent Articles And News For Providers And Seekers</h2>
-		</div>
-
-		<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-			<article class="rounded-3xl border border-neutral-200 bg-white p-5 shadow-soft">
-				<div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-800 to-brand-600 p-4 text-white">
-					<span class="text-xs font-extrabold uppercase tracking-[0.12em]">Skill Pricing Guide</span>
-					<div class="absolute right-4 top-4 rounded-xl bg-white/20 px-2 py-1 text-center text-xs font-extrabold leading-4">28<br>APR</div>
-				</div>
-				<div class="mt-3 flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-					<span>By Admin</span>
-					<span>Comments (05)</span>
-				</div>
-				<h3 class="mt-3 text-xl font-heading font-extrabold text-neutral-950">Top 10 ways to make your first service stand out</h3>
-				<a href="#" class="mt-4 inline-flex items-center gap-1 text-sm font-extrabold text-brand-600 transition hover:text-brand-700">Read More <span aria-hidden="true">-></span></a>
-			</article>
-
-			<article class="rounded-3xl border border-neutral-200 bg-white p-5 shadow-soft">
-				<div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-700 to-brandAccent-tintSoft p-4 text-white">
-					<span class="text-xs font-extrabold uppercase tracking-[0.12em]">Workflow Tips</span>
-					<div class="absolute right-4 top-4 rounded-xl bg-white/20 px-2 py-1 text-center text-xs font-extrabold leading-4">15<br>JUN</div>
-				</div>
-				<div class="mt-3 flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-					<span>By Admin</span>
-					<span>Comments (05)</span>
-				</div>
-				<h3 class="mt-3 text-xl font-heading font-extrabold text-neutral-950">How seekers can write better booking requests</h3>
-				<a href="#" class="mt-4 inline-flex items-center gap-1 text-sm font-extrabold text-brand-600 transition hover:text-brand-700">Read More <span aria-hidden="true">-></span></a>
-			</article>
-
-			<article class="rounded-3xl border border-neutral-200 bg-white p-5 shadow-soft">
-				<div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-900 to-brand-700 p-4 text-white">
-					<span class="text-xs font-extrabold uppercase tracking-[0.12em]">Provider Growth</span>
-					<div class="absolute right-4 top-4 rounded-xl bg-white/20 px-2 py-1 text-center text-xs font-extrabold leading-4">29<br>MAY</div>
-				</div>
-				<div class="mt-3 flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-					<span>By Admin</span>
-					<span>Comments (05)</span>
-				</div>
-				<h3 class="mt-3 text-xl font-heading font-extrabold text-neutral-950">Building trust with profile quality and reviews</h3>
-				<a href="#" class="mt-4 inline-flex items-center gap-1 text-sm font-extrabold text-brand-600 transition hover:text-brand-700">Read More <span aria-hidden="true">-></span></a>
-			</article>
 		</div>
 	</div>
 </section>

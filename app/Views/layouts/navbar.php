@@ -52,9 +52,6 @@ if ($isAuth) {
 		$links[] = ['label' => 'Seek Skills', 'href' => '/services', 'active' => $path === '/services' || preg_match('#^/services/\\d+$#', $path) === 1];
 	}
 
-	$links[] = ['label' => 'Messages', 'href' => '/messages', 'active' => str_starts_with($path, '/messages')];
-	$links[] = ['label' => 'Dashboard', 'href' => '/dashboard', 'active' => str_starts_with($path, '/dashboard')];
-
 	if ($canOfferSkill) {
 		$links[] = ['label' => 'Provider Schedule', 'href' => '/bookings/provider', 'active' => $path === '/bookings/provider'];
 		$links[] = ['label' => 'My Services', 'href' => '/services/mine', 'active' => $path === '/services/mine' || preg_match('#^/services/\\d+/edit$#', $path) === 1];
@@ -69,7 +66,6 @@ if ($isAuth) {
 		['label' => 'Marketplace', 'href' => '/services#marketplace', 'active' => false, 'section' => 'marketplace'],
 		['label' => 'About', 'href' => '/services#about', 'active' => false, 'section' => 'about'],
 		['label' => 'Workflow', 'href' => '/services#workflow', 'active' => false, 'section' => 'workflow'],
-		['label' => 'Stories', 'href' => '/services#stories', 'active' => false, 'section' => 'stories'],
 		['label' => 'Contact', 'href' => '/services#footer', 'active' => false, 'section' => 'footer'],
 	];
 }
