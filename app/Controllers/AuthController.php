@@ -22,7 +22,10 @@ class AuthController extends Controller
 
 	public function showLogin(): void
 	{
-		$this->view('auth.login', ['title' => 'Login'], 'layouts.guest');
+		$this->view('auth.login', [
+			'title' => 'Login',
+			'suppressGlobalErrors' => true,
+		], 'layouts.guest');
 	}
 
 	public function showForgotPassword(): void
@@ -34,7 +37,7 @@ class AuthController extends Controller
 	{
 		[$valid, $errors, $clean] = $this->validate($this->request->all(), [
 			'email' => 'required|email|max:190',
-			'password' => 'required|string|min:8|max:128',
+			'password' => 'required|string|max:128',
 		]);
 
 		if (!$valid) {

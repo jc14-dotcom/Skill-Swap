@@ -65,12 +65,12 @@ if ($isAuth) {
 	}
 } else {
 	$links = [
-		['label' => 'Home', 'href' => '/services#home', 'active' => $path === '/' || $path === '/services'],
-		['label' => 'Marketplace', 'href' => '/services#marketplace', 'active' => $path === '/services'],
-		['label' => 'About', 'href' => '/services#about', 'active' => false],
-		['label' => 'Workflow', 'href' => '/services#workflow', 'active' => false],
-		['label' => 'Stories', 'href' => '/services#stories', 'active' => false],
-		['label' => 'Contact', 'href' => '/services#footer', 'active' => false],
+		['label' => 'Home', 'href' => '/services#home', 'active' => $path === '/' || $path === '/services', 'section' => 'home'],
+		['label' => 'Marketplace', 'href' => '/services#marketplace', 'active' => false, 'section' => 'marketplace'],
+		['label' => 'About', 'href' => '/services#about', 'active' => false, 'section' => 'about'],
+		['label' => 'Workflow', 'href' => '/services#workflow', 'active' => false, 'section' => 'workflow'],
+		['label' => 'Stories', 'href' => '/services#stories', 'active' => false, 'section' => 'stories'],
+		['label' => 'Contact', 'href' => '/services#footer', 'active' => false, 'section' => 'footer'],
 	];
 }
 
@@ -111,6 +111,11 @@ $mobileToggleClasses = $isAuth
 		<ul class="<?php echo htmlspecialchars($navListClasses, ENT_QUOTES, 'UTF-8'); ?>" aria-label="Main navigation">
 			<?php foreach ($links as $link): ?>
 				<?php
+				$linkAttributes = '';
+				if (!$isAuth && isset($link['section'])) {
+					$linkAttributes = ' data-guest-nav-link data-guest-nav-section="' . htmlspecialchars((string) $link['section'], ENT_QUOTES, 'UTF-8') . '"';
+				}
+
 				if ($isAuth) {
 					$linkClasses = $link['active']
 						? 'rounded-full bg-brand-50 px-3 py-2 text-sm font-bold text-brand-700'
@@ -122,7 +127,7 @@ $mobileToggleClasses = $isAuth
 				}
 				?>
 				<li>
-					<a href="<?php echo htmlspecialchars((string) $link['href'], ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($linkClasses, ENT_QUOTES, 'UTF-8'); ?>">
+					<a href="<?php echo htmlspecialchars((string) $link['href'], ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($linkClasses, ENT_QUOTES, 'UTF-8'); ?>"<?php echo $linkAttributes; ?>>
 						<?php echo htmlspecialchars((string) $link['label'], ENT_QUOTES, 'UTF-8'); ?>
 					</a>
 				</li>
