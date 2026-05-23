@@ -24,17 +24,6 @@ class DashboardController extends Controller
 
 	public function index(): void
 	{
-		$actor = $this->user();
-		if (!is_array($actor)) {
-			$this->redirect('/login');
-			return;
-		}
-
-		$this->view('dashboard.index', [
-			'title' => 'Dashboard',
-			'publicServices' => $this->services->listPublicServices(),
-			'myBookings' => $this->bookings->listForSeeker($actor),
-			'providerBookings' => $this->bookings->listForProvider($actor),
-		]);
+		$this->redirect('/home');
 	}
 }

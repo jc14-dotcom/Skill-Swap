@@ -11,6 +11,235 @@
 		}
 	}
 
+	function escapeHtml(value) {
+		return String(value == null ? '' : value)
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#039;');
+	}
+
+	function normalizeNotificationLink(value) {
+		var link = String(value == null ? '' : value).trim();
+		if (link === '' || link.charAt(0) !== '/') {
+			return '/home';
+		}
+
+		return link;
+	}
+
+	function formatNotificationTime(value) {
+		var rawValue = String(value == null ? '' : value).trim();
+		if (rawValue === '') {
+			return '';
+		}
+
+		var parsed = new Date(rawValue.replace(' ', 'T'));
+		if (isNaN(parsed.getTime())) {
+			return rawValue;
+		}
+
+		try {
+			return new Intl.DateTimeFormat('en-US', {
+				month: 'short',
+				day: 'numeric',
+				hour: '2-digit',
+				minute: '2-digit',
+				hour12: false
+			}).format(parsed);
+		} catch (error) {
+			return rawValue;
+		}
+	}
+
+	function getCurrentRelativeUrl() {
+		var path = window.location.pathname || '/home';
+		var search = window.location.search || '';
+		var target = path + search;
+
+		if (target === '') {
+			return '/home';
+		}
+
+		return target.charAt(0) === '/' ? target : '/home';
+	}
+
+	function buildNotificationItemMarkup(notification, csrfToken, redirectTo) {
+		var id = Number(notification && notification.id ? notification.id : 0);
+		if (id <= 0) {
+			return '';
+		}
+
+		var title = escapeHtml(notification && notification.title ? notification.title : 'Notification');
+		var body = String(notification && notification.body ? notification.body : '');
+		var link = escapeHtml(normalizeNotificationLink(notification ? notification.link : ''));
+		var createdAt = escapeHtml(formatNotificationTime(notification ? notification.created_at : ''));
+		var isUnread = String(notification && notification.read_at ? notification.read_at : '') === '';
+		var itemClasses = isUnread
+			? 'relative overflow-hidden rounded-xl border border-brand-200 bg-surface-page p-3 transition hover:border-brand-400 hover:bg-brand-50/40'
+			: 'relative overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 p-3 transition hover:border-brand-300 hover:bg-white';
+		var bodyMarkup = body !== ''
+			? '<p id="notif-body-' + id + '" class="mt-1 text-sm leading-6 text-neutral-700">' + escapeHtml(body) + '</p>'
+			: '';
+		var describedBy = 'notif-meta-' + id + (body !== '' ? ' notif-body-' + id : '');
+		var markReadMarkup = isUnread
+			? '<div class="relative z-20 mt-2"><form action="/notifications/' + id + '/read" method="post">' +
+				'<input type="hidden" name="_token" value="' + escapeHtml(csrfToken) + '">' +
+				'<input type="hidden" name="redirect" value="' + escapeHtml(redirectTo) + '">' +
+				'<button type="submit" class="text-xs font-bold text-neutral-700 transition hover:text-brand-700">Mark read</button>' +
+			'</form></div>'
+			: '';
+
+		return [
+			'<li class="' + itemClasses + '">',
+				'<a href="' + link + '" class="absolute inset-0 z-10 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-200 focus-visible:ring-offset-2 focus-visible:ring-offset-white" aria-labelledby="notif-title-' + id + '" aria-describedby="' + escapeHtml(describedBy) + '">',
+					'<span class="sr-only">Open notification</span>',
+				'</a>',
+				'<div class="relative z-0">',
+					'<div class="flex items-start justify-between gap-2">',
+						'<p id="notif-title-' + id + '" class="text-sm font-extrabold text-neutral-900">' + title + '</p>',
+						'<time id="notif-meta-' + id + '" class="text-xs font-semibold text-neutral-500">' + createdAt + '</time>',
+					'</div>',
+					bodyMarkup,
+				'</div>',
+				markReadMarkup,
+			'</li>'
+		].join('');
+	}
+
+	function buildNotificationFeedMarkup(feed, csrfToken, redirectTo) {
+		var items = feed && feed.items && feed.items.length ? feed.items : [];
+		if (items.length === 0) {
+			return '<p class="rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-4 text-sm text-neutral-600">No new notifications yet.</p>';
+		}
+
+		var markup = '<ul class="grid max-h-[24rem] gap-2 overflow-y-auto pr-1">';
+		eachNode(items, function (notification) {
+			markup += buildNotificationItemMarkup(notification, csrfToken, redirectTo);
+		});
+		markup += '</ul>';
+		return markup;
+	}
+
+	function initNotificationPolling() {
+		var popover = document.querySelector('[data-notif-popover]');
+		if (!popover) {
+			return;
+		}
+
+		var panel = popover.querySelector('[data-notif-panel]');
+		var trigger = popover.querySelector('[data-notif-toggle]');
+		var badge = popover.querySelector('[data-notif-count]');
+		var markAllWrap = popover.querySelector('[data-notif-mark-all-wrap]');
+		var feedBody = popover.querySelector('[data-notif-feed-body]');
+		var feedUrl = popover.getAttribute('data-notif-feed-url') || '/notifications?format=json&limit=6';
+		var csrfToken = popover.getAttribute('data-notif-csrf-token') || '';
+		var redirectTo = getCurrentRelativeUrl();
+		var pollInterval = 30000;
+		var requestInFlight = false;
+		var lastUnreadCount = null;
+
+		function updateBadge(unreadCount) {
+			var count = parseInt(unreadCount, 10);
+			if (isNaN(count) || count < 0) {
+				count = 0;
+			}
+
+			if (badge) {
+				badge.textContent = count > 0 ? (count > 99 ? '99+' : String(count)) : '';
+				badge.style.display = count > 0 ? 'inline-flex' : 'none';
+			}
+
+			if (markAllWrap) {
+				markAllWrap.hidden = count <= 0;
+			}
+		}
+
+		function renderFeed(feed) {
+			if (!feedBody) {
+				return;
+			}
+
+			feedBody.innerHTML = buildNotificationFeedMarkup(feed, csrfToken, redirectTo);
+		}
+
+		function fetchFeed(forceRender) {
+			if (requestInFlight) {
+				return;
+			}
+
+			if (document.hidden && !forceRender) {
+				return;
+			}
+
+			requestInFlight = true;
+
+			fetch(feedUrl, {
+				credentials: 'same-origin',
+				headers: {
+					Accept: 'application/json'
+				}
+			})
+				.then(function (response) {
+					if (!response.ok) {
+						throw new Error('Notification polling failed.');
+					}
+
+					return response.json();
+				})
+				.then(function (payload) {
+					var feed = payload && payload.data ? payload.data : payload;
+					if (!feed || typeof feed !== 'object') {
+						return;
+					}
+
+					var previousUnreadCount = lastUnreadCount;
+					var unreadCount = parseInt(feed.unread_count, 10);
+					if (isNaN(unreadCount) || unreadCount < 0) {
+						unreadCount = 0;
+					}
+
+					updateBadge(unreadCount);
+
+					if (feedBody && (forceRender || !panel || panel.hidden || previousUnreadCount === null || unreadCount !== previousUnreadCount)) {
+						renderFeed(feed);
+					}
+
+					lastUnreadCount = unreadCount;
+				})
+				.catch(function () {
+					return null;
+				})
+				.then(function () {
+					requestInFlight = false;
+				});
+		}
+
+		updateBadge(badge ? badge.textContent : 0);
+		fetchFeed(false);
+
+		window.setInterval(function () {
+			fetchFeed(false);
+		}, pollInterval);
+
+		document.addEventListener('visibilitychange', function () {
+			if (!document.hidden) {
+				fetchFeed(false);
+			}
+		});
+
+		if (trigger) {
+			trigger.addEventListener('click', function () {
+				window.setTimeout(function () {
+					if (panel && !panel.hidden) {
+						fetchFeed(true);
+					}
+				}, 0);
+			});
+		}
+	}
+
 	function initGuestNavHighlight() {
 		var guestLinks = document.querySelectorAll('[data-guest-nav-link]');
 		if (guestLinks.length === 0) {
@@ -534,26 +763,45 @@
 			return;
 		}
 
+		var nameControl = form.querySelector('input[name="name"]');
+		var emailControl = form.querySelector('input[name="email"]');
 		var passwordControl = form.querySelector('input[name="password"]');
 		var confirmationControl = form.querySelector('input[name="password_confirmation"]');
-		if (!passwordControl || !confirmationControl) {
-			return;
+		var fileInput = form.querySelector('input[name="profile_picture"]');
+		var removeField = form.querySelector('input[name="remove_profile_picture"]');
+		var originalName = String(form.getAttribute('data-original-name') || '');
+		var originalEmail = String(form.getAttribute('data-original-email') || '');
+
+		function normalizeValue(value) {
+			return String(value || '').trim();
+		}
+
+		function normalizeEmail(value) {
+			return normalizeValue(value).toLowerCase();
+		}
+
+		function hasProfilePhotoChange() {
+			if (fileInput && fileInput.files && fileInput.files.length > 0) {
+				return true;
+			}
+
+			return Boolean(removeField && String(removeField.value || '') === '1');
 		}
 
 		function updateDirtyState() {
-			var hasPasswordValue = String(passwordControl.value || '').trim() !== '';
-			var hasConfirmationValue = String(confirmationControl.value || '').trim() !== '';
-			var allowSubmit = hasPasswordValue && hasConfirmationValue;
+			var hasNameChanged = nameControl ? normalizeValue(nameControl.value) !== normalizeValue(originalName) : false;
+			var hasEmailChanged = emailControl ? normalizeEmail(emailControl.value) !== normalizeEmail(originalEmail) : false;
+			var hasPasswordChange = passwordControl ? normalizeValue(passwordControl.value) !== '' : false;
+			var hasConfirmationChange = confirmationControl ? normalizeValue(confirmationControl.value) !== '' : false;
+			var allowSubmit = hasNameChanged || hasEmailChanged || hasPasswordChange || hasConfirmationChange || hasProfilePhotoChange();
 			form.setAttribute('data-form-dirty', allowSubmit ? 'true' : 'false');
 			submitButton.disabled = !allowSubmit;
 		}
 
 		form.setAttribute('data-form-dirty', 'false');
 		submitButton.disabled = true;
-		passwordControl.addEventListener('input', updateDirtyState);
-		passwordControl.addEventListener('change', updateDirtyState);
-		confirmationControl.addEventListener('input', updateDirtyState);
-		confirmationControl.addEventListener('change', updateDirtyState);
+		form.addEventListener('input', updateDirtyState);
+		form.addEventListener('change', updateDirtyState);
 		updateDirtyState();
 	}
 
@@ -835,7 +1083,6 @@
 			'is-loading': 'text-info-700',
 			'is-error': 'text-danger-700'
 		};
-		var cardSurfaceClasses = ['bg-surface-rose', 'bg-surface-page', 'bg-surface-warm'];
 
 		function normalizeQuery(rawValue) {
 			var normalized = String(rawValue || '').replace(/\s+/g, ' ').trim();
@@ -902,10 +1149,9 @@
 			var description = String(service.description || '');
 			var priceLabel = String(service.price_label || 'PHP 0.00');
 			var isOwnService = service.is_own_service === true;
-			var cardSurfaceClass = cardSurfaceClasses[Math.abs(cardIndex || 0) % cardSurfaceClasses.length];
 
 			var article = document.createElement('article');
-			article.className = 'group grid min-h-[17rem] gap-4 rounded-3xl border border-neutral-300 p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-brand ' + cardSurfaceClass;
+			article.className = 'group grid min-h-[17rem] gap-4 rounded-3xl border border-neutral-300 bg-white p-6 shadow-soft transition hover:-translate-y-1 hover:border-brand-200 hover:bg-surface-rose hover:shadow-brand';
 			article.setAttribute('data-card-link', detailUrl);
 			article.setAttribute('role', 'link');
 			article.setAttribute('tabindex', '0');
@@ -1133,6 +1379,7 @@
 	}
 
 	initPasswordToggles();
+	initNotificationPolling();
 	initFormFieldValidation();
 	initProfileSettingsDirtyState();
 	initSubmitOnceForms();

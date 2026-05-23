@@ -17,51 +17,76 @@
 				<p class="mt-2 text-sm text-neutral-600">Once seekers submit requests to your services, they will appear here.</p>
 			</div>
 		<?php else: ?>
-			<div class="grid gap-4 lg:grid-cols-2">
-				<?php foreach ($bookings as $booking): ?>
-					<?php
-					$currentStatus = (string) ($booking['status'] ?? 'pending');
-					$preferredSchedule = format_datetime((string) ($booking['scheduled_at'] ?? ''), 'M d, Y h:i A');
-					$bookingMessage = trim((string) ($booking['message'] ?? ''));
-					$allowedStatuses = [];
-					$statusLabels = [
-						'accepted' => 'Accept Customer',
-						'rejected' => 'Reject Customer',
-						'completed' => 'Mark Completed',
-						'cancelled' => 'Cancel Booking',
-					];
+			<div class="overflow-x-auto rounded-3xl border border-neutral-200 bg-white shadow-soft">
+				<table class="min-w-full w-full table-auto divide-y divide-neutral-200 text-sm">
+					<thead class="bg-surface-page text-left text-xs font-extrabold uppercase tracking-[0.12em] text-neutral-600">
+						<tr>
+							<th class="px-4 py-3">Service</th>
+							<th class="px-4 py-3">Seeker</th>
+							<th class="px-4 py-3">Preferred Schedule</th>
+							<th class="px-4 py-3">Status</th>
+							<th class="px-4 py-3">Customer Note</th>
+							<th class="px-4 py-3 text-right">Action</th>
+						</tr>
+					</thead>
+					<tbody class="divide-y divide-neutral-200 bg-white">
+						<?php foreach ($bookings as $booking): ?>
+							<?php
+							$currentStatus = strtolower((string) ($booking['status'] ?? 'pending'));
+							$preferredSchedule = format_datetime((string) ($booking['scheduled_at'] ?? ''), 'M d, Y h:i A');
+							$bookingMessage = trim((string) ($booking['message'] ?? ''));
+							$allowedStatuses = [];
+							$statusLabels = [
+								'pending' => 'Pending',
+								'accepted' => 'Accepted',
+								'rejected' => 'Rejected',
+								'completed' => 'Completed',
+								'cancelled' => 'Cancelled',
+							];
+							$statusChipClasses = [
+								'pending' => 'border-neutral-200 bg-neutral-50 text-neutral-700',
+								'accepted' => 'border-brand-200 bg-brand-50 text-brand-700',
+								'rejected' => 'border-danger-200 bg-danger-50 text-danger-700',
+								'completed' => 'border-brand-200 bg-brand-50 text-brand-700',
+								'cancelled' => 'border-danger-200 bg-danger-50 text-danger-700',
+							];
 
-					if ($currentStatus === 'pending') {
-						$allowedStatuses = ['accepted', 'rejected'];
-					} elseif ($currentStatus === 'accepted') {
-						$allowedStatuses = ['completed', 'cancelled'];
-					}
-					?>
-					<article class="rounded-3xl border border-neutral-200 bg-white p-6 shadow-soft">
-						<span class="inline-flex items-center rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-brand-700">Status: <?php echo htmlspecialchars($currentStatus, ENT_QUOTES, 'UTF-8'); ?></span>
-						<h3 class="mt-4 text-xl font-heading font-extrabold text-neutral-950"><?php echo htmlspecialchars((string) $booking['service_title'], ENT_QUOTES, 'UTF-8'); ?></h3>
-						<p class="mt-2 text-sm text-neutral-700">Seeker: <?php echo htmlspecialchars((string) ($booking['seeker_name'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
-						<p class="mt-1 text-sm text-neutral-700">Preferred Schedule: <?php echo htmlspecialchars($preferredSchedule, ENT_QUOTES, 'UTF-8'); ?></p>
-						<?php if ($bookingMessage !== ''): ?>
-							<p class="mt-1 text-sm text-neutral-700">Customer Note: <?php echo htmlspecialchars($bookingMessage, ENT_QUOTES, 'UTF-8'); ?></p>
-						<?php endif; ?>
-
-						<div class="mt-4 flex flex-wrap gap-2">
-							<?php if ($allowedStatuses === []): ?>
-								<span class="text-xs font-bold uppercase tracking-wide text-neutral-500">No further actions</span>
-							<?php else: ?>
-								<?php foreach ($allowedStatuses as $nextStatus): ?>
-									<form action="/bookings/<?php echo (int) $booking['id']; ?>/status" method="post">
-										<?php echo csrf_field(); ?>
-										<input type="hidden" name="_method" value="PATCH">
-										<input type="hidden" name="status" value="<?php echo htmlspecialchars($nextStatus, ENT_QUOTES, 'UTF-8'); ?>">
-										<button type="submit" class="inline-flex items-center rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-extrabold text-neutral-900 transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700"><?php echo htmlspecialchars((string) ($statusLabels[$nextStatus] ?? ucfirst($nextStatus)), ENT_QUOTES, 'UTF-8'); ?></button>
-									</form>
-								<?php endforeach; ?>
-							<?php endif; ?>
-						</div>
-					</article>
-				<?php endforeach; ?>
+							if ($currentStatus === 'pending') {
+								$allowedStatuses = ['accepted', 'rejected'];
+							} elseif ($currentStatus === 'accepted') {
+								$allowedStatuses = ['completed', 'cancelled'];
+							}
+							?>
+							<tr class="align-top transition hover:bg-surface-page/70">
+								<td class="px-4 py-4 font-semibold text-neutral-900"><?php echo htmlspecialchars((string) ($booking['service_title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+								<td class="px-4 py-4 text-neutral-700"><?php echo htmlspecialchars((string) ($booking['seeker_name'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+								<td class="px-4 py-4 whitespace-nowrap text-neutral-700"><?php echo htmlspecialchars($preferredSchedule, ENT_QUOTES, 'UTF-8'); ?></td>
+								<td class="px-4 py-4">
+									<span class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wide <?php echo htmlspecialchars((string) ($statusChipClasses[$currentStatus] ?? $statusChipClasses['pending']), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars((string) ($statusLabels[$currentStatus] ?? ucfirst($currentStatus)), ENT_QUOTES, 'UTF-8'); ?></span>
+								</td>
+								<td class="px-4 py-4 text-neutral-700">
+									<span class="block max-w-[22rem] break-words leading-6"><?php echo htmlspecialchars($bookingMessage !== '' ? $bookingMessage : '—', ENT_QUOTES, 'UTF-8'); ?></span>
+								</td>
+								<td class="px-4 py-4">
+									<div class="flex flex-wrap items-center justify-end gap-2">
+										<?php if ($allowedStatuses === []): ?>
+											<span class="text-xs font-bold uppercase tracking-wide text-neutral-500">No further actions</span>
+										<?php else: ?>
+											<?php foreach ($allowedStatuses as $nextStatus): ?>
+												<form action="/bookings/<?php echo (int) $booking['id']; ?>/status" method="post">
+													<?php echo csrf_field(); ?>
+													<input type="hidden" name="_method" value="PATCH">
+													<input type="hidden" name="status" value="<?php echo htmlspecialchars($nextStatus, ENT_QUOTES, 'UTF-8'); ?>">
+													<button type="submit" class="inline-flex items-center rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-extrabold text-neutral-900 transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700"><?php echo htmlspecialchars((string) ($statusLabels[$nextStatus] ?? ucfirst($nextStatus)), ENT_QUOTES, 'UTF-8'); ?></button>
+												</form>
+											<?php endforeach; ?>
+										<?php endif; ?>
+									</div>
+								</td>
+							</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
 			</div>
 		<?php endif; ?>
 	</div>
