@@ -37,12 +37,12 @@ $canOfferSkill = $rawRole !== 'seeker';
                         </div>
 
                         <div class="rounded-[1.2rem] border border-neutral-300 bg-surface-warm p-6 shadow-soft md:p-8">
-                                <p class="text-xs font-extrabold uppercase tracking-[0.12em] text-slate-500">My Seeker Bookings</p>     
+                                <p class="text-xs font-extrabold uppercase tracking-[0.12em] text-slate-500">My Bookings</p>     
                                 <p class="mt-3 text-[2.2rem] font-heading font-extrabold text-brand-950"><?php echo (int) ($myBookingCount ?? 0); ?></p>
                         </div>
 
                         <div class="rounded-[1.2rem] border border-neutral-300 bg-surface-warm p-6 shadow-soft md:p-8">
-                                <p class="text-xs font-extrabold uppercase tracking-[0.12em] text-slate-500">Incoming Provider Bookings</p>
+                                <p class="text-xs font-extrabold uppercase tracking-[0.12em] text-slate-500">Provider Bookings</p>
                                 <p class="mt-3 text-[2.2rem] font-heading font-extrabold text-brand-950"><?php echo (int) ($providerBookingCount ?? 0); ?></p>
                         </div>
                 </div>
@@ -51,20 +51,14 @@ $canOfferSkill = $rawRole !== 'seeker';
                         <h2 class="text-[1.65rem] font-heading font-extrabold text-neutral-950">Quick Actions</h2>
                         <div class="mt-6 flex flex-wrap gap-3">
                                 <?php if ($canSeekSkill): ?>
-                                        <a href="/services" class="inline-flex items-center rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-extrabold text-neutral-900 transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700 hover:bg-brand-50">Seek skill</a>
-                                        <a href="/bookings/mine" class="inline-flex items-center rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-extrabold text-neutral-900 transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700 hover:bg-brand-50">My bookings</a>
+                                        <a href="/services" class="inline-flex items-center rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-extrabold text-neutral-900 transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700 hover:bg-brand-50">Browse Skills</a>
+                                        <a href="/bookings/mine" class="inline-flex items-center rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-extrabold text-neutral-900 transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700 hover:bg-brand-50">My Bookings</a>
                                 <?php endif; ?>
 
                                 <?php if ($canOfferSkill): ?>
-                                        <a href="/services/create" class="inline-flex items-center rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-extrabold text-neutral-900 transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700 hover:bg-brand-50">Offer skill</a>
-                                        <a href="/services/mine" class="inline-flex items-center rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-extrabold text-neutral-900 transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700 hover:bg-brand-50">My services (<?php echo (int) ($myServiceCount ?? 0); ?>)</a>
-                                <?php endif; ?>
-
-                                <?php if ($canOfferSkill): ?>
-                                        <a href="/bookings/provider" class="inline-flex items-center rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-extrabold text-neutral-900 transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700 hover:bg-brand-50">Provider schedule</a>
-                                <?php endif; ?>
-                                <?php if ($canOfferSkill): ?>
-                                        <a href="/services/create" class="inline-flex items-center gap-2 rounded-full bg-brand-700 px-5 py-2.5 text-sm font-extrabold text-white shadow-brand transition hover:-translate-y-0.5 hover:bg-brand-800">Create service <span aria-hidden="true" class="text-brand-200">-></span></a>
+                                        <a href="/services/create" class="inline-flex items-center gap-2 rounded-full bg-brand-700 px-5 py-2.5 text-sm font-extrabold text-white shadow-brand transition hover:-translate-y-0.5 hover:bg-brand-800">Create Service <span aria-hidden="true" class="text-brand-200">→</span></a>
+                                        <a href="/services/mine" class="inline-flex items-center rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-extrabold text-neutral-900 transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700 hover:bg-brand-50">My Services (<?php echo (int) ($myServiceCount ?? 0); ?>)</a>
+                                        <a href="/bookings/provider" class="inline-flex items-center rounded-full border border-neutral-300 bg-white px-5 py-2.5 text-sm font-extrabold text-neutral-900 transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700 hover:bg-brand-50">Provider Schedule</a>
                                 <?php endif; ?>
                         </div>
                 </section>

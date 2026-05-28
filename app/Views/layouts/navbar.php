@@ -63,7 +63,7 @@ if ($isAuth) {
 } else {
 	$links = [
 		['label' => 'Home', 'href' => '/services#home', 'active' => $path === '/' || $path === '/services', 'section' => 'home'],
-		['label' => 'Marketplace', 'href' => '/services#marketplace', 'active' => false, 'section' => 'marketplace'],
+		['label' => 'Browse Skills', 'href' => '/services#browse', 'active' => false, 'section' => 'browse'],
 		['label' => 'About', 'href' => '/services#about', 'active' => false, 'section' => 'about'],
 		['label' => 'Workflow', 'href' => '/services#workflow', 'active' => false, 'section' => 'workflow'],
 		['label' => 'Stories', 'href' => '/services#stories', 'active' => false, 'section' => 'stories'],
@@ -100,7 +100,7 @@ $mobileToggleClasses = $isAuth
 <div class="<?php echo htmlspecialchars($navbarWrapClasses, ENT_QUOTES, 'UTF-8'); ?>">
 	<div class="<?php echo htmlspecialchars($navbarInnerClasses, ENT_QUOTES, 'UTF-8'); ?>">
 		<a href="<?php echo htmlspecialchars($brandHref, ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($brandClasses, ENT_QUOTES, 'UTF-8'); ?>" aria-label="SkillSwap home">
-			<span class="h-3.5 w-3.5 rounded-sm bg-gradient-to-br from-brand-500 to-brand-700" aria-hidden="true"></span>
+			<span class="<?php echo $isAuth ? 'h-9 w-9' : 'h-11 w-11'; ?> inline-flex flex-shrink-0 overflow-hidden rounded-full ring-2 ring-brand-200 bg-white shadow-sm" aria-hidden="true"><img src="/assets/images/skillswap-logo.png" alt="" class="h-full w-full object-cover"></span>
 			<span>SkillSwap</span>
 		</a>
 

@@ -56,26 +56,14 @@ $defaultAvatarImage = profile_image_url('');
 				</p>
 
 				<div class="mt-8 flex flex-wrap items-center gap-3">
-					<a href="#marketplace" class="inline-flex items-center justify-center gap-2 rounded-full bg-brand-500 px-7 py-3.5 text-xl font-extrabold text-white shadow-brand transition hover:bg-brand-600">Explore Skills <span aria-hidden="true">-></span></a>
+					<a href="#browse" class="inline-flex items-center justify-center gap-2 rounded-full bg-brand-500 px-7 py-3.5 text-base font-extrabold text-white shadow-brand transition hover:bg-brand-600">Browse Skills <span aria-hidden="true">→</span></a>
 					<?php if (auth_check()): ?>
-						<a href="/services" class="inline-flex items-center justify-center rounded-full border border-neutral-300 bg-white px-7 py-3.5 text-xl font-extrabold text-neutral-900 transition hover:border-brand-500 hover:text-brand-700">Start Booking</a>
+						<a href="/bookings/mine" class="inline-flex items-center justify-center rounded-full border border-neutral-300 bg-white px-7 py-3.5 text-base font-extrabold text-neutral-900 transition hover:border-brand-500 hover:text-brand-700">My Bookings</a>
 					<?php else: ?>
-						<a href="/register" class="inline-flex items-center justify-center rounded-full border border-neutral-300 bg-white px-7 py-3.5 text-xl font-extrabold text-neutral-900 transition hover:border-brand-500 hover:text-brand-700">Join SkillSwap</a>
+						<a href="/register" class="inline-flex items-center justify-center rounded-full border border-neutral-300 bg-white px-7 py-3.5 text-base font-extrabold text-neutral-900 transition hover:border-brand-500 hover:text-brand-700">Join SkillSwap</a>
 					<?php endif; ?>
-
-					<div class="inline-flex items-center gap-3 rounded-full border border-neutral-200 bg-white px-5 py-3.5 shadow-soft">
-						<span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-warning-400 text-neutral-900" aria-hidden="true">
-							<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5">
-								<path d="M7.5 4.5H5.25C4.01 4.5 3 5.51 3 6.75V18.75L7.5 15.75H13.5C14.74 15.75 15.75 14.74 15.75 13.5V11.25" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-								<path d="M18.75 3.75H12.75C11.51 3.75 10.5 4.76 10.5 6V9.75C10.5 10.99 11.51 12 12.75 12H15L18.75 14.25V12C19.99 12 21 10.99 21 9.75V6C21 4.76 19.99 3.75 18.75 3.75Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-							</svg>
-						</span>
-						<div>
-							<p class="text-sm font-bold uppercase tracking-wide text-neutral-600">Need Help</p>
-							<strong class="text-2xl font-extrabold leading-tight text-neutral-900">(02) 555-0112</strong>
-						</div>
-					</div>
 				</div>
+				<p class="mt-4 text-sm text-neutral-600">Need help? <a href="tel:025550112" class="font-bold text-neutral-800 transition hover:text-brand-700">(02) 555-0112</a></p>
 			</div>
 
 			<div class="relative min-h-[32rem] overflow-hidden rounded-[2.25rem] bg-gradient-to-br from-brand-900 via-brand-700 to-brandAccent-tintSoft p-6 shadow-card">
@@ -91,15 +79,15 @@ $defaultAvatarImage = profile_image_url('');
 	</div>
 </section>
 
-<section class="py-14 md:py-16" id="marketplace">
+<section class="py-14 md:py-16" id="browse">
 	<div class="mx-auto w-[min(1320px,calc(100%-2rem))] space-y-8">
 		<div class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
 			<div>
 				<span class="inline-flex items-center gap-3 text-xs font-extrabold uppercase tracking-[0.16em] text-brand-700">
 					<span class="h-px w-8 bg-brand-300"></span>
-					Latest Services
+					Skill Listings
 				</span>
-				<h2 class="mt-3 text-3xl font-heading font-extrabold text-neutral-950 md:text-4xl">Explore SkillSwap's Active Marketplace</h2>
+				<h2 class="mt-3 text-3xl font-heading font-extrabold text-neutral-950 md:text-4xl">Browse Available Skills</h2>
 			</div>
 
 			<?php if (auth_check()): ?>
@@ -251,16 +239,14 @@ $defaultAvatarImage = profile_image_url('');
 	</div>
 </section>
 
-<section class="py-14 md:py-16">
+<section class="py-14 md:py-16" id="stories">
 	<div class="mx-auto w-[min(1320px,calc(100%-2rem))] space-y-8">
-		<div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-			<div>
-				<span class="inline-flex items-center gap-3 text-xs font-extrabold uppercase tracking-[0.16em] text-brand-700">
-					<span class="h-px w-8 bg-brand-300"></span>
-					Testimonial
-				</span>
-				<h2 class="mt-3 text-3xl font-heading font-extrabold text-neutral-950 md:text-4xl">What SkillSwap Members Say</h2>
-			</div>
+		<div>
+			<span class="inline-flex items-center gap-3 text-xs font-extrabold uppercase tracking-[0.16em] text-brand-700">
+				<span class="h-px w-8 bg-brand-300"></span>
+				Member Stories
+			</span>
+			<h2 class="mt-3 text-3xl font-heading font-extrabold text-neutral-950 md:text-4xl">What SkillSwap Members Say</h2>
 		</div>
 
 		<div class="space-y-6 rounded-3xl border border-neutral-200 bg-white p-6 shadow-soft md:p-8">

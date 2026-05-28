@@ -6,7 +6,7 @@
 			<p class="font-semibold">&copy; SkillSwap <span data-current-year>2026</span> | In-system workspace</p>
 			<nav class="flex flex-wrap items-center gap-3">
 				<a href="/home" class="font-semibold transition hover:text-brand-700">Home</a>
-				<a href="/services" class="font-semibold transition hover:text-brand-700">Marketplace</a>
+				<a href="/services" class="font-semibold transition hover:text-brand-700">Browse Skills</a>
 				<a href="/services/mine" class="font-semibold transition hover:text-brand-700">My Services</a>
 				<a href="/bookings/mine" class="font-semibold transition hover:text-brand-700">My Bookings</a>
 				<a href="/dashboard" class="font-semibold transition hover:text-brand-700">Dashboard</a>
@@ -17,8 +17,8 @@
 	<footer class="mt-12 bg-gradient-to-br from-brand-900 via-brand-800 to-brand-600 text-brand-50" id="footer">
 		<div class="mx-auto w-[min(1320px,calc(100%-2rem))] py-10">
 			<div class="mb-8 flex flex-wrap items-center justify-between gap-4 border-b border-overlay-white18 pb-6">
-				<a href="/services" class="inline-flex items-center gap-2 text-2xl font-heading font-extrabold tracking-tight text-white">
-					<span class="h-3.5 w-3.5 rounded-sm bg-white" aria-hidden="true"></span>
+				<a href="/services" class="inline-flex items-center gap-3 text-2xl font-heading font-extrabold tracking-tight text-white">
+					<span class="inline-flex h-10 w-10 flex-shrink-0 overflow-hidden rounded-full ring-2 ring-white/40 bg-white/20" aria-hidden="true"><img src="/assets/images/skillswap-logo.png" alt="" class="h-full w-full object-cover"></span>
 					<span>SkillSwap</span>
 				</a>
 
@@ -53,7 +53,7 @@
 				</div>
 
 				<div>
-					<h4 class="text-base font-extrabold uppercase tracking-wide text-brand-100">Marketplace</h4>
+					<h4 class="text-base font-extrabold uppercase tracking-wide text-brand-100">Skills</h4>
 					<ul class="mt-3 grid gap-2 text-sm">
 						<li><a href="/services" class="font-semibold text-white transition hover:text-brand-100">Browse skills</a></li>
 						<li><a href="/services/create" class="font-semibold text-white transition hover:text-brand-100">Publish service</a></li>
@@ -64,10 +64,10 @@
 				</div>
 
 				<div>
-					<h4 class="text-base font-extrabold uppercase tracking-wide text-brand-100">Get Free Link</h4>
+					<h4 class="text-base font-extrabold uppercase tracking-wide text-brand-100">Explore</h4>
 					<ul class="mt-3 grid gap-2 text-sm">
 						<li><a href="/services#about" class="font-semibold text-white transition hover:text-brand-100">About SkillSwap</a></li>
-						<li><a href="/services#marketplace" class="font-semibold text-white transition hover:text-brand-100">Top services</a></li>
+						<li><a href="/services#browse" class="font-semibold text-white transition hover:text-brand-100">Top skills</a></li>
 						<li><a href="/services#workflow" class="font-semibold text-white transition hover:text-brand-100">How it works</a></li>
 						<li><a href="/services#stories" class="font-semibold text-white transition hover:text-brand-100">Community stories</a></li>
 						<li><a href="/dashboard" class="font-semibold text-white transition hover:text-brand-100">Member dashboard</a></li>

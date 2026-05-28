@@ -22,9 +22,18 @@ class ReviewController extends Controller
 
 	public function create(): void
 	{
+		$actor     = $this->user();
+		$bookingId = (int) $this->request->query('booking_id', 0);
+		$reviewModel = new \App\Models\Review();
+
+		$alreadyReviewed = is_array($actor) && $bookingId > 0
+			? $reviewModel->existsForBookingAndReviewer($bookingId, (int) $actor['id'])
+			: false;
+
 		$this->view('reviews.create', [
-			'title' => 'Write a Review',
-			'bookingId' => (int) $this->request->query('booking_id', 0),
+			'title'           => 'Write a Review',
+			'bookingId'       => $bookingId,
+			'alreadyReviewed' => $alreadyReviewed,
 		]);
 	}
 

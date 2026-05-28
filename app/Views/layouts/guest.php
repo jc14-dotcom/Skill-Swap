@@ -15,6 +15,11 @@ $appJsVersion = is_file($appJsPath) ? (string) filemtime($appJsPath) : '1';
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title><?php echo $pageTitle; ?></title>
+	<!-- Favicon -->
+	<link rel="icon" type="image/png" sizes="any" href="/assets/images/skillswap-logo.png">
+	<link rel="shortcut icon" href="/assets/images/skillswap-logo.png">
+	<link rel="apple-touch-icon" href="/assets/images/skillswap-logo.png">
+	<meta name="theme-color" content="#7a0000">
 	<link rel="preload" href="/assets/fonts/manrope-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 	<link rel="preload" href="/assets/fonts/manrope-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
 	<link rel="preload" href="/assets/fonts/sora-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>

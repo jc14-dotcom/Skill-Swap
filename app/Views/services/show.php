@@ -6,7 +6,7 @@
 			<div class="rounded-3xl border border-neutral-300 bg-surface-card px-6 py-12 text-center shadow-soft">
 				<h2 class="text-2xl font-heading font-extrabold text-neutral-950">Service not found.</h2>
 				<p class="mt-2 text-base text-neutral-700">The requested service may have been removed or is no longer available.</p>
-				<a href="/services" class="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-brand transition hover:bg-brand-600">Back to marketplace <span aria-hidden="true">-></span></a>
+				<a href="/services" class="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-brand transition hover:bg-brand-600">Browse Skills <span aria-hidden="true">→</span></a>
 			</div>
 		</div>
 	</section>
@@ -53,8 +53,7 @@
 					<?php if (auth_check()): ?>
 						<?php if (!$isOwnService): ?>
 							<a href="/bookings/create?service_id=<?php echo (int) $service['id']; ?>" class="<?php echo htmlspecialchars($primaryButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Book this service <span aria-hidden="true">-></span></a>
-							<a href="/services" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Back to marketplace</a>
-						<?php else: ?>
+						<a href="/services" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Browse Skills</a>
 							<?php if (($canManage ?? false) === true): ?>
 								<a href="/services/<?php echo (int) $service['id']; ?>/edit" class="<?php echo htmlspecialchars($primaryButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Edit service</a>
 								<form action="/services/<?php echo (int) $service['id']; ?>" method="post" onsubmit="return confirm('Delete this service?');">
@@ -63,11 +62,11 @@
 									<button type="submit" class="<?php echo htmlspecialchars($dangerButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Delete service</button>
 								</form>
 							<?php endif; ?>
-							<a href="/services" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Back to marketplace</a>
+							<a href="/services" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Browse Skills</a>
 						<?php endif; ?>
 					<?php else: ?>
 						<a href="/login" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Login to book</a>
-						<a href="/services" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Back to marketplace</a>
+						<a href="/services" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Browse Skills</a>
 					<?php endif; ?>
 				</div>
 			</header>

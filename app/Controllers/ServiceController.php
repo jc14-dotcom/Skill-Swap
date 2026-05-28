@@ -49,7 +49,7 @@ class ServiceController extends Controller
 			}
 
 			$this->view('services.marketplace', [
-				'title' => 'Marketplace',
+				'title' => 'Browse Skills',
 				'services' => $services,
 				'searchQuery' => $searchQuery,
 			]);

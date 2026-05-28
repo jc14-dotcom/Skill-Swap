@@ -17,7 +17,7 @@
 		<?php if (($bookings ?? []) === []): ?>
 			<div class="rounded-3xl border border-dashed border-neutral-300 bg-white px-6 py-10 text-center shadow-soft">
 				<h3 class="text-xl font-heading font-extrabold text-neutral-950">No bookings yet.</h3>
-				<p class="mt-2 text-sm text-neutral-600">Browse the marketplace and create your first booking request.</p>
+				<p class="mt-2 text-sm text-neutral-600">Browse available skills and create your first booking request.</p>
 			</div>
 		<?php else: ?>
 			<div class="overflow-x-auto rounded-3xl border border-neutral-200 bg-white shadow-soft">

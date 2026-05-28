@@ -19,7 +19,7 @@ $defaultAvatarImage = profile_image_url('');
 	<div class="mx-auto grid w-[min(1320px,calc(100%-2rem))] gap-6">
 		<div class="flex flex-wrap items-start justify-between gap-4">
 			<div>
-				<span class="mb-3 inline-flex text-xs font-extrabold uppercase tracking-[0.2em] text-brand-500">Marketplace</span>
+				<span class="mb-3 inline-flex text-xs font-extrabold uppercase tracking-[0.2em] text-brand-500">Skill Exchange</span>
 				<h1 class="max-w-[16ch] text-4xl font-extrabold leading-tight text-neutral-950 md:text-5xl">Find Skills To Learn Or Swap</h1>
 				<p class="mt-2 text-base text-neutral-700">Browse active offers, book what you need, or publish your own service.</p>
 			</div>

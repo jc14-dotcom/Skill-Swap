@@ -14,15 +14,20 @@ $appJsVersion = is_file($appJsPath) ? (string) filemtime($appJsPath) : '1';
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title><?php echo $pageTitle; ?></title>
+	<!-- Favicon -->
+	<link rel="icon" type="image/png" sizes="any" href="/assets/images/skillswap-logo.png">
+	<link rel="shortcut icon" href="/assets/images/skillswap-logo.png">
+	<link rel="apple-touch-icon" href="/assets/images/skillswap-logo.png">
+	<meta name="theme-color" content="#7a0000">
 	<link rel="preload" href="/assets/fonts/manrope-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 	<link rel="preload" href="/assets/fonts/manrope-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
 	<link rel="preload" href="/assets/fonts/sora-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
 	<link rel="stylesheet" href="/assets/css/app.css?v=<?php echo urlencode($appCssVersion); ?>">
 </head>
-<body class="min-h-screen bg-surface-page font-sans text-neutral-900 antialiased">
+<body class="flex min-h-screen flex-col bg-surface-page font-sans text-neutral-900 antialiased">
 	<?php include __DIR__ . '/navbar.php'; ?>
 
-	<main class="flex min-h-[calc(100vh-12rem)] flex-col py-6">
+	<main class="flex flex-1 flex-col py-6">
 		<div class="mx-auto w-[min(1320px,calc(100%-2rem))]">
 			<?php if (is_array($allErrors) && $allErrors !== []): ?>
 				<div class="mb-4">
