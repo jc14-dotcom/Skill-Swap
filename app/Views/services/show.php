@@ -11,13 +11,22 @@
 		</div>
 	</section>
 <?php else: ?>
-	<?php $providerImage = profile_image_url((string) ($service['provider_profile_picture'] ?? '')); ?>
+	<?php
+	$providerName = trim((string) ($service['provider_name'] ?? 'Unknown'));
+	if ($providerName === '') {
+		$providerName = 'Unknown';
+	}
+	$providerFallback = initials_avatar_data_uri($providerName);
+	$providerImage = profile_image_url((string) ($service['provider_profile_picture'] ?? ''));
+	if ($providerImage === '') {
+		$providerImage = $providerFallback;
+	}
+	?>
 	<?php $viewer = auth_user(); ?>
 	<?php $viewerId = is_array($viewer) ? (int) ($viewer['id'] ?? 0) : 0; ?>
 	<?php $isOwnService = $viewerId > 0 && $viewerId === (int) ($service['user_id'] ?? 0); ?>
 	<?php $providerBookings = is_array($providerBookings ?? null) ? $providerBookings : []; ?>
 	<?php $bookingActionRedirect = (string) ($bookingActionRedirect ?? '/services/' . (int) ($service['id'] ?? 0)); ?>
-	<?php $defaultAvatarImage = profile_image_url(''); ?>
 	<?php
 	$outlineButtonClasses = 'inline-flex items-center justify-center rounded-full border border-neutral-400 bg-white px-4 py-2 text-sm font-extrabold text-neutral-900 transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700';
 	$primaryButtonClasses = 'inline-flex items-center justify-center gap-2 rounded-full bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-brand transition hover:-translate-y-0.5 hover:bg-brand-600';
@@ -38,10 +47,10 @@
 						</div>
 						<div class="mt-4 flex flex-wrap items-center gap-4">
 							<div class="flex items-center gap-3">
-								<img src="<?php echo htmlspecialchars($providerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Unknown'), ENT_QUOTES, 'UTF-8'); ?> profile picture" class="h-11 w-11 rounded-full border-2 border-brand-200 bg-neutral-200 object-cover" data-fallback-src="<?php echo htmlspecialchars($defaultAvatarImage, ENT_QUOTES, 'UTF-8'); ?>">
+								<img src="<?php echo htmlspecialchars($providerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($providerName, ENT_QUOTES, 'UTF-8'); ?> profile picture" class="h-11 w-11 rounded-full border-2 border-brand-200 bg-neutral-200 object-cover" data-fallback-src="<?php echo htmlspecialchars($providerFallback, ENT_QUOTES, 'UTF-8'); ?>" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback-src');">
 								<div>
 									<p class="text-xs font-extrabold uppercase tracking-[0.2em] text-neutral-500">Provider</p>
-									<p class="text-sm font-semibold text-neutral-700"><?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Unknown'), ENT_QUOTES, 'UTF-8'); ?></p>
+									<p class="text-sm font-semibold text-neutral-700"><?php echo htmlspecialchars($providerName, ENT_QUOTES, 'UTF-8'); ?></p>
 								</div>
 							</div>
 						</div>
@@ -126,7 +135,15 @@
 												'completed' => 'border-brand-200 bg-brand-50 text-brand-700',
 												'cancelled' => 'border-danger-200 bg-danger-50 text-danger-700',
 											];
+											$seekerName = trim((string) ($booking['seeker_name'] ?? 'Seeker'));
+											if ($seekerName === '') {
+												$seekerName = 'Seeker';
+											}
+											$seekerFallback = initials_avatar_data_uri($seekerName);
 											$seekerImage = profile_image_url((string) ($booking['seeker_profile_picture'] ?? ''));
+											if ($seekerImage === '') {
+												$seekerImage = $seekerFallback;
+											}
 
 											if ($currentStatus === 'pending') {
 												$allowedStatuses = ['accepted', 'rejected'];
@@ -137,9 +154,9 @@
 											<tr class="align-top transition hover:bg-surface-page/70">
 												<td class="px-4 py-4">
 													<div class="flex items-center gap-3">
-														<img src="<?php echo htmlspecialchars($seekerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars((string) ($booking['seeker_name'] ?? 'Seeker'), ENT_QUOTES, 'UTF-8'); ?> profile picture" class="h-9 w-9 rounded-full border border-brand-200 bg-neutral-200 object-cover" data-fallback-src="<?php echo htmlspecialchars($defaultAvatarImage, ENT_QUOTES, 'UTF-8'); ?>">
+														<img src="<?php echo htmlspecialchars($seekerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($seekerName, ENT_QUOTES, 'UTF-8'); ?> profile picture" class="h-9 w-9 rounded-full border border-brand-200 bg-neutral-200 object-cover" data-fallback-src="<?php echo htmlspecialchars($seekerFallback, ENT_QUOTES, 'UTF-8'); ?>" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback-src');">
 														<div class="min-w-0">
-															<p class="text-sm font-semibold text-neutral-900"><?php echo htmlspecialchars((string) ($booking['seeker_name'] ?? 'Unknown'), ENT_QUOTES, 'UTF-8'); ?></p>
+															<p class="text-sm font-semibold text-neutral-900"><?php echo htmlspecialchars($seekerName, ENT_QUOTES, 'UTF-8'); ?></p>
 															<p class="text-xs text-neutral-500">Request #<?php echo (int) ($booking['id'] ?? 0); ?></p>
 														</div>
 													</div>

@@ -1,9 +1,16 @@
 <?php declare(strict_types=1); ?>
 
 <?php $profileData = is_array($profile ?? null) ? $profile : []; ?>
-<?php $profileImageUrl = profile_image_url((string) ($profileData['profile_picture'] ?? '')); ?>
-<?php $defaultProfileImageUrl = profile_image_url(''); ?>
-<?php $hasCustomProfileImage = $profileImageUrl !== $defaultProfileImageUrl; ?>
+<?php
+$profileName = trim((string) ($profileData['name'] ?? 'Member'));
+if ($profileName === '') {
+	$profileName = 'Member';
+}
+$profileImageRaw = profile_image_url((string) ($profileData['profile_picture'] ?? ''));
+$defaultProfileImageUrl = initials_avatar_data_uri($profileName);
+$profileImageUrl = $profileImageRaw !== '' ? $profileImageRaw : $defaultProfileImageUrl;
+$hasCustomProfileImage = $profileImageRaw !== '';
+?>
 
 <section class="pt-4 pb-14 md:pt-6 md:pb-16">
 	<div class="mx-auto w-[min(1320px,calc(100%-2rem))] space-y-8">
@@ -48,6 +55,7 @@
 									data-profile-photo-preview
 									data-default-src="<?php echo htmlspecialchars($defaultProfileImageUrl, ENT_QUOTES, 'UTF-8'); ?>"
 									data-fallback-src="<?php echo htmlspecialchars($defaultProfileImageUrl, ENT_QUOTES, 'UTF-8'); ?>"
+									onerror="this.onerror=null;this.src=this.getAttribute('data-fallback-src');"
 								>
 							</button>
 
@@ -93,7 +101,7 @@
 									<path d="M8.25 6.75L9.3 5.25H14.7L15.75 6.75H18.75C19.58 6.75 20.25 7.42 20.25 8.25V17.25C20.25 18.08 19.58 18.75 18.75 18.75H5.25C4.42 18.75 3.75 18.08 3.75 17.25V8.25C3.75 7.42 4.42 6.75 5.25 6.75H8.25Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
 									<circle cx="12" cy="12.75" r="3" stroke="currentColor" stroke-width="1.6"/>
 								</svg>
-								<span>Click the photo to upload a new one, or remove it to use the default avatar.</span>
+								<span>Click the photo to upload a new one, or remove it to use your initials.</span>
 							</p>
 						</div>
 					</div>

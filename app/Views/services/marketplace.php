@@ -12,7 +12,6 @@ $isSearching = $searchQuery !== '';
 $outlineButtonClasses = 'inline-flex items-center justify-center rounded-full border border-neutral-400 bg-white px-5 py-3 text-sm font-extrabold text-neutral-900 transition hover:-translate-y-0.5 hover:border-brand-500 hover:text-brand-700';
 $primaryButtonClasses = 'inline-flex items-center justify-center gap-2 rounded-full bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-brand transition hover:-translate-y-0.5 hover:bg-brand-600';
 $miniLinkClasses = 'inline-flex items-center gap-1 text-sm font-extrabold text-brand-600 transition hover:text-brand-700';
-$defaultAvatarImage = profile_image_url('');
 ?>
 
 <section class="pt-4 pb-14 md:pt-6 md:pb-16">
@@ -78,7 +77,15 @@ $defaultAvatarImage = profile_image_url('');
 			<div class="grid grid-cols-1 gap-6 xl:grid-cols-3" data-live-search-results <?php echo ($services ?? []) === [] ? 'hidden' : ''; ?>>
 				<?php foreach ($services as $index => $service): ?>
 					<?php
+					$providerName = trim((string) ($service['provider_name'] ?? 'Provider'));
+					if ($providerName === '') {
+						$providerName = 'Provider';
+					}
+					$providerFallback = initials_avatar_data_uri($providerName);
 					$providerImage = profile_image_url((string) ($service['provider_profile_picture'] ?? ''));
+					if ($providerImage === '') {
+						$providerImage = $providerFallback;
+					}
 					$isOwnService = $actorId > 0 && $actorId === (int) ($service['user_id'] ?? 0);
 					$serviceLink = '/services/' . (int) ($service['id'] ?? 0);
 					?>
@@ -86,8 +93,8 @@ $defaultAvatarImage = profile_image_url('');
 						<div>
 							<h3 class="text-[1.45rem] font-extrabold leading-tight text-neutral-950"><?php echo htmlspecialchars((string) ($service['title'] ?? 'Skill Service'), ENT_QUOTES, 'UTF-8'); ?></h3>
 							<div class="mt-1.5 flex items-center gap-3">
-								<img src="<?php echo htmlspecialchars($providerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Provider'), ENT_QUOTES, 'UTF-8'); ?> profile picture" class="h-9 w-9 rounded-full border-2 border-brand-200 bg-neutral-200 object-cover" data-fallback-src="<?php echo htmlspecialchars($defaultAvatarImage, ENT_QUOTES, 'UTF-8'); ?>">
-								<p class="text-sm font-bold text-neutral-700">By <?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Provider'), ENT_QUOTES, 'UTF-8'); ?></p>
+								<img src="<?php echo htmlspecialchars($providerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($providerName, ENT_QUOTES, 'UTF-8'); ?> profile picture" class="h-9 w-9 rounded-full border-2 border-brand-200 bg-neutral-200 object-cover" data-fallback-src="<?php echo htmlspecialchars($providerFallback, ENT_QUOTES, 'UTF-8'); ?>" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback-src');">
+								<p class="text-sm font-bold text-neutral-700">By <?php echo htmlspecialchars($providerName, ENT_QUOTES, 'UTF-8'); ?></p>
 							</div>
 						</div>
 

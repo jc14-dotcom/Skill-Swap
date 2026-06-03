@@ -35,7 +35,6 @@ $testimonialCards = [
 
 $serviceCount = count($allServices);
 $providerCount = count($providerMap);
-$defaultAvatarImage = profile_image_url('');
 ?>
 
 <section class="relative overflow-hidden bg-surface-page pt-4 pb-16 md:pt-6" id="home">
@@ -109,7 +108,15 @@ $defaultAvatarImage = profile_image_url('');
 					<?php
 					$title = (string) ($service['title'] ?? 'Skill Service');
 					$iconVariant = $index % 3;
+					$providerName = trim((string) ($service['provider_name'] ?? 'Provider'));
+					if ($providerName === '') {
+						$providerName = 'Provider';
+					}
+					$providerFallback = initials_avatar_data_uri($providerName);
 					$providerImage = profile_image_url((string) ($service['provider_profile_picture'] ?? ''));
+					if ($providerImage === '') {
+						$providerImage = $providerFallback;
+					}
 					$serviceLink = '/services/' . (int) ($service['id'] ?? 0);
 					?>
 					<article class="group grid min-h-[17rem] gap-4 rounded-3xl border border-neutral-300 bg-white p-6 shadow-soft transition hover:-translate-y-1 hover:border-brand-200 hover:bg-surface-rose hover:shadow-brand" data-card-link="<?php echo htmlspecialchars($serviceLink, ENT_QUOTES, 'UTF-8'); ?>" role="link" tabindex="0" aria-label="Open <?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?> details">
@@ -139,8 +146,8 @@ $defaultAvatarImage = profile_image_url('');
 						<div>
 							<h3 class="text-[1.45rem] font-extrabold leading-tight text-neutral-950"><?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?></h3>
 							<div class="mt-2 flex items-center gap-2">
-								<img src="<?php echo htmlspecialchars($providerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Provider'), ENT_QUOTES, 'UTF-8'); ?> profile picture" class="h-9 w-9 rounded-full border border-neutral-200 object-cover" data-fallback-src="<?php echo htmlspecialchars($defaultAvatarImage, ENT_QUOTES, 'UTF-8'); ?>">
-								<p class="text-sm font-semibold text-neutral-700">By <?php echo htmlspecialchars((string) ($service['provider_name'] ?? 'Provider'), ENT_QUOTES, 'UTF-8'); ?></p>
+								<img src="<?php echo htmlspecialchars($providerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($providerName, ENT_QUOTES, 'UTF-8'); ?> profile picture" class="h-9 w-9 rounded-full border border-neutral-200 object-cover" data-fallback-src="<?php echo htmlspecialchars($providerFallback, ENT_QUOTES, 'UTF-8'); ?>" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback-src');">
+								<p class="text-sm font-semibold text-neutral-700">By <?php echo htmlspecialchars($providerName, ENT_QUOTES, 'UTF-8'); ?></p>
 							</div>
 						</div>
 
@@ -252,12 +259,19 @@ $defaultAvatarImage = profile_image_url('');
 		<div class="space-y-6 rounded-3xl border border-neutral-200 bg-white p-6 shadow-soft md:p-8">
 			<div class="grid gap-4 lg:grid-cols-2">
 				<?php foreach ($testimonialCards as $quote): ?>
+					<?php
+					$quoteName = trim((string) ($quote['name'] ?? 'Member'));
+					if ($quoteName === '') {
+						$quoteName = 'Member';
+					}
+					$quoteFallback = initials_avatar_data_uri($quoteName);
+					?>
 					<article class="rounded-3xl border border-neutral-200 bg-surface-page p-5">
 						<p class="text-sm leading-8 text-neutral-700"><?php echo htmlspecialchars((string) $quote['quote'], ENT_QUOTES, 'UTF-8'); ?></p>
 						<div class="mt-4 flex items-center gap-3">
-							<img src="<?php echo htmlspecialchars($defaultAvatarImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars((string) $quote['name'], ENT_QUOTES, 'UTF-8'); ?> photo" class="h-10 w-10 rounded-full border border-neutral-200 object-cover" data-fallback-src="<?php echo htmlspecialchars($defaultAvatarImage, ENT_QUOTES, 'UTF-8'); ?>">
+							<img src="<?php echo htmlspecialchars($quoteFallback, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($quoteName, ENT_QUOTES, 'UTF-8'); ?> photo" class="h-10 w-10 rounded-full border border-neutral-200 object-cover" data-fallback-src="<?php echo htmlspecialchars($quoteFallback, ENT_QUOTES, 'UTF-8'); ?>" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback-src');">
 							<div>
-								<strong class="block text-sm font-extrabold text-neutral-900"><?php echo htmlspecialchars((string) $quote['name'], ENT_QUOTES, 'UTF-8'); ?></strong>
+								<strong class="block text-sm font-extrabold text-neutral-900"><?php echo htmlspecialchars($quoteName, ENT_QUOTES, 'UTF-8'); ?></strong>
 								<span class="text-xs font-semibold uppercase tracking-wide text-neutral-500"><?php echo htmlspecialchars((string) $quote['role'], ENT_QUOTES, 'UTF-8'); ?></span>
 							</div>
 						</div>

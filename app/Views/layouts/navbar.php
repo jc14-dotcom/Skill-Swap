@@ -100,7 +100,7 @@ $mobileToggleClasses = $isAuth
 <div class="<?php echo htmlspecialchars($navbarWrapClasses, ENT_QUOTES, 'UTF-8'); ?>">
 	<div class="<?php echo htmlspecialchars($navbarInnerClasses, ENT_QUOTES, 'UTF-8'); ?>">
 		<a href="<?php echo htmlspecialchars($brandHref, ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($brandClasses, ENT_QUOTES, 'UTF-8'); ?>" aria-label="SkillSwap home">
-			<span class="<?php echo $isAuth ? 'h-9 w-9' : 'h-11 w-11'; ?> inline-flex flex-shrink-0 overflow-hidden rounded-full ring-2 ring-brand-200 bg-white shadow-sm" aria-hidden="true"><img src="/assets/images/skillswap-logo.png" alt="" class="h-full w-full object-cover"></span>
+			<img src="/assets/images/skillswap-logo.png" alt="" class="<?php echo $isAuth ? 'h-9 w-9' : 'h-11 w-11'; ?> flex-shrink-0 object-contain" aria-hidden="true">
 			<span>SkillSwap</span>
 		</a>
 

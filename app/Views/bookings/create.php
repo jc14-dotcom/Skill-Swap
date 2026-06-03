@@ -3,13 +3,22 @@
 <?php
 $selectedService = is_array($service ?? null) ? $service : null;
 $selectedServiceId = is_array($selectedService) ? (int) ($selectedService['id'] ?? 0) : 0;
-$defaultAvatarImage = profile_image_url('');
 ?>
 
 <section class="pt-4 pb-14 md:pt-6 md:pb-16">
 	<div class="mx-auto w-[min(1320px,calc(100%-2rem))] space-y-8">
 		<?php if (is_array($selectedService)): ?>
-			<?php $providerImage = profile_image_url((string) ($selectedService['provider_profile_picture'] ?? '')); ?>
+			<?php
+			$providerName = trim((string) ($selectedService['provider_name'] ?? 'Provider'));
+			if ($providerName === '') {
+				$providerName = 'Provider';
+			}
+			$providerFallback = initials_avatar_data_uri($providerName);
+			$providerImage = profile_image_url((string) ($selectedService['provider_profile_picture'] ?? ''));
+			if ($providerImage === '') {
+				$providerImage = $providerFallback;
+			}
+			?>
 
 			<div class="grid gap-6 lg:grid-cols-[minmax(0,1fr),22rem]">
 				<form action="/bookings" method="post" class="space-y-5 rounded-3xl border border-neutral-200 bg-white p-6 shadow-soft md:p-8">
@@ -28,8 +37,8 @@ $defaultAvatarImage = profile_image_url('');
 					<div class="rounded-3xl border border-neutral-200 bg-surface-page p-5">
 						<h2 class="text-2xl font-heading font-extrabold text-neutral-950"><?php echo htmlspecialchars((string) ($selectedService['title'] ?? 'Skill Service'), ENT_QUOTES, 'UTF-8'); ?></h2>
 						<div class="mt-3 flex items-center gap-3">
-							<img src="<?php echo htmlspecialchars($providerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars((string) ($selectedService['provider_name'] ?? 'Provider'), ENT_QUOTES, 'UTF-8'); ?> profile picture" class="h-10 w-10 rounded-full border border-neutral-200 object-cover" data-fallback-src="<?php echo htmlspecialchars($defaultAvatarImage, ENT_QUOTES, 'UTF-8'); ?>">
-							<p class="text-sm font-semibold text-neutral-700">By <?php echo htmlspecialchars((string) ($selectedService['provider_name'] ?? 'Provider'), ENT_QUOTES, 'UTF-8'); ?></p>
+							<img src="<?php echo htmlspecialchars($providerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($providerName, ENT_QUOTES, 'UTF-8'); ?> profile picture" class="h-10 w-10 rounded-full border border-neutral-200 object-cover" data-fallback-src="<?php echo htmlspecialchars($providerFallback, ENT_QUOTES, 'UTF-8'); ?>" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback-src');">
+							<p class="text-sm font-semibold text-neutral-700">By <?php echo htmlspecialchars($providerName, ENT_QUOTES, 'UTF-8'); ?></p>
 						</div>
 
 						<p class="mt-4 text-sm leading-7 text-neutral-700"><?php echo htmlspecialchars((string) ($selectedService['description'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>

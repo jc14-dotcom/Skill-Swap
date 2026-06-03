@@ -882,7 +882,7 @@
 					return;
 				}
 
-				if (!window.confirm('Remove your profile photo and switch to the default avatar?')) {
+				if (!window.confirm('Remove your profile photo and switch to your initials?')) {
 					return;
 				}
 
@@ -1141,11 +1141,53 @@
 			setOfferLinkLabel('Offer this skill');
 		}
 
+		function toInitials(name) {
+			var value = String(name || '').trim();
+			if (value === '') {
+				return 'U';
+			}
+
+			var parts = value.split(/\s+/);
+			var initials = '';
+			for (var i = 0; i < parts.length; i += 1) {
+				var clean = parts[i].replace(/[^A-Za-z0-9]/g, '');
+				if (clean === '') {
+					continue;
+				}
+				initials += clean.charAt(0).toUpperCase();
+				if (initials.length >= 2) {
+					break;
+				}
+			}
+
+			if (initials === '') {
+				var compact = value.replace(/[^A-Za-z0-9]/g, '');
+				initials = compact.substring(0, 2).toUpperCase();
+			}
+
+			return initials !== '' ? initials : 'U';
+		}
+
+		function initialsAvatarDataUri(name) {
+			var initials = toInitials(name);
+			var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'
+				+ '<rect width="100" height="100" rx="50" fill="#F5E8E8"/>'
+				+ '<text x="50" y="52" text-anchor="middle" font-family="Manrope, Arial, sans-serif" font-size="40" font-weight="700" fill="#7A0000" dominant-baseline="middle">'
+				+ initials
+				+ '</text>'
+				+ '</svg>';
+			return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+		}
+
 		function createServiceCard(service, cardIndex) {
 			var detailUrl = String(service.detail_url || '/services');
 			var title = String(service.title || 'Skill Service');
 			var providerName = String(service.provider_name || 'Provider');
-			var providerImageUrl = String(service.provider_image_url || '/assets/images/default-avatar.png');
+			var providerImageUrl = String(service.provider_image_url || '');
+			var providerFallback = initialsAvatarDataUri(providerName);
+			if (providerImageUrl === '') {
+				providerImageUrl = providerFallback;
+			}
 			var description = String(service.description || '');
 			var priceLabel = String(service.price_label || 'PHP 0.00');
 			var isOwnService = service.is_own_service === true;
@@ -1168,7 +1210,7 @@
 
 			var avatar = document.createElement('img');
 			avatar.src = providerImageUrl;
-			avatar.setAttribute('data-fallback-src', '/assets/images/default-avatar.png');
+			avatar.setAttribute('data-fallback-src', providerFallback);
 			avatar.alt = providerName + ' profile picture';
 			avatar.className = 'h-9 w-9 rounded-full border-2 border-brand-200 bg-neutral-200 object-cover';
 			providerRow.appendChild(avatar);
