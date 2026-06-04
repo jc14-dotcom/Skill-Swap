@@ -112,6 +112,9 @@ $providerCount = count($providerMap);
 					if ($providerName === '') {
 						$providerName = 'Provider';
 					}
+					$boostExpiresAt = (string) ($service['boost_expires_at'] ?? '');
+					$boostActive = ((int) ($service['is_boosted'] ?? 0) === 1)
+						&& ($boostExpiresAt !== '' && strtotime($boostExpiresAt) > time());
 					$providerFallback = initials_avatar_data_uri($providerName);
 					$providerImage = profile_image_url((string) ($service['provider_profile_picture'] ?? ''));
 					if ($providerImage === '') {
@@ -144,6 +147,9 @@ $providerCount = count($providerMap);
 							<?php endif; ?>
 						</div>
 						<div>
+							<?php if ($boostActive): ?>
+								<span class="mb-2 inline-flex w-fit items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-amber-800">Boosted</span>
+							<?php endif; ?>
 							<h3 class="text-[1.45rem] font-extrabold leading-tight text-neutral-950"><?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?></h3>
 							<div class="mt-2 flex items-center gap-2">
 								<img src="<?php echo htmlspecialchars($providerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($providerName, ENT_QUOTES, 'UTF-8'); ?> profile picture" class="h-9 w-9 rounded-full border border-neutral-200 object-cover" data-fallback-src="<?php echo htmlspecialchars($providerFallback, ENT_QUOTES, 'UTF-8'); ?>" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback-src');">

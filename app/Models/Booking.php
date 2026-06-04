@@ -17,6 +17,11 @@ class Booking extends Model
 			'seeker_id' => $payload['seeker_id'],
 			'provider_id' => $payload['provider_id'],
 			'status' => $payload['status'] ?? 'pending',
+			'service_price' => $payload['service_price'] ?? 0,
+			'payment_status' => $payload['payment_status'] ?? 'unpaid',
+			'payment_method' => $payload['payment_method'] ?? null,
+			'payment_reference' => $payload['payment_reference'] ?? null,
+			'paid_at' => $payload['paid_at'] ?? null,
 			'message' => $payload['message'] ?? null,
 			'scheduled_at' => $payload['scheduled_at'] ?? null,
 			'created_at' => date('Y-m-d H:i:s'),
@@ -26,7 +31,7 @@ class Booking extends Model
 
 	public function findDetailed(int $bookingId): ?array
 	{
-		$sql = 'SELECT b.*, s.title AS service_title,
+		$sql = 'SELECT b.*, s.title AS service_title, s.price AS service_current_price,
 					   seeker.name AS seeker_name,
 					   provider.name AS provider_name
 				FROM bookings b
@@ -84,6 +89,17 @@ class Booking extends Model
 	{
 		return $this->updateById($bookingId, [
 			'status' => $status,
+			'updated_at' => date('Y-m-d H:i:s'),
+		]);
+	}
+
+	public function updatePayment(int $bookingId, array $payload): bool
+	{
+		return $this->updateById($bookingId, [
+			'payment_status' => $payload['payment_status'] ?? 'unpaid',
+			'payment_method' => $payload['payment_method'] ?? null,
+			'payment_reference' => $payload['payment_reference'] ?? null,
+			'paid_at' => $payload['paid_at'] ?? null,
 			'updated_at' => date('Y-m-d H:i:s'),
 		]);
 	}

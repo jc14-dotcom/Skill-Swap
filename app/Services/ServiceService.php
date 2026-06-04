@@ -23,6 +23,37 @@ class ServiceService
 		return $this->services->listPublic($searchQuery);
 	}
 
+	public function boostPlans(): array
+	{
+		return [
+			3 => [
+				'days' => 3,
+				'price' => 50.00,
+				'label' => '3 days',
+			],
+			7 => [
+				'days' => 7,
+				'price' => 100.00,
+				'label' => '7 days',
+			],
+			15 => [
+				'days' => 15,
+				'price' => 200.00,
+				'label' => '15 days',
+			],
+		];
+	}
+
+	public function getBoostPlan(int $days): array
+	{
+		$plans = $this->boostPlans();
+		if (!isset($plans[$days])) {
+			throw new \RuntimeException('Selected boost plan is not available.');
+		}
+
+		return $plans[$days];
+	}
+
 	public function findService(int $id): ?array
 	{
 		return $this->services->findWithProvider($id);
@@ -105,5 +136,31 @@ class ServiceService
 		}
 
 		return true;
+	}
+
+	public function boostService(array $actor, int $serviceId, int $days): array
+	{
+		$service = $this->findManagedService($actor, $serviceId);
+		$plan = $this->getBoostPlan($days);
+
+		$now = new \DateTimeImmutable('now');
+		$expiresAt = $now->modify('+' . (int) $plan['days'] . ' days');
+
+		$updated = $this->services->updateBoost($serviceId, [
+			'is_boosted' => 1,
+			'boost_started_at' => $now->format('Y-m-d H:i:s'),
+			'boost_expires_at' => $expiresAt->format('Y-m-d H:i:s'),
+		]);
+
+		if (!$updated) {
+			throw new \RuntimeException('Boost update failed.');
+		}
+
+		$service = $this->services->findWithProvider($serviceId);
+		if (!is_array($service)) {
+			throw new \RuntimeException('Service not found after boost update.');
+		}
+
+		return $service;
 	}
 }

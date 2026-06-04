@@ -25,6 +25,7 @@
 							<th class="px-4 py-3">Seeker</th>
 							<th class="px-4 py-3">Preferred Schedule</th>
 							<th class="px-4 py-3">Status</th>
+							<th class="px-4 py-3">Payment</th>
 							<th class="px-4 py-3">Customer Note</th>
 							<th class="px-4 py-3 text-right">Action</th>
 						</tr>
@@ -33,6 +34,7 @@
 						<?php foreach ($bookings as $booking): ?>
 							<?php
 							$currentStatus = strtolower((string) ($booking['status'] ?? 'pending'));
+							$paymentStatus = strtolower((string) ($booking['payment_status'] ?? 'unpaid'));
 							$preferredSchedule = format_datetime((string) ($booking['scheduled_at'] ?? ''), 'M d, Y h:i A');
 							$bookingMessage = trim((string) ($booking['message'] ?? ''));
 							$allowedStatuses = [];
@@ -54,7 +56,9 @@
 							if ($currentStatus === 'pending') {
 								$allowedStatuses = ['accepted', 'rejected'];
 							} elseif ($currentStatus === 'accepted') {
-								$allowedStatuses = ['completed', 'cancelled'];
+								$allowedStatuses = $paymentStatus === 'paid'
+									? ['completed', 'cancelled']
+									: ['cancelled'];
 							}
 							?>
 							<tr class="align-top transition hover:bg-surface-page/70">
@@ -63,6 +67,13 @@
 								<td class="px-4 py-4 whitespace-nowrap text-neutral-700"><?php echo htmlspecialchars($preferredSchedule, ENT_QUOTES, 'UTF-8'); ?></td>
 								<td class="px-4 py-4">
 									<span class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wide <?php echo htmlspecialchars((string) ($statusChipClasses[$currentStatus] ?? $statusChipClasses['pending']), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars((string) ($statusLabels[$currentStatus] ?? ucfirst($currentStatus)), ENT_QUOTES, 'UTF-8'); ?></span>
+								</td>
+								<td class="px-4 py-4">
+									<?php if ($paymentStatus === 'paid'): ?>
+										<span class="inline-flex items-center rounded-full border border-success-200 bg-success-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-success-700">Paid</span>
+									<?php else: ?>
+										<span class="inline-flex items-center rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-neutral-600">Unpaid</span>
+									<?php endif; ?>
 								</td>
 								<td class="px-4 py-4 text-neutral-700">
 									<span class="block max-w-[22rem] break-words leading-6"><?php echo htmlspecialchars($bookingMessage !== '' ? $bookingMessage : '—', ENT_QUOTES, 'UTF-8'); ?></span>

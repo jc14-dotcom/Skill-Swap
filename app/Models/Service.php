@@ -31,7 +31,7 @@ class Service extends Model
 			$params['keyword_provider'] = '%' . $keyword . '%';
 		}
 
-		$sql .= ' ORDER BY s.id DESC';
+		$sql .= ' ORDER BY (s.is_boosted = 1 AND (s.boost_expires_at IS NULL OR s.boost_expires_at >= NOW())) DESC, s.id DESC';
 
 		return $this->query($sql, $params)->fetchAll();
 	}
@@ -50,7 +50,7 @@ class Service extends Model
 
 	public function listByProvider(int $providerId): array
 	{
-		return $this->where('user_id', $providerId, 'id DESC');
+		return $this->where('user_id', $providerId, 'is_boosted DESC, boost_expires_at DESC, id DESC');
 	}
 
 	public function createService(array $payload): int
@@ -73,6 +73,16 @@ class Service extends Model
 			'description' => $payload['description'],
 			'price' => $payload['price'],
 			'status' => $payload['status'],
+			'updated_at' => date('Y-m-d H:i:s'),
+		]);
+	}
+
+	public function updateBoost(int $serviceId, array $payload): bool
+	{
+		return $this->updateById($serviceId, [
+			'is_boosted' => (int) ($payload['is_boosted'] ?? 0),
+			'boost_started_at' => $payload['boost_started_at'] ?? null,
+			'boost_expires_at' => $payload['boost_expires_at'] ?? null,
 			'updated_at' => date('Y-m-d H:i:s'),
 		]);
 	}

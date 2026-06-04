@@ -1191,6 +1191,7 @@
 			var description = String(service.description || '');
 			var priceLabel = String(service.price_label || 'PHP 0.00');
 			var isOwnService = service.is_own_service === true;
+			var isBoosted = service.is_boosted === true;
 
 			var article = document.createElement('article');
 			article.className = 'group grid min-h-[17rem] gap-4 rounded-3xl border border-neutral-300 bg-white p-6 shadow-soft transition hover:-translate-y-1 hover:border-brand-200 hover:bg-surface-rose hover:shadow-brand';
@@ -1200,6 +1201,13 @@
 			article.setAttribute('aria-label', 'Open ' + title + ' details');
 
 			var topBlock = document.createElement('div');
+			if (isBoosted) {
+				var boostBadge = document.createElement('span');
+				boostBadge.className = 'mb-2 inline-flex w-fit items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-amber-800';
+				boostBadge.textContent = 'Boosted';
+				topBlock.appendChild(boostBadge);
+			}
+
 			var heading = document.createElement('h3');
 			heading.className = 'text-[1.45rem] font-extrabold leading-tight text-neutral-950';
 			heading.textContent = title;

@@ -8,6 +8,7 @@ use App\Models\Booking;
 use App\Models\BookingStatusHistory;
 use App\Models\Service;
 use App\Policies\BookingPolicy;
+use App\Services\RevenueService;
 use Core\App;
 use Core\Database;
 
@@ -18,6 +19,7 @@ class BookingService
 	private Service $services;
 	private BookingPolicy $policy;
 	private NotificationService $notifications;
+	private RevenueService $revenue;
 
 	public function __construct()
 	{
@@ -26,6 +28,7 @@ class BookingService
 		$this->services = new Service();
 		$this->policy = new BookingPolicy();
 		$this->notifications = new NotificationService();
+		$this->revenue = new RevenueService();
 	}
 
 	public function createBooking(array $actor, array $payload): array
@@ -47,6 +50,8 @@ class BookingService
 				'seeker_id' => (int) $actor['id'],
 				'provider_id' => (int) $service['user_id'],
 				'status' => 'pending',
+				'service_price' => (float) ($service['price'] ?? 0),
+				'payment_status' => 'unpaid',
 				'message' => $payload['message'] ?? null,
 				'scheduled_at' => $payload['scheduled_at'] ?? null,
 			]);
@@ -131,6 +136,13 @@ class BookingService
 			throw new \RuntimeException('Booking update failed.');
 		}
 
+		if ($newStatus === 'completed') {
+			$paymentStatus = strtolower((string) ($updated['payment_status'] ?? 'unpaid'));
+			if ($paymentStatus === 'paid') {
+				$this->revenue->recordCommission($updated);
+			}
+		}
+
 		App::logger()->info('booking.status.transitioned', [
 			'booking_id' => (int) $updated['id'],
 			'from_status' => $currentStatus,
@@ -160,5 +172,97 @@ class BookingService
 	public function findBooking(int $bookingId): ?array
 	{
 		return $this->bookings->findDetailed($bookingId);
+	}
+
+	public function getBookingForActor(array $actor, int $bookingId): array
+	{
+		$booking = $this->bookings->findDetailed($bookingId);
+		if (!is_array($booking)) {
+			throw new \RuntimeException('Booking not found.');
+		}
+
+		if (!$this->policy->canView($actor, $booking)) {
+			throw new \RuntimeException('You are not allowed to view this booking.');
+		}
+
+		return $booking;
+	}
+
+	public function getBookingForPayment(array $actor, int $bookingId): array
+	{
+		$booking = $this->bookings->findDetailed($bookingId);
+		if (!is_array($booking)) {
+			throw new \RuntimeException('Booking not found.');
+		}
+
+		if (!$this->policy->canView($actor, $booking)) {
+			throw new \RuntimeException('You are not allowed to view this booking.');
+		}
+
+		$actorRole = (string) ($actor['role'] ?? '');
+		$actorId = (int) ($actor['id'] ?? 0);
+		if ($actorRole !== 'admin' && $actorId !== (int) ($booking['seeker_id'] ?? 0)) {
+			throw new \RuntimeException('Only the seeker can make payments.');
+		}
+
+		if ((string) ($booking['status'] ?? '') !== 'accepted') {
+			throw new \RuntimeException('Payment is available once the provider accepts your booking.');
+		}
+
+		return $booking;
+	}
+
+	public function markPaid(array $booking, string $paymentMethod): array
+	{
+		$bookingId = (int) ($booking['id'] ?? 0);
+		if ($bookingId <= 0) {
+			throw new \RuntimeException('Invalid booking.');
+		}
+
+		$paymentStatus = strtolower((string) ($booking['payment_status'] ?? 'unpaid'));
+		if ($paymentStatus === 'paid') {
+			return $booking;
+		}
+
+		$reference = 'PAY-' . strtoupper(bin2hex(random_bytes(4)));
+		$updated = $this->bookings->updatePayment($bookingId, [
+			'payment_status' => 'paid',
+			'payment_method' => $paymentMethod,
+			'payment_reference' => $reference,
+			'paid_at' => date('Y-m-d H:i:s'),
+		]);
+
+		if (!$updated) {
+			throw new \RuntimeException('Payment update failed.');
+		}
+
+		$reloaded = $this->bookings->findDetailed($bookingId);
+		if (!is_array($reloaded)) {
+			throw new \RuntimeException('Payment update could not be verified.');
+		}
+
+		return $reloaded;
+	}
+
+	public function buildPaymentBreakdown(array $booking, float $commissionRate = 0.10): array
+	{
+		$price = (float) ($booking['service_price'] ?? 0);
+		if ($price <= 0) {
+			$price = (float) ($booking['service_current_price'] ?? 0);
+		}
+
+		if ($price < 0) {
+			$price = 0;
+		}
+
+		$commission = round($price * $commissionRate, 2);
+		$providerNet = round($price - $commission, 2);
+
+		return [
+			'price' => $price,
+			'commission' => $commission,
+			'provider_net' => $providerNet,
+			'commission_rate' => $commissionRate,
+		];
 	}
 }

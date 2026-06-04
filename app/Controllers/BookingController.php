@@ -130,6 +130,101 @@ class BookingController extends Controller
 		]);
 	}
 
+	public function checkout(string $id): void
+	{
+		$actor = $this->user();
+		if (!is_array($actor)) {
+			$this->redirect('/login');
+			return;
+		}
+
+		try {
+			$booking = $this->bookings->getBookingForPayment($actor, (int) $id);
+			$breakdown = $this->bookings->buildPaymentBreakdown($booking);
+			$this->view('bookings.checkout', [
+				'title' => 'Checkout',
+				'booking' => $booking,
+				'breakdown' => $breakdown,
+			]);
+		} catch (\Throwable $exception) {
+			Session::flash('errors', ['payment' => [$exception->getMessage()]]);
+			$this->redirect('/bookings/mine');
+		}
+	}
+
+	public function pay(string $id): void
+	{
+		$actor = $this->user();
+		if (!is_array($actor)) {
+			$this->redirect('/login');
+			return;
+		}
+
+		[$valid, $errors, $clean] = $this->validate($this->request->all(), [
+			'payment_method' => 'required|in:gcash,paymaya,paypal',
+		]);
+
+		if (!$valid) {
+			$this->redirect('/bookings/' . (int) $id . '/checkout');
+			return;
+		}
+
+		try {
+			$booking = $this->bookings->getBookingForPayment($actor, (int) $id);
+			$booking = $this->bookings->markPaid($booking, (string) $clean['payment_method']);
+			$breakdown = $this->bookings->buildPaymentBreakdown($booking);
+			Session::flash('payment_receipt', [
+				'booking_id' => (int) ($booking['id'] ?? 0),
+				'service_title' => (string) ($booking['service_title'] ?? 'Service'),
+				'provider_name' => (string) ($booking['provider_name'] ?? 'Provider'),
+				'payment_method' => (string) $clean['payment_method'],
+				'payment_reference' => (string) ($booking['payment_reference'] ?? ''),
+				'paid_at' => (string) ($booking['paid_at'] ?? ''),
+				'breakdown' => $breakdown,
+			]);
+			$this->redirect('/bookings/' . (int) $id . '/payment-success');
+		} catch (\Throwable $exception) {
+			Session::flash('errors', ['payment' => [$exception->getMessage()]]);
+			$this->redirect('/bookings/' . (int) $id . '/checkout');
+		}
+	}
+
+	public function paymentSuccess(string $id): void
+	{
+		$actor = $this->user();
+		if (!is_array($actor)) {
+			$this->redirect('/login');
+			return;
+		}
+
+		$receipt = Session::get('payment_receipt');
+		try {
+			$booking = $this->bookings->getBookingForActor($actor, (int) $id);
+
+			if (!is_array($receipt)) {
+				$breakdown = $this->bookings->buildPaymentBreakdown($booking);
+				$receipt = [
+					'booking_id' => (int) ($booking['id'] ?? 0),
+					'service_title' => (string) ($booking['service_title'] ?? 'Service'),
+					'provider_name' => (string) ($booking['provider_name'] ?? 'Provider'),
+					'payment_method' => (string) ($booking['payment_method'] ?? 'Demo'),
+					'payment_reference' => (string) ($booking['payment_reference'] ?? 'PAY-DEMO'),
+					'paid_at' => (string) ($booking['paid_at'] ?? ''),
+					'breakdown' => $breakdown,
+				];
+			}
+
+			$this->view('bookings.payment-success', [
+				'title' => 'Payment Successful',
+				'booking' => $booking,
+				'receipt' => $receipt,
+			]);
+		} catch (\Throwable $exception) {
+			Session::flash('errors', ['payment' => [$exception->getMessage()]]);
+			$this->redirect('/bookings/mine');
+		}
+	}
+
 	public function updateStatus(string $id): void
 	{
 		$actor = $this->user();

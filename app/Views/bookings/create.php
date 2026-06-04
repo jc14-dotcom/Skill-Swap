@@ -59,6 +59,8 @@ $selectedServiceId = is_array($selectedService) ? (int) ($selectedService['id'] 
 						<p class="mt-2 text-sm leading-7 text-neutral-700">Once submitted, your request appears in the provider queue for approval or rejection.</p>
 						<ul class="mt-4 grid gap-2 text-sm text-neutral-700">
 							<li>Watch status updates in My Bookings.</li>
+							<li>Payments are handled inside SkillSwap once accepted.</li>
+							<li>Platform fee (10%) is included automatically.</li>
 							<li>Use Messages after provider responds.</li>
 							<li>Leave a review after completion.</li>
 						</ul>

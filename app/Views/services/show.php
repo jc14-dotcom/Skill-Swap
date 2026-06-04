@@ -16,6 +16,10 @@
 	if ($providerName === '') {
 		$providerName = 'Unknown';
 	}
+	$boostExpiresAt = (string) ($service['boost_expires_at'] ?? '');
+	$boostActive = ((int) ($service['is_boosted'] ?? 0) === 1)
+		&& ($boostExpiresAt !== '' && strtotime($boostExpiresAt) > time());
+	$boostExpiryLabel = $boostActive ? format_datetime($boostExpiresAt, 'M d, Y h:i A') : '';
 	$providerFallback = initials_avatar_data_uri($providerName);
 	$providerImage = profile_image_url((string) ($service['provider_profile_picture'] ?? ''));
 	if ($providerImage === '') {
@@ -42,9 +46,15 @@
 						<h1 class="mt-2 text-4xl font-heading font-extrabold leading-tight text-neutral-950 md:text-5xl"><?php echo htmlspecialchars((string) $service['title'], ENT_QUOTES, 'UTF-8'); ?></h1>
 						<div class="mt-3 flex flex-wrap items-center gap-3">
 							<span class="inline-flex items-center rounded-full border border-neutral-200 bg-white px-3 py-1 text-xs font-bold uppercase tracking-wide text-neutral-600">Status: <?php echo htmlspecialchars((string) ($service['status'] ?? 'active'), ENT_QUOTES, 'UTF-8'); ?></span>
+							<?php if ($boostActive): ?>
+								<span class="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-amber-800">Boosted</span>
+							<?php endif; ?>
 							<span class="text-xs font-extrabold uppercase tracking-[0.16em] text-neutral-500">Price</span>
 							<span class="text-base font-extrabold text-neutral-900"><?php echo htmlspecialchars(format_currency((float) ($service['price'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?></span>
 						</div>
+						<?php if ($boostActive && $boostExpiryLabel !== ''): ?>
+							<p class="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">Boosted until <?php echo htmlspecialchars($boostExpiryLabel, ENT_QUOTES, 'UTF-8'); ?></p>
+						<?php endif; ?>
 						<div class="mt-4 flex flex-wrap items-center gap-4">
 							<div class="flex items-center gap-3">
 								<img src="<?php echo htmlspecialchars($providerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($providerName, ENT_QUOTES, 'UTF-8'); ?> profile picture" class="h-11 w-11 rounded-full border-2 border-brand-200 bg-neutral-200 object-cover" data-fallback-src="<?php echo htmlspecialchars($providerFallback, ENT_QUOTES, 'UTF-8'); ?>" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback-src');">
@@ -60,17 +70,19 @@
 
 				<div class="mt-6 flex flex-wrap items-center gap-3">
 					<?php if (auth_check()): ?>
-						<?php if (!$isOwnService): ?>
-							<a href="/bookings/create?service_id=<?php echo (int) $service['id']; ?>" class="<?php echo htmlspecialchars($primaryButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Book this service <span aria-hidden="true">-></span></a>
-						<a href="/services" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Browse Skills</a>
+						<?php if ($isOwnService): ?>
 							<?php if (($canManage ?? false) === true): ?>
 								<a href="/services/<?php echo (int) $service['id']; ?>/edit" class="<?php echo htmlspecialchars($primaryButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Edit service</a>
+								<a href="/services/<?php echo (int) $service['id']; ?>/boost" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Boost listing</a>
 								<form action="/services/<?php echo (int) $service['id']; ?>" method="post" onsubmit="return confirm('Delete this service?');">
 									<?php echo csrf_field(); ?>
 									<input type="hidden" name="_method" value="DELETE">
 									<button type="submit" class="<?php echo htmlspecialchars($dangerButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Delete service</button>
 								</form>
 							<?php endif; ?>
+							<a href="/services" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Browse Skills</a>
+						<?php else: ?>
+							<a href="/bookings/create?service_id=<?php echo (int) $service['id']; ?>" class="<?php echo htmlspecialchars($primaryButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Book this service <span aria-hidden="true">-></span></a>
 							<a href="/services" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Browse Skills</a>
 						<?php endif; ?>
 					<?php else: ?>
@@ -104,6 +116,7 @@
 											<th class="px-4 py-3">Seeker</th>
 											<th class="px-4 py-3">Preferred Schedule</th>
 											<th class="px-4 py-3">Status</th>
+											<th class="px-4 py-3">Payment</th>
 											<th class="px-4 py-3">Customer Note</th>
 											<th class="px-4 py-3 text-right">Action</th>
 										</tr>
@@ -112,6 +125,7 @@
 										<?php foreach ($providerBookings as $booking): ?>
 											<?php
 											$currentStatus = strtolower((string) ($booking['status'] ?? 'pending'));
+											$paymentStatus = strtolower((string) ($booking['payment_status'] ?? 'unpaid'));
 											$preferredSchedule = format_datetime((string) ($booking['scheduled_at'] ?? ''), 'M d, Y h:i A');
 											$bookingMessage = trim((string) ($booking['message'] ?? ''));
 											$allowedStatuses = [];
@@ -148,7 +162,9 @@
 											if ($currentStatus === 'pending') {
 												$allowedStatuses = ['accepted', 'rejected'];
 											} elseif ($currentStatus === 'accepted') {
-												$allowedStatuses = ['completed', 'cancelled'];
+												$allowedStatuses = $paymentStatus === 'paid'
+													? ['completed', 'cancelled']
+													: ['cancelled'];
 											}
 											?>
 											<tr class="align-top transition hover:bg-surface-page/70">
@@ -164,6 +180,13 @@
 												<td class="px-4 py-4 whitespace-nowrap text-neutral-700"><?php echo htmlspecialchars($preferredSchedule, ENT_QUOTES, 'UTF-8'); ?></td>
 												<td class="px-4 py-4">
 													<span class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wide <?php echo htmlspecialchars((string) ($statusChipClasses[$currentStatus] ?? $statusChipClasses['pending']), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars((string) ($statusLabels[$currentStatus] ?? ucfirst($currentStatus)), ENT_QUOTES, 'UTF-8'); ?></span>
+												</td>
+												<td class="px-4 py-4">
+													<?php if ($paymentStatus === 'paid'): ?>
+														<span class="inline-flex items-center rounded-full border border-success-200 bg-success-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-success-700">Paid</span>
+													<?php else: ?>
+														<span class="inline-flex items-center rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-neutral-600">Unpaid</span>
+													<?php endif; ?>
 												</td>
 												<td class="px-4 py-4 text-neutral-700">
 													<span class="block max-w-[20rem] break-words leading-6"><?php echo htmlspecialchars($bookingMessage !== '' ? $bookingMessage : '-', ENT_QUOTES, 'UTF-8'); ?></span>

@@ -60,6 +60,10 @@ class BookingPolicy
         }
 
         if ($currentStatus === 'accepted' && $newStatus === 'completed') {
+            if (strtolower((string) ($booking['payment_status'] ?? 'unpaid')) !== 'paid') {
+                return false;
+            }
+
             return $userId === $providerId;
         }
 

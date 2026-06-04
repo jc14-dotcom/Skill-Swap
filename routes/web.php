@@ -44,6 +44,9 @@ $router->get('/services/mine', [ServiceController::class, 'myServices'], ['middl
 $router->get('/services/{id}/edit', [ServiceController::class, 'edit'], ['middleware' => ['auth']]);
 $router->patch('/services/{id}', [ServiceController::class, 'update'], ['middleware' => ['auth', 'csrf']]);
 $router->delete('/services/{id}', [ServiceController::class, 'destroy'], ['middleware' => ['auth', 'csrf']]);
+$router->get('/services/{id}/boost', [ServiceController::class, 'boost'], ['middleware' => ['auth']]);
+$router->post('/services/{id}/boost', [ServiceController::class, 'storeBoost'], ['middleware' => ['auth', 'csrf']]);
+$router->get('/services/{id}/boost/receipt', [ServiceController::class, 'boostReceipt'], ['middleware' => ['auth']]);
 $router->get('/services/{id}', [ServiceController::class, 'show']);
 
 $router->get('/bookings', [BookingController::class, 'index'], ['middleware' => ['auth']]);
@@ -51,6 +54,9 @@ $router->get('/bookings/create', [BookingController::class, 'create'], ['middlew
 $router->post('/bookings', [BookingController::class, 'store'], ['middleware' => ['auth', 'csrf']]);
 $router->get('/bookings/mine', [BookingController::class, 'myBookings'], ['middleware' => ['auth']]);
 $router->get('/bookings/provider', [BookingController::class, 'providerBookings'], ['middleware' => ['auth']]);
+$router->get('/bookings/{id}/checkout', [BookingController::class, 'checkout'], ['middleware' => ['auth']]);
+$router->post('/bookings/{id}/pay', [BookingController::class, 'pay'], ['middleware' => ['auth', 'csrf']]);
+$router->get('/bookings/{id}/payment-success', [BookingController::class, 'paymentSuccess'], ['middleware' => ['auth']]);
 $router->patch('/bookings/{id}/status', [BookingController::class, 'updateStatus'], ['middleware' => ['auth', 'csrf']]);
 
 // Messages feature disabled — routes commented out, code preserved for future use

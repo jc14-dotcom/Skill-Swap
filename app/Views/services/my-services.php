@@ -22,15 +22,30 @@
 		<?php else: ?>
 			<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
 				<?php foreach ($services as $service): ?>
+					<?php
+					$boostExpiresAt = (string) ($service['boost_expires_at'] ?? '');
+					$boostActive = ((int) ($service['is_boosted'] ?? 0) === 1)
+						&& ($boostExpiresAt !== '' && strtotime($boostExpiresAt) > time());
+					$boostExpiryLabel = $boostActive ? format_datetime($boostExpiresAt, 'M d, Y h:i A') : '';
+					?>
 					<article class="group grid min-h-[16rem] gap-4 rounded-3xl border border-neutral-200 bg-white p-6 shadow-soft transition hover:-translate-y-0.5 hover:border-brand-200 hover:bg-surface-rose hover:shadow-brand" data-card-link="/services/<?php echo (int) $service['id']; ?>" role="link" tabindex="0" aria-label="Open <?php echo htmlspecialchars((string) $service['title'], ENT_QUOTES, 'UTF-8'); ?> details">
-						<span class="inline-flex w-fit items-center rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-brand-700"><?php echo htmlspecialchars((string) ($service['status'] ?? 'active'), ENT_QUOTES, 'UTF-8'); ?></span>
+						<div class="flex flex-wrap items-center gap-2">
+							<span class="inline-flex w-fit items-center rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-brand-700"><?php echo htmlspecialchars((string) ($service['status'] ?? 'active'), ENT_QUOTES, 'UTF-8'); ?></span>
+							<?php if ($boostActive): ?>
+								<span class="inline-flex w-fit items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-amber-800">Boosted</span>
+							<?php endif; ?>
+						</div>
 						<h3 class="text-xl font-heading font-extrabold text-neutral-950"><?php echo htmlspecialchars((string) $service['title'], ENT_QUOTES, 'UTF-8'); ?></h3>
 						<p class="text-sm leading-7 text-neutral-700"><?php echo htmlspecialchars((string) $service['description'], ENT_QUOTES, 'UTF-8'); ?></p>
 						<p class="text-2xl font-heading font-extrabold text-brand-700"><?php echo htmlspecialchars(format_currency((float) $service['price']), ENT_QUOTES, 'UTF-8'); ?></p>
+						<?php if ($boostActive && $boostExpiryLabel !== ''): ?>
+							<p class="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">Boosted until <?php echo htmlspecialchars($boostExpiryLabel, ENT_QUOTES, 'UTF-8'); ?></p>
+						<?php endif; ?>
 
 						<div class="mt-auto flex flex-wrap gap-2">
 							<a class="inline-flex items-center rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-extrabold text-neutral-900 transition hover:border-brand-500 hover:text-brand-700" href="/services/<?php echo (int) $service['id']; ?>" data-no-card-nav>Open</a>
 							<a class="inline-flex items-center rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs font-extrabold text-neutral-900 transition hover:border-brand-500 hover:text-brand-700" href="/services/<?php echo (int) $service['id']; ?>/edit" data-no-card-nav>Edit</a>
+							<a class="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-extrabold text-amber-800 transition hover:bg-amber-100" href="/services/<?php echo (int) $service['id']; ?>/boost" data-no-card-nav>Boost</a>
 							<form action="/services/<?php echo (int) $service['id']; ?>" method="post" onsubmit="return confirm('Delete this service?');" data-no-card-nav>
 								<?php echo csrf_field(); ?>
 								<input type="hidden" name="_method" value="DELETE">

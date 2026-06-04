@@ -27,12 +27,17 @@
 							<th class="px-4 py-3">Service</th>
 							<th class="px-4 py-3">Provider</th>
 							<th class="px-4 py-3">Status</th>
+							<th class="px-4 py-3">Payment</th>
 							<th class="px-4 py-3">Action</th>
 						</tr>
 					</thead>
 					<tbody class="divide-y divide-neutral-200">
 						<?php foreach ($bookings as $booking): ?>
-							<?php $status = (string) ($booking['status'] ?? 'pending'); ?>
+							<?php
+							$status = (string) ($booking['status'] ?? 'pending');
+							$paymentStatus = strtolower((string) ($booking['payment_status'] ?? 'unpaid'));
+							$canPay = $status === 'accepted' && $paymentStatus !== 'paid';
+							?>
 							<tr>
 								<td class="px-4 py-3 font-semibold text-neutral-900"><?php echo htmlspecialchars((string) $booking['service_title'], ENT_QUOTES, 'UTF-8'); ?></td>
 								<td class="px-4 py-3 text-neutral-700"><?php echo htmlspecialchars((string) ($booking['provider_name'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
@@ -40,8 +45,19 @@
 									<span class="inline-flex items-center rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-brand-700"><?php echo htmlspecialchars($status, ENT_QUOTES, 'UTF-8'); ?></span>
 								</td>
 								<td class="px-4 py-3">
+									<?php if ($paymentStatus === 'paid'): ?>
+										<span class="inline-flex items-center rounded-full border border-success-200 bg-success-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-success-700">Paid</span>
+									<?php else: ?>
+										<span class="inline-flex items-center rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-neutral-600">Unpaid</span>
+									<?php endif; ?>
+								</td>
+								<td class="px-4 py-3">
 									<?php if ($status === 'completed'): ?>
 										<a class="inline-flex items-center gap-1 text-sm font-extrabold text-brand-600 transition hover:text-brand-700" href="/reviews/create?booking_id=<?php echo (int) $booking['id']; ?>">Add review <span aria-hidden="true">-></span></a>
+									<?php elseif ($canPay): ?>
+										<a class="inline-flex items-center gap-1 text-sm font-extrabold text-brand-600 transition hover:text-brand-700" href="/bookings/<?php echo (int) $booking['id']; ?>/checkout">Pay now <span aria-hidden="true">-></span></a>
+									<?php elseif ($status === 'accepted' && $paymentStatus === 'paid'): ?>
+										<span class="text-xs font-bold uppercase tracking-wide text-neutral-500">Waiting completion</span>
 									<?php elseif (in_array($status, ['pending', 'accepted'], true)): ?>
 										<form action="/bookings/<?php echo (int) $booking['id']; ?>/status" method="post">
 											<?php echo csrf_field(); ?>

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Services\BookingService;
+use App\Services\RevenueService;
 use App\Services\ServiceService;
 use Core\Controller;
 use Core\Request;
@@ -15,12 +16,14 @@ class ServiceController extends Controller
 {
 	private ServiceService $services;
 	private BookingService $bookings;
+	private RevenueService $revenue;
 
 	public function __construct(Request $request, Response $response)
 	{
 		parent::__construct($request, $response);
 		$this->services = new ServiceService();
 		$this->bookings = new BookingService();
+		$this->revenue = new RevenueService();
 	}
 
 	public function index(): void
@@ -79,6 +82,7 @@ class ServiceController extends Controller
 		$items = [];
 		$actorId = is_array($actor) ? (int) ($actor['id'] ?? 0) : 0;
 
+		$now = time();
 		foreach ($services as $service) {
 			if (!is_array($service)) {
 				continue;
@@ -98,6 +102,10 @@ class ServiceController extends Controller
 
 			$isOwnService = $actorId > 0 && $actorId === (int) ($service['user_id'] ?? 0);
 
+			$boostExpiresAt = (string) ($service['boost_expires_at'] ?? '');
+			$boostActive = ((int) ($service['is_boosted'] ?? 0) === 1)
+				&& ($boostExpiresAt !== '' && strtotime($boostExpiresAt) > $now);
+
 			$items[] = [
 				'id' => $serviceId,
 				'title' => $title,
@@ -108,6 +116,8 @@ class ServiceController extends Controller
 				'detail_url' => '/services/' . $serviceId,
 				'book_url' => '/bookings/create?service_id=' . $serviceId,
 				'is_own_service' => $isOwnService,
+				'is_boosted' => $boostActive,
+				'boost_expires_at' => $boostExpiresAt,
 			];
 		}
 
@@ -259,5 +269,89 @@ class ServiceController extends Controller
 		}
 
 		$this->redirect('/services/mine');
+	}
+
+	public function boost(string $id): void
+	{
+		$actor = $this->user();
+		if (!is_array($actor)) {
+			$this->redirect('/login');
+			return;
+		}
+
+		try {
+			$service = $this->services->findManagedService($actor, (int) $id);
+			$this->view('services.boost', [
+				'title' => 'Boost Service',
+				'service' => $service,
+				'boostPlans' => $this->services->boostPlans(),
+			]);
+		} catch (\Throwable $exception) {
+			Session::flash('errors', ['service' => [$exception->getMessage()]]);
+			$this->redirect('/services/mine');
+		}
+	}
+
+	public function storeBoost(string $id): void
+	{
+		$actor = $this->user();
+		if (!is_array($actor)) {
+			$this->redirect('/login');
+			return;
+		}
+
+		[$valid, $errors, $clean] = $this->validate($this->request->all(), [
+			'plan' => 'required|in:3,7,15',
+			'payment_method' => 'required|in:gcash,paymaya,paypal',
+		]);
+
+		if (!$valid) {
+			$this->redirect('/services/' . (int) $id . '/boost');
+			return;
+		}
+
+		try {
+			$days = (int) $clean['plan'];
+			$service = $this->services->boostService($actor, (int) $id, $days);
+			$plan = $this->services->getBoostPlan($days);
+			$receipt = $this->revenue->recordBoost(
+				(int) ($service['id'] ?? 0),
+				$days,
+				(float) $plan['price'],
+				$actor,
+				(string) $clean['payment_method'],
+				(string) ($service['boost_expires_at'] ?? '')
+			);
+			Session::flash('boost_receipt', $receipt);
+			$this->redirect('/services/' . (int) $id . '/boost/receipt');
+		} catch (\Throwable $exception) {
+			Session::flash('errors', ['service' => [$exception->getMessage()]]);
+			$this->redirect('/services/' . (int) $id . '/boost');
+		}
+	}
+
+	public function boostReceipt(string $id): void
+	{
+		$actor = $this->user();
+		if (!is_array($actor)) {
+			$this->redirect('/login');
+			return;
+		}
+
+		$receipt = Session::get('boost_receipt');
+		try {
+			$service = $this->services->findManagedService($actor, (int) $id);
+			if (!is_array($receipt)) {
+				$receipt = $this->revenue->buildBoostReceipt($service);
+			}
+			$this->view('services.boost-receipt', [
+				'title' => 'Boost Receipt',
+				'service' => $service,
+				'receipt' => $receipt,
+			]);
+		} catch (\Throwable $exception) {
+			Session::flash('errors', ['service' => [$exception->getMessage()]]);
+			$this->redirect('/services/mine');
+		}
 	}
 }

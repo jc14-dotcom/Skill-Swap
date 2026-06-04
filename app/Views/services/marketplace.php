@@ -81,6 +81,9 @@ $miniLinkClasses = 'inline-flex items-center gap-1 text-sm font-extrabold text-b
 					if ($providerName === '') {
 						$providerName = 'Provider';
 					}
+					$boostExpiresAt = (string) ($service['boost_expires_at'] ?? '');
+					$boostActive = ((int) ($service['is_boosted'] ?? 0) === 1)
+						&& ($boostExpiresAt !== '' && strtotime($boostExpiresAt) > time());
 					$providerFallback = initials_avatar_data_uri($providerName);
 					$providerImage = profile_image_url((string) ($service['provider_profile_picture'] ?? ''));
 					if ($providerImage === '') {
@@ -91,6 +94,9 @@ $miniLinkClasses = 'inline-flex items-center gap-1 text-sm font-extrabold text-b
 					?>
 					<article class="group grid min-h-[17rem] gap-4 rounded-3xl border border-neutral-300 bg-white p-6 shadow-soft transition hover:-translate-y-1 hover:border-brand-200 hover:bg-surface-rose hover:shadow-brand" data-card-link="<?php echo htmlspecialchars($serviceLink, ENT_QUOTES, 'UTF-8'); ?>" role="link" tabindex="0" aria-label="Open <?php echo htmlspecialchars((string) ($service['title'] ?? 'service'), ENT_QUOTES, 'UTF-8'); ?> details">
 						<div>
+							<?php if ($boostActive): ?>
+								<span class="mb-2 inline-flex w-fit items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-amber-800">Boosted</span>
+							<?php endif; ?>
 							<h3 class="text-[1.45rem] font-extrabold leading-tight text-neutral-950"><?php echo htmlspecialchars((string) ($service['title'] ?? 'Skill Service'), ENT_QUOTES, 'UTF-8'); ?></h3>
 							<div class="mt-1.5 flex items-center gap-3">
 								<img src="<?php echo htmlspecialchars($providerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($providerName, ENT_QUOTES, 'UTF-8'); ?> profile picture" class="h-9 w-9 rounded-full border-2 border-brand-200 bg-neutral-200 object-cover" data-fallback-src="<?php echo htmlspecialchars($providerFallback, ENT_QUOTES, 'UTF-8'); ?>" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback-src');">
