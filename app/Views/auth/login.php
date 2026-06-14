@@ -21,34 +21,34 @@ $inputErrorClasses = ' border-danger-300 focus:border-danger-500 focus:ring-dang
 	<?php echo csrf_field(); ?>
 
 	<div class="grid gap-1.5" data-field>
-		<label for="email" class="<?php echo htmlspecialchars($fieldLabelClasses, ENT_QUOTES, 'UTF-8'); ?>">Email</label>
-		<input id="email" name="email" type="email" required maxlength="190" autocomplete="email" value="<?php echo htmlspecialchars((string) old_input('email'), ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($fieldInputClasses . ($emailHasError ? $inputErrorClasses : ''), ENT_QUOTES, 'UTF-8'); ?>"<?php echo $emailHasError ? ' aria-invalid="true" data-invalid="true"' : ''; ?>>
+		<label for="email" class="<?php echo e($fieldLabelClasses); ?>">Email</label>
+		<input id="email" name="email" type="email" required maxlength="190" autocomplete="email" value="<?php echo e(old_input('email')); ?>" class="<?php echo e($fieldInputClasses . ($emailHasError ? $inputErrorClasses : '')); ?>"<?php echo $emailHasError ? ' aria-invalid="true" data-invalid="true"' : ''; ?>>
 		<?php if ($emailHasError): ?>
-			<p class="text-xs font-semibold text-danger-700" data-field-error><?php echo htmlspecialchars($emailError, ENT_QUOTES, 'UTF-8'); ?></p>
+			<p class="text-xs font-semibold text-danger-700" data-field-error><?php echo e($emailError); ?></p>
 		<?php endif; ?>
 	</div>
 
 	<div class="grid gap-1.5" data-field>
-		<label for="password" class="<?php echo htmlspecialchars($fieldLabelClasses, ENT_QUOTES, 'UTF-8'); ?>">Password</label>
-		<input id="password" name="password" type="password" required maxlength="128" autocomplete="current-password" class="<?php echo htmlspecialchars($fieldInputClasses . ($passwordHasError ? $inputErrorClasses : ''), ENT_QUOTES, 'UTF-8'); ?>"<?php echo $passwordHasError ? ' aria-invalid="true" data-invalid="true"' : ''; ?>>
+		<label for="password" class="<?php echo e($fieldLabelClasses); ?>">Password</label>
+		<input id="password" name="password" type="password" required maxlength="128" autocomplete="current-password" class="<?php echo e($fieldInputClasses . ($passwordHasError ? $inputErrorClasses : '')); ?>"<?php echo $passwordHasError ? ' aria-invalid="true" data-invalid="true"' : ''; ?>>
 		<?php if ($passwordHasError): ?>
-			<p class="text-xs font-semibold text-danger-700" data-field-error><?php echo htmlspecialchars($passwordError !== '' ? $passwordError : $authError, ENT_QUOTES, 'UTF-8'); ?></p>
+			<p class="text-xs font-semibold text-danger-700" data-field-error><?php echo e($passwordError !== '' ? $passwordError : $authError); ?></p>
 		<?php endif; ?>
 	</div>
 
 	<div class="pt-1">
-		<button type="submit" class="<?php echo htmlspecialchars($primaryButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Login</button>
+		<button type="submit" class="<?php echo e($primaryButtonClasses); ?>">Login</button>
 	</div>
 </form>
 
 <p class="mt-3 text-sm text-neutral-600">
 	No account yet?
-	<a href="/register" class="<?php echo htmlspecialchars($inlineLinkClasses, ENT_QUOTES, 'UTF-8'); ?>">Create one <span aria-hidden="true">-></span></a>
+	<a href="/register" class="<?php echo e($inlineLinkClasses); ?>">Create one <span aria-hidden="true">-></span></a>
 </p>
 
 <p class="mt-1.5 text-sm text-neutral-600">
 	Forgot your password?
-	<a href="/forgot-password" class="<?php echo htmlspecialchars($inlineLinkClasses, ENT_QUOTES, 'UTF-8'); ?>">Reset it <span aria-hidden="true">-></span></a>
+	<a href="/forgot-password" class="<?php echo e($inlineLinkClasses); ?>">Reset it <span aria-hidden="true">-></span></a>
 </p>
 
 <div class="mt-3 rounded-2xl border border-neutral-300 bg-surface-page p-4">

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         failOnRisky="true"
+         failOnWarning="false"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         displayDetailsOnTestsThatTriggerWarnings="true">
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+            <exclude>tests/Unit/.gitkeep</exclude>
+            <exclude>tests/Unit/BookingPolicyTest.php</exclude>
+            <exclude>tests/Unit/ReviewPolicyTest.php</exclude>
+            <exclude>tests/Unit/ServicePolicyTest.php</exclude>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
+            <exclude>tests/Feature/.gitkeep</exclude>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>core</directory>
+            <directory>app</directory>
+        </include>
+    </source>
+</phpunit>

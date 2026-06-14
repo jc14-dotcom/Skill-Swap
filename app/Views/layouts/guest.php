@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-$pageTitle = htmlspecialchars((string) ($title ?? 'SkillSwap'), ENT_QUOTES, 'UTF-8');
+$pageTitle = e($title ?? 'SkillSwap');
 $allErrors = form_errors();
 $success = session_get('success');
 $appCssPath = __DIR__ . '/../../../public/assets/css/app.css';
@@ -32,7 +32,7 @@ $appJsVersion = is_file($appJsPath) ? (string) filemtime($appJsPath) : '1';
 		<div class="mx-auto w-[min(1320px,calc(100%-2rem))]">
 			<?php if (is_string($success) && $success !== ''): ?>
 				<div class="mb-4">
-					<div class="rounded-2xl border border-success-300 bg-success-50 px-4 py-3 text-sm font-semibold text-success-800 shadow-soft"><?php echo htmlspecialchars($success, ENT_QUOTES, 'UTF-8'); ?></div>
+					<div class="rounded-2xl border border-success-300 bg-success-50 px-4 py-3 text-sm font-semibold text-success-800 shadow-soft"><?php echo e($success); ?></div>
 				</div>
 			<?php endif; ?>
 
@@ -43,7 +43,7 @@ $appJsVersion = is_file($appJsPath) ? (string) filemtime($appJsPath) : '1';
 						<ul class="mt-2 list-disc space-y-1 pl-5">
 							<?php foreach ($allErrors as $fieldErrors): ?>
 								<?php foreach ((array) $fieldErrors as $message): ?>
-									<li><?php echo htmlspecialchars((string) $message, ENT_QUOTES, 'UTF-8'); ?></li>
+									<li><?php echo e($message); ?></li>
 								<?php endforeach; ?>
 							<?php endforeach; ?>
 						</ul>

@@ -12,24 +12,24 @@ $inlineLinkClasses = 'inline-flex items-center gap-1 font-extrabold text-brand-6
 
 <form action="/reset-password" method="post" class="mt-6 grid gap-4">
 	<?php echo csrf_field(); ?>
-	<input type="hidden" name="token" value="<?php echo htmlspecialchars((string) ($token ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
+	<input type="hidden" name="token" value="<?php echo e($token ?? ''); ?>">
 
 	<div class="grid gap-1.5">
-		<label for="password" class="<?php echo htmlspecialchars($fieldLabelClasses, ENT_QUOTES, 'UTF-8'); ?>">New Password</label>
-		<input id="password" name="password" type="password" required minlength="8" maxlength="128" autocomplete="new-password" class="<?php echo htmlspecialchars($fieldInputClasses, ENT_QUOTES, 'UTF-8'); ?>">
+		<label for="password" class="<?php echo e($fieldLabelClasses); ?>">New Password</label>
+		<input id="password" name="password" type="password" required minlength="8" maxlength="128" autocomplete="new-password" class="<?php echo e($fieldInputClasses); ?>">
 	</div>
 
 	<div class="grid gap-1.5">
-		<label for="password_confirmation" class="<?php echo htmlspecialchars($fieldLabelClasses, ENT_QUOTES, 'UTF-8'); ?>">Confirm New Password</label>
-		<input id="password_confirmation" name="password_confirmation" type="password" required minlength="8" maxlength="128" autocomplete="new-password" class="<?php echo htmlspecialchars($fieldInputClasses, ENT_QUOTES, 'UTF-8'); ?>">
+		<label for="password_confirmation" class="<?php echo e($fieldLabelClasses); ?>">Confirm New Password</label>
+		<input id="password_confirmation" name="password_confirmation" type="password" required minlength="8" maxlength="128" autocomplete="new-password" class="<?php echo e($fieldInputClasses); ?>">
 	</div>
 
 	<div class="pt-1">
-		<button type="submit" class="<?php echo htmlspecialchars($primaryButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Update Password</button>
+		<button type="submit" class="<?php echo e($primaryButtonClasses); ?>">Update Password</button>
 	</div>
 </form>
 
 <p class="mt-3 text-sm text-neutral-600">
 	Need to return?
-	<a href="/login" class="<?php echo htmlspecialchars($inlineLinkClasses, ENT_QUOTES, 'UTF-8'); ?>">Back to login <span aria-hidden="true">-></span></a>
+	<a href="/login" class="<?php echo e($inlineLinkClasses); ?>">Back to login <span aria-hidden="true">-></span></a>
 </p>

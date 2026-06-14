@@ -8,6 +8,7 @@ class Logger
 {
 	private string $path;
 	private string $level;
+	private int $maxFiles;
 
 	/** @var array<string, int> */
 	private array $levels = [
@@ -25,6 +26,8 @@ class Logger
 
 		$configuredLevel = strtolower((string) ($config['level'] ?? 'debug'));
 		$this->level = array_key_exists($configuredLevel, $this->levels) ? $configuredLevel : 'debug';
+
+		$this->maxFiles = (int) ($config['max_files'] ?? 30);
 	}
 
 	public function debug(string $message, array $context = []): void
@@ -62,6 +65,8 @@ class Logger
 		if (!is_dir($dir)) {
 			mkdir($dir, 0777, true);
 		}
+
+		$this->rotateIfNeeded();
 
 		$requestContext = $this->resolveRequestContext();
 
@@ -101,12 +106,58 @@ class Logger
 			return;
 		}
 
-		file_put_contents($this->path, $line . PHP_EOL, FILE_APPEND);
+		file_put_contents($this->path, $line . PHP_EOL, FILE_APPEND | LOCK_EX);
 	}
 
 	private function shouldLog(string $level): bool
 	{
 		return $this->levels[$level] >= $this->levels[$this->level];
+	}
+
+	/**
+	 * Rotate log file if it exceeds 10MB. Keeps up to $maxFiles rotated files.
+	 */
+	private function rotateIfNeeded(): void
+	{
+		if (!is_file($this->path)) {
+			return;
+		}
+
+		$size = filesize($this->path);
+		if ($size === false || $size < 10 * 1024 * 1024) {
+			return;
+		}
+
+		$dir = dirname($this->path);
+		$ext = pathinfo($this->path, PATHINFO_EXTENSION);
+		$basename = pathinfo($this->path, PATHINFO_FILENAME);
+		$rotatedName = $dir . '/' . $basename . '.' . date('Y-m-d-His') . '.' . $ext;
+
+		rename($this->path, $rotatedName);
+
+		$this->cleanupOldFiles($dir, $basename, $ext);
+	}
+
+	/**
+	 * Remove old rotated log files exceeding maxFiles limit.
+	 */
+	private function cleanupOldFiles(string $dir, string $basename, string $ext): void
+	{
+		$pattern = $dir . '/' . $basename . '.*.' . $ext;
+		$files = glob($pattern);
+
+		if ($files === false || count($files) <= $this->maxFiles) {
+			return;
+		}
+
+		usort($files, static function (string $a, string $b): int {
+			return filemtime($b) - filemtime($a);
+		});
+
+		$toDelete = array_slice($files, $this->maxFiles);
+		foreach ($toDelete as $file) {
+			unlink($file);
+		}
 	}
 
 	private function normalizeContext(array $context): array

@@ -15,10 +15,10 @@ class AuthService
 	private User $users;
 	private PasswordReset $passwordResets;
 
-	public function __construct()
+	public function __construct(?User $users = null, ?PasswordReset $passwordResets = null)
 	{
-		$this->users = new User();
-		$this->passwordResets = new PasswordReset();
+		$this->users = $users ?? new User();
+		$this->passwordResets = $passwordResets ?? new PasswordReset();
 	}
 
 	public function register(array $payload): array

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Services\AuthService;
+use Core\App;
 use Core\Controller;
 use Core\Request;
 use Core\Response;
@@ -75,7 +76,10 @@ class AuthController extends Controller
 		$token = $this->auth->requestPasswordReset((string) $clean['email']);
 
 		if (is_string($token) && $token !== '') {
-			Session::flash('reset_preview_url', '/reset-password?token=' . urlencode($token));
+			App::logger()->debug('auth.password_reset.created', [
+				'email' => (string) $clean['email'],
+				'token_hash' => hash('sha256', $token),
+			]);
 		}
 
 		Session::flash('success', 'If an account exists for that email, a reset link is ready.');

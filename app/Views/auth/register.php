@@ -14,19 +14,19 @@ $inlineLinkClasses = 'inline-flex items-center gap-1 font-extrabold text-brand-6
 	<?php echo csrf_field(); ?>
 
 	<div class="grid gap-1.5">
-		<label for="name" class="<?php echo htmlspecialchars($fieldLabelClasses, ENT_QUOTES, 'UTF-8'); ?>">Name</label>
-		<input id="name" name="name" type="text" required minlength="2" maxlength="120" autocomplete="name" value="<?php echo htmlspecialchars((string) old_input('name'), ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($fieldInputClasses, ENT_QUOTES, 'UTF-8'); ?>">
+		<label for="name" class="<?php echo e($fieldLabelClasses); ?>">Name</label>
+		<input id="name" name="name" type="text" required minlength="2" maxlength="120" autocomplete="name" value="<?php echo e(old_input('name')); ?>" class="<?php echo e($fieldInputClasses); ?>">
 	</div>
 
 	<div class="grid gap-1.5">
-		<label for="email" class="<?php echo htmlspecialchars($fieldLabelClasses, ENT_QUOTES, 'UTF-8'); ?>">Email</label>
-		<input id="email" name="email" type="email" required maxlength="190" autocomplete="email" value="<?php echo htmlspecialchars((string) old_input('email'), ENT_QUOTES, 'UTF-8'); ?>" class="<?php echo htmlspecialchars($fieldInputClasses, ENT_QUOTES, 'UTF-8'); ?>">
+		<label for="email" class="<?php echo e($fieldLabelClasses); ?>">Email</label>
+		<input id="email" name="email" type="email" required maxlength="190" autocomplete="email" value="<?php echo e(old_input('email')); ?>" class="<?php echo e($fieldInputClasses); ?>">
 	</div>
 
 	<div class="grid gap-1.5">
-		<label for="role" class="<?php echo htmlspecialchars($fieldLabelClasses, ENT_QUOTES, 'UTF-8'); ?>">Role</label>
+		<label for="role" class="<?php echo e($fieldLabelClasses); ?>">Role</label>
 		<?php $oldRole = (string) old_input('role', 'seeker'); ?>
-		<select id="role" name="role" required class="<?php echo htmlspecialchars($fieldInputClasses, ENT_QUOTES, 'UTF-8'); ?> pr-10">
+		<select id="role" name="role" required class="<?php echo e($fieldInputClasses); ?> pr-10">
 			<option value="seeker" <?php echo $oldRole === 'seeker' ? 'selected' : ''; ?>>Seeker</option>
 			<option value="provider" <?php echo $oldRole === 'provider' ? 'selected' : ''; ?>>Provider</option>
 			<option value="both" <?php echo $oldRole === 'both' ? 'selected' : ''; ?>>Both (Seeker + Provider)</option>
@@ -34,21 +34,21 @@ $inlineLinkClasses = 'inline-flex items-center gap-1 font-extrabold text-brand-6
 	</div>
 
 	<div class="grid gap-1.5">
-		<label for="password" class="<?php echo htmlspecialchars($fieldLabelClasses, ENT_QUOTES, 'UTF-8'); ?>">Password</label>
-		<input id="password" name="password" type="password" required minlength="8" maxlength="128" autocomplete="new-password" class="<?php echo htmlspecialchars($fieldInputClasses, ENT_QUOTES, 'UTF-8'); ?>">
+		<label for="password" class="<?php echo e($fieldLabelClasses); ?>">Password</label>
+		<input id="password" name="password" type="password" required minlength="8" maxlength="128" autocomplete="new-password" class="<?php echo e($fieldInputClasses); ?>">
 	</div>
 
 	<div class="grid gap-1.5">
-		<label for="password_confirmation" class="<?php echo htmlspecialchars($fieldLabelClasses, ENT_QUOTES, 'UTF-8'); ?>">Confirm Password</label>
-		<input id="password_confirmation" name="password_confirmation" type="password" required minlength="8" maxlength="128" autocomplete="new-password" class="<?php echo htmlspecialchars($fieldInputClasses, ENT_QUOTES, 'UTF-8'); ?>">
+		<label for="password_confirmation" class="<?php echo e($fieldLabelClasses); ?>">Confirm Password</label>
+		<input id="password_confirmation" name="password_confirmation" type="password" required minlength="8" maxlength="128" autocomplete="new-password" class="<?php echo e($fieldInputClasses); ?>">
 	</div>
 
 	<div class="pt-1">
-		<button type="submit" class="<?php echo htmlspecialchars($primaryButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Register</button>
+		<button type="submit" class="<?php echo e($primaryButtonClasses); ?>">Register</button>
 	</div>
 </form>
 
 <p class="mt-3 text-sm text-neutral-600">
 	Already have an account?
-	<a href="/login" class="<?php echo htmlspecialchars($inlineLinkClasses, ENT_QUOTES, 'UTF-8'); ?>">Login <span aria-hidden="true">-></span></a>
+	<a href="/login" class="<?php echo e($inlineLinkClasses); ?>">Login <span aria-hidden="true">-></span></a>
 </p>

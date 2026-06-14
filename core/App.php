@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Core;
 
 use ErrorException;
+use Core\Exceptions\AppException;
 use Throwable;
 
 class App
@@ -20,6 +21,7 @@ class App
 	private string $requestId;
 
 	private Router $router;
+	private Container $container;
 
 	public function __construct(string $basePath)
 	{
@@ -40,7 +42,10 @@ class App
 		Session::start((array) $this->config('app.session', []));
 		Database::connect((array) $this->config('database', []));
 
-		$this->router = new Router();
+		$this->container = new Container();
+		$this->registerContainerBindings();
+
+		$this->router = new Router($this->container);
 		$this->router->setMiddlewareAliases((array) $this->config('app.middleware_aliases', []));
 	}
 
@@ -61,6 +66,11 @@ class App
 	public static function logger(): Logger
 	{
 		return self::instance()->logger;
+	}
+
+	public static function container(): Container
+	{
+		return self::instance()->container;
 	}
 
 	public function config(string $key, mixed $default = null): mixed
@@ -94,7 +104,19 @@ class App
 		$response = new Response($this->basePath);
 
 		$router = $this->router;
-		require $this->basePath('routes/web.php');
+
+		$apiFile = $this->basePath('routes/api.php');
+		$webFile = $this->basePath('routes/web.php');
+
+		if (str_starts_with($request->path(), '/api')) {
+			if (is_file($apiFile)) {
+				require $apiFile;
+			}
+		} else {
+			if (is_file($webFile)) {
+				require $webFile;
+			}
+		}
 
 		$this->router->dispatch($request, $response);
 	}
@@ -149,6 +171,16 @@ class App
 		}
 	}
 
+	private function registerContainerBindings(): void
+	{
+		$this->container->instance(App::class, $this);
+		$this->container->instance(Logger::class, $this->logger);
+		$this->container->instance(Container::class, $this->container);
+
+		$this->container->singleton(Request::class, static fn(): Request => new Request());
+		$this->container->singleton(Response::class, static fn(): Response => new Response(self::instance()->basePath));
+	}
+
 	private function registerErrorHandling(): void
 	{
 		set_error_handler(static function (
@@ -163,21 +195,31 @@ class App
 		set_exception_handler(function (Throwable $exception): void {
 			$actor = Session::get('auth.user');
 			$actorId = is_array($actor) ? (int) ($actor['id'] ?? 0) : 0;
+
+			$statusCode = $exception instanceof AppException ? $exception->getStatusCode() : 500;
+
 			$this->logger->error('Unhandled exception', [
 				'request_id' => $this->requestId,
 				'method' => (string) ($_SERVER['REQUEST_METHOD'] ?? 'CLI'),
 				'path' => (string) ($_SERVER['REQUEST_URI'] ?? '/'),
 				'actor_id' => $actorId > 0 ? $actorId : null,
+				'status_code' => $statusCode,
 				'exception' => $exception,
 				'trace' => $exception->getTraceAsString(),
 			]);
 
-			http_response_code(500);
+			http_response_code($statusCode);
 			$isDebug = (bool) $this->config('app.debug', false);
 
 			$errorMessage = $isDebug
 				? $exception->getMessage() . ' in ' . $exception->getFile() . ':' . $exception->getLine()
 				: 'Something went wrong. Please try again later.';
+
+			$errorView = $this->basePath('app/Views/errors/' . $statusCode . '.php');
+			if (is_file($errorView)) {
+				include $errorView;
+				return;
+			}
 
 			$errorView = $this->basePath('app/Views/errors/500.php');
 			if (is_file($errorView)) {

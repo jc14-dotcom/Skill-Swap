@@ -164,11 +164,7 @@ class BookingController extends Controller
 		$fallback = $this->bookingsRedirectForActor($actor);
 		$target = trim((string) $this->request->input('redirect', ''));
 
-		if ($target === '') {
-			return $fallback;
-		}
-
-		if (!str_starts_with($target, '/')) {
+		if ($target === '' || !str_starts_with($target, '/') || str_starts_with($target, '//')) {
 			return $fallback;
 		}
 

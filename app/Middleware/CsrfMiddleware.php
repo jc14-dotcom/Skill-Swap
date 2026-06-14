@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Middleware;
 
 use Core\Request;
+use Core\Response;
 use Core\Session;
 
 class CsrfMiddleware
@@ -19,8 +20,8 @@ class CsrfMiddleware
         $sessionToken = Session::token();
 
         if ($sessionToken === '' || !hash_equals($sessionToken, $token)) {
-            http_response_code(419);
-            echo 'CSRF token mismatch.';
+            $response = new Response(BASE_PATH);
+            $response->json(['error' => 'CSRF token mismatch.'], 419);
             return null;
         }
 

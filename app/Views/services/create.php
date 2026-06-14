@@ -17,17 +17,17 @@
 
 				<div class="grid gap-2" data-field>
 					<label for="title" class="text-sm font-extrabold text-neutral-800">Service title</label>
-					<input id="title" name="title" type="text" required value="<?php echo htmlspecialchars((string) old_input('title'), ENT_QUOTES, 'UTF-8'); ?>" class="w-full rounded-2xl border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100">
+					<input id="title" name="title" type="text" required value="<?php echo e(old_input('title')); ?>" class="w-full rounded-2xl border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100">
 				</div>
 
 				<div class="grid gap-2" data-field>
 					<label for="description" class="text-sm font-extrabold text-neutral-800">Description</label>
-					<textarea id="description" name="description" rows="6" required class="w-full rounded-2xl border border-neutral-300 bg-white px-4 py-3 text-sm leading-7 text-neutral-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"><?php echo htmlspecialchars((string) old_input('description'), ENT_QUOTES, 'UTF-8'); ?></textarea>
+					<textarea id="description" name="description" rows="6" required class="w-full rounded-2xl border border-neutral-300 bg-white px-4 py-3 text-sm leading-7 text-neutral-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"><?php echo e(old_input('description')); ?></textarea>
 				</div>
 
 				<div class="grid gap-2" data-field>
 					<label for="price" class="text-sm font-extrabold text-neutral-800">Price</label>
-					<input id="price" name="price" type="number" min="1" step="0.01" required value="<?php echo htmlspecialchars((string) old_input('price'), ENT_QUOTES, 'UTF-8'); ?>" class="w-full rounded-2xl border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100">
+					<input id="price" name="price" type="number" min="1" step="0.01" required value="<?php echo e(old_input('price')); ?>" class="w-full rounded-2xl border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100">
 				</div>
 
 				<div class="flex flex-wrap gap-3 pt-1">

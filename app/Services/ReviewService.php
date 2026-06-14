@@ -16,12 +16,16 @@ class ReviewService
 	private ReviewPolicy $policy;
 	private NotificationService $notifications;
 
-	public function __construct()
-	{
-		$this->reviews = new Review();
-		$this->bookings = new Booking();
-		$this->policy = new ReviewPolicy();
-		$this->notifications = new NotificationService();
+	public function __construct(
+		?Review $reviews = null,
+		?Booking $bookings = null,
+		?ReviewPolicy $policy = null,
+		?NotificationService $notifications = null
+	) {
+		$this->reviews = $reviews ?? new Review();
+		$this->bookings = $bookings ?? new Booking();
+		$this->policy = $policy ?? new ReviewPolicy();
+		$this->notifications = $notifications ?? new NotificationService();
 	}
 
 	public function createReview(array $actor, array $payload): int
