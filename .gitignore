@@ -5,3 +5,4 @@
 /.env
 /public/hot
 /public/assets/css/app.css.map
+/.phpunit.result.cache
