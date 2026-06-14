@@ -103,7 +103,7 @@ class NotificationController extends Controller
 			}
 		}
 
-		if (!str_starts_with($target, '/')) {
+		if ($target === '' || !str_starts_with($target, '/') || str_starts_with($target, '//')) {
 			return $fallback;
 		}
 

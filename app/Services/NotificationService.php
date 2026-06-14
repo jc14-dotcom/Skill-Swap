@@ -10,9 +10,9 @@ class NotificationService
 {
 	private Notification $notifications;
 
-	public function __construct()
+	public function __construct(?Notification $notifications = null)
 	{
-		$this->notifications = new Notification();
+		$this->notifications = $notifications ?? new Notification();
 	}
 
 	public function feed(array $actor, int $limit = 8): array

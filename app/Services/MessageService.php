@@ -16,12 +16,16 @@ class MessageService
 	private BookingPolicy $policy;
 	private NotificationService $notifications;
 
-	public function __construct()
-	{
-		$this->messages = new Message();
-		$this->bookings = new Booking();
-		$this->policy = new BookingPolicy();
-		$this->notifications = new NotificationService();
+	public function __construct(
+		?Message $messages = null,
+		?Booking $bookings = null,
+		?BookingPolicy $policy = null,
+		?NotificationService $notifications = null
+	) {
+		$this->messages = $messages ?? new Message();
+		$this->bookings = $bookings ?? new Booking();
+		$this->policy = $policy ?? new BookingPolicy();
+		$this->notifications = $notifications ?? new NotificationService();
 	}
 
 	public function listConversations(array $actor): array

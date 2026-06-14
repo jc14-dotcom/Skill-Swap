@@ -21,14 +21,20 @@ class BookingService
 	private NotificationService $notifications;
 	private RevenueService $revenue;
 
-	public function __construct()
-	{
-		$this->bookings = new Booking();
-		$this->statusHistory = new BookingStatusHistory();
-		$this->services = new Service();
-		$this->policy = new BookingPolicy();
-		$this->notifications = new NotificationService();
-		$this->revenue = new RevenueService();
+	public function __construct(
+		?Booking $bookings = null,
+		?BookingStatusHistory $statusHistory = null,
+		?Service $services = null,
+		?BookingPolicy $policy = null,
+		?NotificationService $notifications = null,
+		?RevenueService $revenue = null
+	) {
+		$this->bookings = $bookings ?? new Booking();
+		$this->statusHistory = $statusHistory ?? new BookingStatusHistory();
+		$this->services = $services ?? new Service();
+		$this->policy = $policy ?? new BookingPolicy();
+		$this->notifications = $notifications ?? new NotificationService();
+		$this->revenue = $revenue ?? new RevenueService();
 	}
 
 	public function createBooking(array $actor, array $payload): array

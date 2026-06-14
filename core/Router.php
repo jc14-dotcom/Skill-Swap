@@ -12,6 +12,13 @@ class Router
 	/** @var array<string, string> */
 	private array $middlewareAliases = [];
 
+	private Container $container;
+
+	public function __construct(Container $container)
+	{
+		$this->container = $container;
+	}
+
 	public function setMiddlewareAliases(array $aliases): void
 	{
 		$this->middlewareAliases = $aliases;
@@ -133,7 +140,10 @@ class Router
 				throw new \RuntimeException('Controller does not exist: ' . $controllerClass);
 			}
 
-			$controller = new $controllerClass($request, $response);
+			$this->container->instance(Request::class, $request);
+			$this->container->instance(Response::class, $response);
+
+			$controller = $this->container->make($controllerClass);
 
 			if (!method_exists($controller, $action)) {
 				throw new \RuntimeException('Action does not exist: ' . $controllerClass . '::' . $action);
@@ -156,7 +166,7 @@ class Router
 			throw new \RuntimeException('Middleware does not exist: ' . $class);
 		}
 
-		$middleware = new $class();
+		$middleware = $this->container->make($class);
 
 		if (!method_exists($middleware, 'handle')) {
 			throw new \RuntimeException('Middleware handle method missing: ' . $class);

@@ -6,6 +6,7 @@ namespace App\Middleware;
 
 use Core\App;
 use Core\Request;
+use Core\Response;
 use Core\Session;
 
 class RateLimitMiddleware
@@ -35,8 +36,8 @@ class RateLimitMiddleware
         }
 
         if ((int) ($bucket['count'] ?? 0) >= $maxAttempts) {
-            http_response_code(429);
-            echo 'Too many requests. Please try again later.';
+            $response = new Response(BASE_PATH);
+            $response->json(['error' => 'Too many requests. Please try again later.'], 429);
             return null;
         }
 

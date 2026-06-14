@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-$safeMessage = htmlspecialchars((string) ($errorMessage ?? 'Unexpected server error.'), ENT_QUOTES, 'UTF-8');
+$safeMessage = e($errorMessage ?? 'Unexpected server error.');
 $appCssPath = __DIR__ . '/../../../public/assets/css/app.css';
 $appCssVersion = is_file($appCssPath) ? (string) filemtime($appCssPath) : '1';
 ?>

@@ -6,7 +6,7 @@ use App\Controllers\AuthController;
 use App\Controllers\BookingController;
 use App\Controllers\DashboardController;
 use App\Controllers\HomeController;
-// use App\Controllers\MessageController; // Messages feature disabled
+use App\Controllers\MessageController;
 use App\Controllers\NotificationController;
 use App\Controllers\ProfileController;
 use App\Controllers\ReviewController;
@@ -59,10 +59,9 @@ $router->post('/bookings/{id}/pay', [BookingController::class, 'pay'], ['middlew
 $router->get('/bookings/{id}/payment-success', [BookingController::class, 'paymentSuccess'], ['middleware' => ['auth']]);
 $router->patch('/bookings/{id}/status', [BookingController::class, 'updateStatus'], ['middleware' => ['auth', 'csrf']]);
 
-// Messages feature disabled — routes commented out, code preserved for future use
-// $router->get('/messages', [MessageController::class, 'index'], ['middleware' => ['auth']]);
-// $router->get('/messages/{bookingId}', [MessageController::class, 'show'], ['middleware' => ['auth']]);
-// $router->post('/messages/{bookingId}', [MessageController::class, 'store'], ['middleware' => ['auth', 'csrf']]);
+$router->get('/messages', [MessageController::class, 'index'], ['middleware' => ['auth']]);
+$router->get('/messages/{bookingId}', [MessageController::class, 'show'], ['middleware' => ['auth']]);
+$router->post('/messages/{bookingId}', [MessageController::class, 'store'], ['middleware' => ['auth', 'csrf']]);
 
 $router->get('/notifications', [NotificationController::class, 'index'], ['middleware' => ['auth']]);
 $router->post('/notifications/read-all', [NotificationController::class, 'markAllRead'], ['middleware' => ['auth', 'csrf']]);

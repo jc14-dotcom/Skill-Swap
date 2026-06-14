@@ -12,10 +12,10 @@ class ServiceService
 	private Service $services;
 	private ServicePolicy $policy;
 
-	public function __construct()
+	public function __construct(?Service $services = null, ?ServicePolicy $policy = null)
 	{
-		$this->services = new Service();
-		$this->policy = new ServicePolicy();
+		$this->services = $services ?? new Service();
+		$this->policy = $policy ?? new ServicePolicy();
 	}
 
 	public function listPublicServices(string $searchQuery = ''): array

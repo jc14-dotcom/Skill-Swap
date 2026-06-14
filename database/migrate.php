@@ -97,8 +97,17 @@ foreach ($migrationFiles as $file) {
         continue;
     }
 
-    Core\Database::pdo()->exec($sql);
-    echo 'Migrated: ' . basename($file) . PHP_EOL;
+    try {
+        Core\Database::pdo()->exec($sql);
+        echo 'Migrated: ' . basename($file) . PHP_EOL;
+    } catch (\PDOException $e) {
+        // Skip duplicate key errors (index already exists)
+        if (str_contains($e->getMessage(), 'Duplicate key') || str_contains($e->getMessage(), 'already exists')) {
+            echo 'Skipped (already exists): ' . basename($file) . PHP_EOL;
+        } else {
+            throw $e;
+        }
+    }
 }
 
 echo 'All migrations complete.' . PHP_EOL;

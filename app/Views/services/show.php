@@ -43,28 +43,28 @@
 				<div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
 					<div class="min-w-0">
 						<span class="inline-flex text-xs font-extrabold uppercase tracking-[0.2em] text-brand-500">Service Detail</span>
-						<h1 class="mt-2 text-4xl font-heading font-extrabold leading-tight text-neutral-950 md:text-5xl"><?php echo htmlspecialchars((string) $service['title'], ENT_QUOTES, 'UTF-8'); ?></h1>
+						<h1 class="mt-2 text-4xl font-heading font-extrabold leading-tight text-neutral-950 md:text-5xl"><?php echo e($service['title'] ?? ''); ?></h1>
 						<div class="mt-3 flex flex-wrap items-center gap-3">
-							<span class="inline-flex items-center rounded-full border border-neutral-200 bg-white px-3 py-1 text-xs font-bold uppercase tracking-wide text-neutral-600">Status: <?php echo htmlspecialchars((string) ($service['status'] ?? 'active'), ENT_QUOTES, 'UTF-8'); ?></span>
+							<span class="inline-flex items-center rounded-full border border-neutral-200 bg-white px-3 py-1 text-xs font-bold uppercase tracking-wide text-neutral-600">Status: <?php echo e($service['status'] ?? 'active'); ?></span>
 							<?php if ($boostActive): ?>
 								<span class="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-extrabold uppercase tracking-wide text-amber-800">Boosted</span>
 							<?php endif; ?>
 							<span class="text-xs font-extrabold uppercase tracking-[0.16em] text-neutral-500">Price</span>
-							<span class="text-base font-extrabold text-neutral-900"><?php echo htmlspecialchars(format_currency((float) ($service['price'] ?? 0)), ENT_QUOTES, 'UTF-8'); ?></span>
+							<span class="text-base font-extrabold text-neutral-900"><?php echo e(format_currency((float) ($service['price'] ?? 0))); ?></span>
 						</div>
 						<?php if ($boostActive && $boostExpiryLabel !== ''): ?>
 							<p class="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">Boosted until <?php echo htmlspecialchars($boostExpiryLabel, ENT_QUOTES, 'UTF-8'); ?></p>
 						<?php endif; ?>
 						<div class="mt-4 flex flex-wrap items-center gap-4">
 							<div class="flex items-center gap-3">
-								<img src="<?php echo htmlspecialchars($providerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($providerName, ENT_QUOTES, 'UTF-8'); ?> profile picture" class="h-11 w-11 rounded-full border-2 border-brand-200 bg-neutral-200 object-cover" data-fallback-src="<?php echo htmlspecialchars($providerFallback, ENT_QUOTES, 'UTF-8'); ?>" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback-src');">
+								<img src="<?php echo e($providerImage); ?>" alt="<?php echo e($providerName); ?> profile picture" class="h-11 w-11 rounded-full border-2 border-brand-200 bg-neutral-200 object-cover" data-fallback-src="<?php echo e($providerFallback); ?>" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback-src');">
 								<div>
 									<p class="text-xs font-extrabold uppercase tracking-[0.2em] text-neutral-500">Provider</p>
-									<p class="text-sm font-semibold text-neutral-700"><?php echo htmlspecialchars($providerName, ENT_QUOTES, 'UTF-8'); ?></p>
+									<p class="text-sm font-semibold text-neutral-700"><?php echo e($providerName); ?></p>
 								</div>
 							</div>
 						</div>
-						<p class="mt-5 whitespace-pre-line text-base leading-8 text-neutral-700"><?php echo htmlspecialchars((string) ($service['description'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+						<p class="mt-5 whitespace-pre-line text-base leading-8 text-neutral-700"><?php echo e($service['description'] ?? ''); ?></p>
 					</div>
 				</div>
 
@@ -72,22 +72,22 @@
 					<?php if (auth_check()): ?>
 						<?php if ($isOwnService): ?>
 							<?php if (($canManage ?? false) === true): ?>
-								<a href="/services/<?php echo (int) $service['id']; ?>/edit" class="<?php echo htmlspecialchars($primaryButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Edit service</a>
-								<a href="/services/<?php echo (int) $service['id']; ?>/boost" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Boost listing</a>
+								<a href="/services/<?php echo (int) $service['id']; ?>/edit" class="<?php echo e($primaryButtonClasses); ?>">Edit service</a>
+								<a href="/services/<?php echo (int) $service['id']; ?>/boost" class="<?php echo e($outlineButtonClasses); ?>">Boost listing</a>
 								<form action="/services/<?php echo (int) $service['id']; ?>" method="post" onsubmit="return confirm('Delete this service?');">
 									<?php echo csrf_field(); ?>
 									<input type="hidden" name="_method" value="DELETE">
-									<button type="submit" class="<?php echo htmlspecialchars($dangerButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Delete service</button>
+									<button type="submit" class="<?php echo e($dangerButtonClasses); ?>">Delete service</button>
 								</form>
 							<?php endif; ?>
-							<a href="/services" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Browse Skills</a>
+							<a href="/services" class="<?php echo e($outlineButtonClasses); ?>">Browse Skills</a>
 						<?php else: ?>
-							<a href="/bookings/create?service_id=<?php echo (int) $service['id']; ?>" class="<?php echo htmlspecialchars($primaryButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Book this service <span aria-hidden="true">-></span></a>
-							<a href="/services" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Browse Skills</a>
+							<a href="/bookings/create?service_id=<?php echo (int) $service['id']; ?>" class="<?php echo e($primaryButtonClasses); ?>">Book this service <span aria-hidden="true">-></span></a>
+							<a href="/services" class="<?php echo e($outlineButtonClasses); ?>">Browse Skills</a>
 						<?php endif; ?>
 					<?php else: ?>
-						<a href="/login" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Login to book</a>
-						<a href="/services" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Browse Skills</a>
+						<a href="/login" class="<?php echo e($outlineButtonClasses); ?>">Login to book</a>
+						<a href="/services" class="<?php echo e($outlineButtonClasses); ?>">Browse Skills</a>
 					<?php endif; ?>
 				</div>
 			</header>
@@ -101,7 +101,7 @@
 								<h2 class="mt-1 text-xl font-heading font-extrabold text-neutral-950">Bookings for this service</h2>
 								<p class="mt-2 text-sm text-neutral-600">Review requests and update booking status.</p>
 							</div>
-							<a href="/bookings/provider" class="<?php echo htmlspecialchars($outlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>">Open full provider schedule</a>
+							<a href="/bookings/provider" class="<?php echo e($outlineButtonClasses); ?>">Open full provider schedule</a>
 						</div>
 
 						<?php if ($providerBookings === []): ?>
@@ -170,16 +170,16 @@
 											<tr class="align-top transition hover:bg-surface-page/70">
 												<td class="px-4 py-4">
 													<div class="flex items-center gap-3">
-														<img src="<?php echo htmlspecialchars($seekerImage, ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($seekerName, ENT_QUOTES, 'UTF-8'); ?> profile picture" class="h-9 w-9 rounded-full border border-brand-200 bg-neutral-200 object-cover" data-fallback-src="<?php echo htmlspecialchars($seekerFallback, ENT_QUOTES, 'UTF-8'); ?>" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback-src');">
+														<img src="<?php echo e($seekerImage); ?>" alt="<?php echo e($seekerName); ?> profile picture" class="h-9 w-9 rounded-full border border-brand-200 bg-neutral-200 object-cover" data-fallback-src="<?php echo e($seekerFallback); ?>" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback-src');">
 														<div class="min-w-0">
-															<p class="text-sm font-semibold text-neutral-900"><?php echo htmlspecialchars($seekerName, ENT_QUOTES, 'UTF-8'); ?></p>
+															<p class="text-sm font-semibold text-neutral-900"><?php echo e($seekerName); ?></p>
 															<p class="text-xs text-neutral-500">Request #<?php echo (int) ($booking['id'] ?? 0); ?></p>
 														</div>
 													</div>
 												</td>
-												<td class="px-4 py-4 whitespace-nowrap text-neutral-700"><?php echo htmlspecialchars($preferredSchedule, ENT_QUOTES, 'UTF-8'); ?></td>
+												<td class="px-4 py-4 whitespace-nowrap text-neutral-700"><?php echo e($preferredSchedule); ?></td>
 												<td class="px-4 py-4">
-													<span class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wide <?php echo htmlspecialchars((string) ($statusChipClasses[$currentStatus] ?? $statusChipClasses['pending']), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars((string) ($statusLabels[$currentStatus] ?? ucfirst($currentStatus)), ENT_QUOTES, 'UTF-8'); ?></span>
+													<span class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wide <?php echo e($statusChipClasses[$currentStatus] ?? $statusChipClasses['pending']); ?>"><?php echo e($statusLabels[$currentStatus] ?? ucfirst($currentStatus)); ?></span>
 												</td>
 												<td class="px-4 py-4">
 													<?php if ($paymentStatus === 'paid'): ?>
@@ -189,7 +189,7 @@
 													<?php endif; ?>
 												</td>
 												<td class="px-4 py-4 text-neutral-700">
-													<span class="block max-w-[20rem] break-words leading-6"><?php echo htmlspecialchars($bookingMessage !== '' ? $bookingMessage : '-', ENT_QUOTES, 'UTF-8'); ?></span>
+													<span class="block max-w-[20rem] break-words leading-6"><?php echo e($bookingMessage !== '' ? $bookingMessage : '-'); ?></span>
 												</td>
 												<td class="px-4 py-4 text-right">
 													<div class="flex flex-wrap items-center justify-end gap-2">
@@ -200,9 +200,9 @@
 																<form action="/bookings/<?php echo (int) $booking['id']; ?>/status" method="post">
 																	<?php echo csrf_field(); ?>
 																	<input type="hidden" name="_method" value="PATCH">
-																	<input type="hidden" name="status" value="<?php echo htmlspecialchars($nextStatus, ENT_QUOTES, 'UTF-8'); ?>">
-																	<input type="hidden" name="redirect" value="<?php echo htmlspecialchars($bookingActionRedirect, ENT_QUOTES, 'UTF-8'); ?>">
-																	<button type="submit" class="<?php echo htmlspecialchars($smallOutlineButtonClasses, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars((string) ($actionLabels[$nextStatus] ?? ucfirst($nextStatus)), ENT_QUOTES, 'UTF-8'); ?></button>
+																<input type="hidden" name="status" value="<?php echo e($nextStatus); ?>">
+																<input type="hidden" name="redirect" value="<?php echo e($bookingActionRedirect); ?>">
+																<button type="submit" class="<?php echo e($smallOutlineButtonClasses); ?>"><?php echo e($actionLabels[$nextStatus] ?? ucfirst($nextStatus)); ?></button>
 																</form>
 															<?php endforeach; ?>
 														<?php endif; ?>

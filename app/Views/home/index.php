@@ -1,8 +1,8 @@
 <?php declare(strict_types=1); ?>
 
 <?php
-$userName = htmlspecialchars((string) ($user['name'] ?? 'Member'), ENT_QUOTES, 'UTF-8');
-$roleLabel = strtoupper(htmlspecialchars((string) ($role ?? 'seeker'), ENT_QUOTES, 'UTF-8'));
+$userName = e($user['name'] ?? 'Member');
+$roleLabel = strtoupper(e($role ?? 'seeker'));
 $rawRole = strtolower((string) ($role ?? 'seeker'));
 $canSeekSkill = $rawRole !== 'provider';
 $canOfferSkill = $rawRole !== 'seeker';

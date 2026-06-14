@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-$pageTitle = htmlspecialchars((string) ($title ?? 'SkillSwap'), ENT_QUOTES, 'UTF-8');
+$pageTitle = e($title ?? 'SkillSwap');
 $allErrors = form_errors();
 $appCssPath = __DIR__ . '/../../../public/assets/css/app.css';
 $appCssVersion = is_file($appCssPath) ? (string) filemtime($appCssPath) : '1';
@@ -36,7 +36,7 @@ $appJsVersion = is_file($appJsPath) ? (string) filemtime($appJsPath) : '1';
 						<ul class="mt-2 list-disc space-y-1 pl-5">
 							<?php foreach ($allErrors as $fieldErrors): ?>
 								<?php foreach ((array) $fieldErrors as $message): ?>
-									<li><?php echo htmlspecialchars((string) $message, ENT_QUOTES, 'UTF-8'); ?></li>
+									<li><?php echo e($message); ?></li>
 								<?php endforeach; ?>
 							<?php endforeach; ?>
 						</ul>
