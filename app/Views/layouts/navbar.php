@@ -12,6 +12,9 @@ if ($displayName === '') {
 }
 
 $profileInitial = strtoupper(substr($displayName, 0, 1));
+$profileImageRaw = profile_image_url((string) ($user['profile_picture'] ?? ''));
+$profileFallback = initials_avatar_data_uri($displayName);
+$profileImageUrl = $profileImageRaw !== '' ? $profileImageRaw : $profileFallback;
 $roleLabel = strtoupper((string) ($user['role'] ?? 'member'));
 $userRole = strtolower((string) ($user['role'] ?? 'member'));
 $canSeekSkill = !$isAuth || $userRole !== 'provider';
@@ -220,7 +223,7 @@ $mobileToggleClasses = $isAuth
 
 					<div class="relative" data-popover data-profile-popover>
 						<button type="button" class="inline-flex items-center gap-2 rounded-full border border-neutral-300 bg-white px-2 py-1.5 transition hover:border-brand-500" data-popover-trigger data-profile-toggle aria-label="Profile menu" aria-expanded="false">
-							<span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-brand-100 text-sm font-extrabold text-brand-700"><?php echo htmlspecialchars($profileInitial, ENT_QUOTES, 'UTF-8'); ?></span>
+							<img src="<?php echo e($profileImageUrl); ?>" alt="<?php echo e($displayName); ?>" class="h-8 w-8 rounded-full border-2 border-neutral-200 bg-neutral-200 object-cover" data-fallback-src="<?php echo e($profileFallback); ?>" onerror="this.onerror=null;this.src=this.getAttribute('data-fallback-src');">
 							<span class="hidden text-left md:flex md:flex-col md:items-start md:leading-tight">
 								<strong class="text-sm font-extrabold text-neutral-900"><?php echo htmlspecialchars($displayName, ENT_QUOTES, 'UTF-8'); ?></strong>
 								<small class="text-xs font-bold uppercase tracking-wide text-neutral-500"><?php echo htmlspecialchars($roleLabel, ENT_QUOTES, 'UTF-8'); ?></small>
