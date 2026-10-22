@@ -73,14 +73,7 @@ class AuthController extends Controller
 			return;
 		}
 
-		$token = $this->auth->requestPasswordReset((string) $clean['email']);
-
-		if (is_string($token) && $token !== '') {
-			App::logger()->debug('auth.password_reset.created', [
-				'email' => (string) $clean['email'],
-				'token_hash' => hash('sha256', $token),
-			]);
-		}
+		$this->auth->requestPasswordReset((string) $clean['email']);
 
 		Session::flash('success', 'If an account exists for that email, a reset link is ready.');
 		$this->redirect('/forgot-password');

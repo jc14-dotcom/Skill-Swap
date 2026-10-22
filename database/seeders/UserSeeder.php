@@ -10,6 +10,16 @@ class UserSeeder
 {
 	public function run(): void
 	{
+		$environment = strtolower((string) (getenv('APP_ENV') ?: 'local'));
+		if (!in_array($environment, ['local', 'testing'], true)) {
+			throw new \RuntimeException('Demo users may only be seeded in local or testing environments.');
+		}
+
+		$demoPassword = (string) (getenv('SEED_DEMO_PASSWORD') ?: '');
+		if ($demoPassword === '') {
+			throw new \RuntimeException('SEED_DEMO_PASSWORD must be set before seeding demo users.');
+		}
+
 		$now = date('Y-m-d H:i:s');
 
 		Database::query(
@@ -23,7 +33,7 @@ class UserSeeder
 			[
 				'name' => 'Hybrid Demo',
 				'email' => 'provider@example.com',
-				'password' => password_hash('[removed-demo-password]', PASSWORD_DEFAULT),
+				'password' => password_hash($demoPassword, PASSWORD_DEFAULT),
 				'role' => 'both',
 				'created_at' => $now,
 				'updated_at' => $now,
@@ -41,7 +51,7 @@ class UserSeeder
 			[
 				'name' => 'Seeker Demo',
 				'email' => 'seeker@example.com',
-				'password' => password_hash('[removed-demo-password]', PASSWORD_DEFAULT),
+				'password' => password_hash($demoPassword, PASSWORD_DEFAULT),
 				'role' => 'seeker',
 				'created_at' => $now,
 				'updated_at' => $now,

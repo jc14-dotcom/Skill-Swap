@@ -19,7 +19,7 @@ Implemented modules:
 
 1. Update environment values in .env for your local database.
 2. Run SQL migration files in order from database/migrations.
-3. Optionally run seeders by using database/seed.php after migrations.
+3. Optionally run seeders by using database/seed.php after migrations. Seeders are restricted to local/testing environments and require `SEED_DEMO_PASSWORD` in `.env`.
 4. Start app from web server root pointing to /public.
 
 ## Local Run (PHP built-in server)

@@ -53,6 +53,4 @@ $inputErrorClasses = ' border-danger-300 focus:border-danger-500 focus:ring-dang
 
 <div class="mt-3 rounded-2xl border border-neutral-300 bg-surface-page p-4">
 	<p class="text-xs font-extrabold uppercase tracking-[0.14em] text-brand-700">Demo Accounts</p>
-	<p class="mt-2 text-sm text-neutral-700">Both: provider@example.com / [removed-demo-password]</p>
-	<p class="text-sm text-neutral-700">Seeker: seeker@example.com / [removed-demo-password]</p>
 </div>
